@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d440c372-076a-401d-bafd-f51dd4a4f3ff" name="Quiz" url="http://localhost">
+        <fileTransfer mountedRoot="C:\xampp\htdocs\QuizSys" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>
