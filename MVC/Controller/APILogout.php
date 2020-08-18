@@ -1,8 +1,10 @@
 <?php
-require "./MVC/config/api.php";
-require "./MVC/Controller/JwtHandler.php";
+require_once __DIR__."/../config/api.php";
+require_once "JwtHandler.php";
+require_once __DIR__."/../core/controllers.php";
 
-class APILogout
+
+class APILogout extends Controller
 {
     private  function messages($status, $type, $messages){
         return [

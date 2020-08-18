@@ -44,10 +44,12 @@ class User extends Database {
         $stmt = $this->con->prepare($query);
         $stmt->bind_param("s", $email);
         $stmt->execute();
-        $stmt->get_result();
-        if ($stmt->num_rows){
+        $result = $stmt->get_result();
+        if ($result->num_rows){
+            $stmt->close();
             return true;
         }else{
+            $stmt->close();
             return false;
         }
     }

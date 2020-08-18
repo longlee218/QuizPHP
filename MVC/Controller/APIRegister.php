@@ -1,6 +1,7 @@
 <?php
-require "./MVC/config/api.php";
-require "./MVC/Controller/JwtHandler.php";
+require_once __DIR__."/../config/api.php";
+require_once "JwtHandler.php";
+require_once __DIR__."/../core/controllers.php";
 
 class APIRegister extends Controller {
     private function messages($success, $status, $mess, $token=null){

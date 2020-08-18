@@ -1,7 +1,7 @@
 <?php
     echo 'This is new';
-    class News{
+    class News extends Controller {
         function defaultFunction(){
-            echo 'This is default';
+            $this->requireView('home', []);
         }
     }

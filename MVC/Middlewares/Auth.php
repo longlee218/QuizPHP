@@ -56,3 +56,4 @@ require_once "./MVC/core/controllers.php";
             }
         }
     }
+    ?>

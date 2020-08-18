@@ -13,7 +13,7 @@
         }
 
         public function requireView($view, $data=[]){
-            $this->view_path = "./MVC/Views/".$view.".php";
+            $this->view_path =  "./MVC/Views/".$view.".php";
             require_once $this->view_path;
         }
     }

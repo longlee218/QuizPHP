@@ -1,4 +1,3 @@
-<!--THIS FILE IS USING TO SOLVE URL CONTROLLER-->
 <?php
     class App
     {
@@ -20,20 +19,22 @@
             $this->file_path =  "./MVC/Controller/".$this->controller.".php";
             require_once $this->file_path;
 
-            $this->controller = new $this->controller;
+            if( class_exists($this->controller)) {
+                $this->controller = new $this->controller;
 
-            //Action in url
-            if (isset($arr[1])){
-                if (method_exists($this->controller, $arr[1])){
-                    $this->action = $arr[1];
+                //Action in url
+                if (isset($arr[1])) {
+                    if (method_exists($this->controller, $arr[1])) {
+                        $this->action = $arr[1];
+                    }
+                    unset($arr[1]);
                 }
-                unset($arr[1]);
+                //Params in url
+                if ($arr) {
+                    $this->param = $arr;
+                }
+                call_user_func_array([$this->controller, $this->action], $this->param);
             }
-            //Params in url
-            if ($arr){
-                $this->param = $arr;
-            }
-            call_user_func_array([$this->controller, $this->action], $this->param);
         }
 
         public function urlProcess()

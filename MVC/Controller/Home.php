@@ -1,10 +1,10 @@
 <?php
-require_once "./MVC/config/api.php";
+require_once __DIR__."/../core/controllers.php";
 require_once "./MVC/Middlewares/Auth.php";
 
 class Home extends Controller {
-    function defaultFunction(){
-        $this->requireView('This is home');
+    public function defaultFunction(){
+        $this->requireView('home', []);
     }
     public function infoUserJWT(){
         $getAllHeaders = getallheaders();
