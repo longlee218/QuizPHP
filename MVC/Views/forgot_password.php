@@ -41,7 +41,7 @@
             var data_post_json = {email:email};
             $.ajax({
                 type: 'POST',
-                url: '/./QuizSys/MVC/Controller/APISendEmail.php',
+                url: '../APISendEmail/sendEmailResetPassword',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 data: data_post_json,
             }).done(function (data){

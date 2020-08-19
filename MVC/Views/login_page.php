@@ -2,36 +2,39 @@
 <div class="container">
     <hr>
     <div class="row justify-content-center pt-5">
-        <aside class="col-sm-4">
+        <div class="col-md-4">
             <div class="card">
-                <article class="card-body mt-3">
-                    <h4 class="card-title mb-4 mt-1">Đăng nhập</h4>
+                    <header class="card-header">
+                        <h3 class="card-title mb-4 mt-1">Đăng nhập</h3>
+                    </header>
                     <div id="messages"></div>
-                    <form method="post" id="login_form">
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input name="email" id="email" class="form-control" placeholder="Enter email" type="text">
-                            <div id="messages_email"></div>
-                        </div> <!-- form-group// -->
-                        <div class="form-group">
-                            <a class="float-right" href="ForgotPassword/defaultFunction">Quên mật khẩu?</a>
-                            <label>Mật khẩu</label>
-                            <input name="password" id="password" class="form-control" placeholder="******" type="password">
-                            <div id="messages_password"></div>
-                        </div> <!-- form-group// -->
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label><input type="checkbox"> Lưu mật khẩu </label>
-                            </div> <!-- checkbox .// -->
-                        </div> <!-- form-group// -->
-                        <div class="form-group">
-                            <button type="submit" name="login_button" id='login_btn' class="btn btn-primary btn-block"> Đăng nhập </button>
-                        </div> <!-- form-group// -->
-                    </form>
-                </article>
+                    <article class="card-body">
+                        <form method="post" id="login_form">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input name="email" id="email" class="form-control" placeholder="Enter email" type="text">
+                                <div id="messages_email"></div>
+                            </div> <!-- form-group// -->
+                            <div class="form-group">
+                                <a class="float-right" href="ForgotPassword/defaultFunction">Quên mật khẩu?</a>
+                                <label>Mật khẩu</label>
+                                <input name="password" id="password" class="form-control" placeholder="******" type="password">
+                                <div id="messages_password"></div>
+                            </div> <!-- form-group// -->
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <a class="float-right" href="RegisterAccount">Đăng ký tài khoản?</a>
+                                    <label><input type="checkbox"> Lưu mật khẩu </label>
+                                </div> <!-- checkbox .// -->
+                            </div> <!-- form-group// -->
+                            <div class="form-group">
+                                <button type="submit" name="login_button" id='login_btn' class="btn btn-outline-primary btn-block"> Đăng nhập </button>
+                            </div> <!-- form-group// -->
+                        </form>
+                    </article>
             </div> <!-- card.// -->
 
-        </aside> <!-- col.// -->
+        </div> <!-- col.// -->
     </div> <!-- row.// -->
     <script>
         $(document).ready(function (){
@@ -41,13 +44,14 @@
                 var password  = $('#password').val();
                 var data_post_json = {email:email, password:password};
                 $.ajax({
-                    url: './MVC/Controller/APILogin.php',
+                    url: './APILogin/checkLoginAPI',
                     type: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded', 'MESSAGES': 'HELLO'},
                     data: data_post_json,
                 }).done(function (data) {
                     if (data['success'] === 1){
-                        location.href = "Home/defaultFunction";
+                        document.cookie = "Authorization="+data['token'];
+                        location.href = "Home";
                     }
                     if (data['success'] === 0){
                         if (data['mess'] === "Your email is not validate"){

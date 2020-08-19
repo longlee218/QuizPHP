@@ -24,8 +24,11 @@ class APISendEmail extends Controller {
             }else{
                 $user =  $this->requireModel("User");
                 $email = $data['email'];
+                $result = $user->selectUser($email);
+                $row =  $result->fetch_assoc();
+                $username = $row['username'];
                 if ($user->checkEmail($email)){
-                    if($this->sendEmail($email, "RESET YOUR PASSWORD", "Please click this link to reset your password: http://localhost:85/QuizSys/reset_password?email=$email")){
+                    if($this->sendEmail($email, "RESET YOUR PASSWORD", "Please click this link to reset your password: http://localhost:85/QuizSys/reset_password?usr=$username")){
                         $dataReturn = $this->messages(1, 200, "Success");
                     }else{
                         $dataReturn = $this->messages(0, 500, "Something wrong, please check again!");
@@ -71,6 +74,3 @@ class APISendEmail extends Controller {
         }
     }
 }
-
-$send_email = new APISendEmail();
-$send_email->sendEmailResetPassword();

@@ -15,11 +15,9 @@ class APILogout extends Controller
 
     }
     public function logout(){
-        $get_headers =  getallheaders();
-        $dataReturn = [];
-        echo $get_headers['Authorization'];
         try{
-            unset($get_headers['Authorization']);
+            setcookie( 'Authorization', '', time() - 999999, '/', $_SERVER['SERVER_NAME'] );
+            echo($_COOKIE['Authorization']);
             $dataReturn = $this->messages(1, 200, "You are logout");
         }catch (Exception $exception){
             $dataReturn =  $this->messages(0, 500, "Sorry, somethings wrong");

@@ -7,8 +7,8 @@ class Home extends Controller {
         $this->requireView('home', []);
     }
     public function infoUserJWT(){
-        $getAllHeaders = getallheaders();
-        $auth = new Auth($this->requireModel("User"), $getAllHeaders);
+        $cookie_authorization = $_COOKIE;
+        $auth = new Auth($this->requireModel("User"), $cookie_authorization);
         $returnData = [
             "success"=>0,
             "status"=>404,

@@ -5,13 +5,19 @@ require_once "./MVC/core/controllers.php";
         protected $db;
         protected $headers;
         protected $token;
-        public function __construct($db,$headers) {
+        public function __construct($db,$cookie) {
             parent::__construct();
             $database = new Controller();
             $this->db = $database->requireModel("User");
-            $this->headers = $headers;
+            $this->headers = $cookie;
         }
-
+        private function messages($success, $status, $user){
+            return array(
+                "success"=>$success,
+                "status"=>$status,
+                "user"=>$user
+            );
+        }
         public function isAuth(){
             if(array_key_exists('Authorization',$this->headers) && !empty(trim($this->headers['Authorization']))):
                 $this->token = explode(" ", trim($this->headers['Authorization']));
@@ -42,11 +48,7 @@ require_once "./MVC/core/controllers.php";
                 $result = $this->db->selectByID($user_id);
                 if($result->num_rows):
                     $row = $result->fetch_assoc();
-                    return [
-                        'success' => 1,
-                        'status' => 200,
-                        'user' => $row
-                    ];
+                    return $this->messages(1, 200, $row);
                 else:
                     return null;
                 endif;
@@ -56,4 +58,3 @@ require_once "./MVC/core/controllers.php";
             }
         }
     }
-    ?>

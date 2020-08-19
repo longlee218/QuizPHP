@@ -50,5 +50,3 @@ class APILogin extends Controller {
         echo json_encode($returnData);
     }
 }
-$login = new APILogin();
-$login->checkLoginAPI();
