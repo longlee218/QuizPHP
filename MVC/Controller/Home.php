@@ -3,12 +3,16 @@ require_once __DIR__."/../core/controllers.php";
 require_once "./MVC/Middlewares/Auth.php";
 
 class Home extends Controller {
-    public function defaultFunction(){
+    public function InstructorHome(){
         $this->requireView('home', []);
     }
+
+    public function StudentHome(){
+        $this->requireView('home_student', []);
+    }
+
     public function infoUserJWT(){
-        $cookie_authorization = $_COOKIE;
-        $auth = new Auth($this->requireModel("User"), $cookie_authorization);
+        $auth = new Auth($this->requireModel("User"), $_COOKIE);
         $returnData = [
             "success"=>0,
             "status"=>404,

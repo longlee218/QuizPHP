@@ -1,6 +1,6 @@
 <?php include_once './MVC/Views/inc/master.php'?>
 <div class="container">
-    <h1>This is Instructor Home</h1>
+    <h1>This is Student Home</h1>
     <h2 id="username" ></h2>
     <button id="btn_logout" class="btn btn-outline-primary" value="logout">Logout</button>
 </div>

@@ -6,19 +6,19 @@ require_once __DIR__."/../core/controllers.php";
 
 class APILogout extends Controller
 {
-    private  function messages($status, $type, $messages){
+    private  function messages($status, $type, $messages, $url=null){
         return [
             "status"=> $status,
             "type"=>$type,
-            "messages"=>$messages
+            "messages"=>$messages,
+            "url"=>$url
         ];
 
     }
     public function logout(){
         try{
-            setcookie( 'Authorization', '', time() - 999999, '/', $_SERVER['SERVER_NAME'] );
-            echo($_COOKIE['Authorization']);
-            $dataReturn = $this->messages(1, 200, "You are logout");
+            setcookie("Authorization", false , time()-3600, "/", $_SERVER['SERVER_NAME']);
+            $dataReturn = $this->messages(1, 200, "You are logout", "../Login");
         }catch (Exception $exception){
             $dataReturn =  $this->messages(0, 500, "Sorry, somethings wrong");
         }

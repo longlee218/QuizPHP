@@ -5,11 +5,11 @@ require_once "./MVC/core/controllers.php";
         protected $db;
         protected $headers;
         protected $token;
-        public function __construct($db,$cookie) {
+        public function __construct($db,$headers) {
             parent::__construct();
             $database = new Controller();
             $this->db = $database->requireModel("User");
-            $this->headers = $cookie;
+            $this->headers = $headers;
         }
         private function messages($success, $status, $user){
             return array(

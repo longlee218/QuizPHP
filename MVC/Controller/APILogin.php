@@ -4,12 +4,13 @@ require_once "JwtHandler.php";
 require_once __DIR__."/../core/controllers.php";
 
 class APILogin extends Controller {
-    private function messages($success, $status, $mess, $token=null){
+    private function messages($success, $status, $mess, $token=null, $url=null){
             return array(
                 "success"=>$success,
                 "status"=>$status,
                 "mess"=>$mess,
-                "token"=>$token
+                "token"=>$token,
+                "url"=>$url
             );
     }
     public function checkLoginAPI(){
@@ -35,11 +36,21 @@ class APILogin extends Controller {
                 $row = $user->fetch_assoc();
                 if (md5($password) == $row['password']){
                     $jwt_handler = new JwtHandler();
-                    $token_return = $jwt_handler->_jwt_encode_token(
-                        "http:localhost:85/QuizSys/Home/defaultFunction",
-                        $row['id']
-                    );
-                    $returnData = $this->messages(1, 200, 'You are login', $token_return);
+                    if ($row['user_type'] == 1){
+                        $token_return = $jwt_handler->_jwt_encode_token(
+                            "http:localhost:85/QuizSys/Home/InstructorHome",
+                            $row['id']
+                        );
+                        $url = "Home/InstructorHome";
+                    }else if ($row['user_type'] == 2){
+                        $token_return = $jwt_handler->_jwt_encode_token(
+                            "http:localhost:85/QuizSys/Home/StudentHome",
+                            $row['id']
+                        );
+                        $url = "Home/StudentHome";
+                    }
+                    $returnData = $this->messages(1, 200, 'You are login', $token_return, $url);
+                    setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);
                 }else{
                     $returnData = $this->messages(0, 500, 'Wrong password');
                 }

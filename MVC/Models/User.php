@@ -19,7 +19,7 @@ class User extends Database {
 
     }
     public function selectByID($id){
-        $fetch_user_by_id = "SELECT username,email FROM users WHERE id=?";
+        $fetch_user_by_id = "SELECT username,email, id, user_type FROM users WHERE id=?";
         $this->con->init();
         $stmt = $this->con->prepare($fetch_user_by_id);
         $stmt->bind_param("d", $id);

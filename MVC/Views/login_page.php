@@ -46,12 +46,11 @@
                 $.ajax({
                     url: './APILogin/checkLoginAPI',
                     type: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded', 'MESSAGES': 'HELLO'},
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     data: data_post_json,
                 }).done(function (data) {
                     if (data['success'] === 1){
-                        document.cookie = "Authorization="+data['token'];
-                        location.href = "Home";
+                        window.location.href = data['url'];
                     }
                     if (data['success'] === 0){
                         if (data['mess'] === "Your email is not validate"){
