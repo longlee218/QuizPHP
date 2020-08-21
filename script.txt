@@ -1,133 +1,94 @@
-create table users(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    username varchar(100) not null,
-    first_name varchar(100),
-    last_name varchar(100),
-    email varchar(255),
-    user_type int(1),
-    date_join TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    password varchar(255)
-);
-
-create table instructors(
-    id int not null AUTO_INCREMENT PRIMARY KEY,
-    organization_type int(1),
-    organization_name varchar(255),
-    position varchar(255),
-    country varchar(125),
-    users_id int,
-    CONSTRAINT FK_users_id FOREIGN KEY (users_id) REFERENCES users(id)
-);
-
-create table students(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
+#Table Users
+#user_type { "1"; "Instructor", "2": "Student" }
+#gender {"1": "Male", "0": "Female", "2": Unknow}
+create table Users(
+    id int not null auto_increment primary key ,
+    username varchar(125) not null,
+    first_name varchar(255) not null,
+    last_name varchar(255) not null,
+    email varchar(255) not null,
+    gender int(1) default 2,
+    date_join timestamp default current_timestamp,
+    update_at timestamp default current_timestamp on update current_timestamp,
+    user_type enum('1','2') default '2',
+    country varchar(10) not null ,
+    school_name varchar(255) null ,
     class_name varchar(255) null,
-    school_name varchar(255) null,
+    organization_type int(1) null ,
+    organization_name varchar(255) null,
+    position varchar(255) null,
+    password varchar(255),
+    city varchar(255) null
+);
+
+# Table Room
+# status {"0":"offline", "1":"Online"}
+create table Room(
+    id int not null auto_increment primary key ,
+    room_name varchar(255) not null ,
+    status enum('0','1') default '0',
+    create_at timestamp default current_timestamp,
+    update_at timestamp default current_timestamp on update current_timestamp,
+    time_start timestamp null ,
+    time_end timestamp null ,
+    password varchar(255) null ,
     users_id int,
-    CONSTRAINT FK_users_id FOREIGN KEY(users_id) REFERENCES users(id)
+    constraint fk_users_id foreign key (users_id) references Users(id)
 );
 
-CREATE TABLE room(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    room_name varchar(255),
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_at TImeSTAMP DEFAULT CURRENT_TIMESTAMP on UPDATE CURRENT_TIMESTAMP,
-    status int(1) DEFAULT 0,
-    time_set time null,
-    password varchar(255) null,
-    instructors_id int,
-    CONSTRAINT FK_instructors_id FOREIGN KEY(instructos_id) REFERENCES instructors(id)
-);
-
-CREATE TABLE quiz(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    subject varchar(255) null,
-    quiz_title varchar(255) not null,
-    grade varchar(255) null,
-   	create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_at TImeSTAMP DEFAULT CURRENT_TIMESTAMP on UPDATE CURRENT_TIMESTAMP,
-    is_test int(1) DEFAULT 0,
+#Table Thread
+create table Thread(
+    id int not null auto_increment primary key ,
+    title varchar(255) not null ,
+    subject varchar(255) null ,
+    grade varchar(255),
+    create_at timestamp default current_timestamp,
+    update_at timestamp default current_timestamp on update current_timestamp,
+    is_test enum('0','1') default '0',
     room_id int,
-    CONSTRAINT FK_room_id FOREIGN KEY(room_id) REFERENCES room(id)
-);
-
-CREATE TABLE quiz_question(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    explain_question varchar(255) null,
-    image varchar(255) null,
-    description varchar(255) not null,
-    quiz_id int,
-    CONSTRAINT FK_quiz_id FOREIGN KEY(quiz_id) REFERENCES quiz(id)
-);
-
-CREATE TABLE quiz_choices(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    choice_name varchar(12) not null,
-    choice_content varchar(255) not null,
-    correct int(1) DEFAULT 0,
-	question_type int(1) DEFAULT 0,
-    quiz_question_id int,
-    CONSTRAINT FK_quiz_question_id FOREIGN KEY(quiz_question_id) REFERENCES quiz_question(id)
-);
-
-CREATE TABLE quiz_render(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    subject varchar(255) null,
-    quiz_title varchar(255) not null,
-    grade varchar(255) null
-);
-
-CREATE TABLE quiz_question_render(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    explain_question varchar(255) null,
-    image varchar(255) null,
-    description varchar(255) not null,
-    quiz_render_id int,
-    CONSTRAINT FK_quiz_render_id FOREIGN KEY(quiz_render_id) REFERENCES quiz_render(id)
-);
-
-CREATE TABLE quiz_choices_render(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    choice_name varchar(12) not null,
-    choice_content varchar(255) not null,
-    correct int(1) DEFAULT 0,
-    question_type int(1) DEFAULT 0,
-    quiz_question_render_id int,
- 	CONSTRAINT FK_quiz_question_render_id FOREIGN KEY(quiz_question_render_id) REFERENCES quiz_question_render(id)
-);
-
-CREATE TABLE result(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    score float,
-    percent float,
-    finish_at timestamp DEFAULT CURRENT_TIMESTAMP,
-    start_at datetime,
-    student_id int,
-    quiz_render_id int,
-    CONSTRAINT FK_student_id FOREIGN KEY(student_id) REFERENCES students(id),
-    CONSTRAINT FK_quiz_render_result_id FOREIGN KEY(quiz_render_id) REFERENCES quiz_render(id)
-);
-
-CREATE TABLE result_detail(
-	id int not null AUTO_INCREMENT PRIMARY KEY,
-    choice_answer varchar(255),
-    result_id int,
-    CONSTRAINT FK_result_id FOREIGN KEY(result_id) REFERENCES result(id)
+    flag_delete enum('0','1') default '0',
+    constraint fk_room_id foreign key (room_id) references Room(id)
 );
 
 
+#Table Question
+create table Question(
+    id int not null auto_increment primary key ,
+    `explain` varchar(255) null ,
+    image varchar(255) null ,
+    description text,
+    thread_id int,
+    constraint fk_thread_id foreign key (thread_id) references Thread(id)
+);
 
+#Table Answer
+create table Choices(
+    id int not null  auto_increment primary key ,
+    choice_name varchar(255) not null ,
+    choice_content varchar(255) not null ,
+    correct enum('0', '1') default '0',
+    question_id int,
+    constraint fk_question_id foreign key (question_id) references Question(id)
+);
 
+#Table Result Detail
+create table ResultDetail(
+    id int not null auto_increment primary key ,
+    users_id int,
+    question_id int,
+    answer varchar(255) null,
+    correct boolean,
+    constraint fk_users_detail_id foreign key (users_id) references Users(id),
+    constraint fk_question_detail_id foreign key (question_id) references Question(id)
+);
 
-
-
-
-
-
-
-
-
-
-
-
-
+#Table Result
+create table Result(
+    id int not null auto_increment primary key ,
+    score varchar(255),
+    result_detail_id int,
+    start_at timestamp null ,
+    finish_at timestamp null ,
+    update_at timestamp null ,
+    constraint fk_result_detail_id foreign key (result_detail_id) references ResultDetail(id)
+);

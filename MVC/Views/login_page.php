@@ -7,7 +7,6 @@
                     <header class="card-header">
                         <h3 class="card-title mb-4 mt-1">Đăng nhập</h3>
                     </header>
-                    <div id="messages"></div>
                     <article class="card-body">
                         <form method="post" id="login_form">
                             <div class="form-group">
@@ -20,6 +19,7 @@
                                 <label>Mật khẩu</label>
                                 <input name="password" id="password" class="form-control" placeholder="******" type="password">
                                 <div id="messages_password"></div>
+                                <div id="messages"></div>
                             </div> <!-- form-group// -->
                             <div class="form-group">
                                 <div class="checkbox">
@@ -39,10 +39,10 @@
     <script>
         $(document).ready(function (){
             $("#login_btn").click(function () {
-                var data = $(this);
                 var email = $("#email").val();
                 var password  = $('#password').val();
                 var data_post_json = {email:email, password:password};
+                console.log(data_post_json);
                 $.ajax({
                     url: './APILogin/checkLoginAPI',
                     type: 'POST',
@@ -59,6 +59,8 @@
                             $('#messages').html("<small class='text-danger'>*Không được bỏ trống các trường sau</small>")
                         }else if (data['mess'] === "Wrong password"){
                             $('#messages_password').html("<small class='text-danger'>*Sai mật khẩu vui lòng thử lại!</small>")
+                        }else if(data['mess'] === "Wrong email or username"){
+                            $('#messages').html("<small class='text-danger'>*Sai email hoặc mật khẩu</small>")
                         }
                     }
                 }).fail(function (xhr, error) {

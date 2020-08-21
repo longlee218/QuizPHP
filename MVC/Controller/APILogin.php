@@ -21,7 +21,7 @@ class APILogin extends Controller {
         if($_SERVER["REQUEST_METHOD"] != "POST"){
             $returnData = $this->messages(0, 404, "Method is not allow");
         }
-        elseif (!isset($data['email'])||!isset($data['password'])
+        if (!isset($data['email'])||!isset($data['password'])
             ||empty(trim($data['email']))||empty(trim($data['password']))){
             $returnData = $this->messages(0, 400, "Please fill in this fields");
         }

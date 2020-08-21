@@ -8,9 +8,10 @@
 
     $.ajax({
         type: 'GET',
-        url: "./Home/infoUserJWT",
+        url: "../Home/infoUserJWT",
         success:function (data){
             var data_parse = JSON.parse(data);
+            console.log(data_parse)
             if (data_parse['success'] === 1){
                 $('#username').html(data_parse['user']['username']);
             }

@@ -26,18 +26,49 @@ class User extends Database {
         $stmt->execute();
         return $stmt->get_result();
     }
-    public function  insertUser($first_name, $last_name, $username, $email, $password){
-            $user_type = 2;
-            $password_hash = md5($password);
-            $query = "insert into users(first_name, last_name, username, email, user_type, password)
-                        values (?,?,?,?,?,?)";
+    public function  insertInstructor($first_name, $last_name, $username, $email, $password, $gender,
+                                      $organization_type, $organization_name, $position, $country, $city){
+            $user_type = '1';
+            $query = "insert into users(first_name, last_name, username, email, user_type, password, gender, organization_type,
+                                        organization_name, position , country, city)
+                        values (?,?,?,?,?,?,?,?,?,?,?,?)";
             $this->con->init();
             $stmt = $this->con->prepare($query);
-            $stmt->bind_param('ssssis', $first_name, $last_name, $username, $email, $user_type, $password_hash);
+            $stmt->bind_param('ssssssssssss', $first_name, $last_name, $username, $email, $user_type, $password,
+                        $gender, $organization_type, $organization_name, $position, $country, $city);
             $stmt->execute();
             $stmt->close();
             return $this->selectUser($email);
     }
+
+
+    public function  insertStudent($first_name, $last_name, $username, $email, $password, $gender,
+                                      $school_name, $class_name, $country, $city){
+        $user_type = '2';
+        $query = "insert into users(first_name, last_name, username, email, user_type, password, gender, school_name, 
+                                    class_name, country, city)
+                        values (?,?,?,?,?,?,?,?,?,?,?)";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("sssssssssss",
+            $first_name,
+            $last_name,
+            $username,
+            $email,
+            $user_type,
+            $password,
+            $gender,
+            $school_name,
+            $class_name,
+            $country,
+            $city);
+        $stmt->execute();
+        $stmt->close();
+        return $this->selectUser($email);
+    }
+
+
+
     public function checkEmail($email){
         $query = "select * from users where email=?";
         $this->con->init();
