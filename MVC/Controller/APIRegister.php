@@ -17,7 +17,7 @@ class APIRegister extends Controller {
 //        $instructor_model = $this->requireModel("Instructor");
 
         //Data POST and data return
-//        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(file_get_contents("php://input"));
         $data = $_REQUEST;
         $returnData = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){

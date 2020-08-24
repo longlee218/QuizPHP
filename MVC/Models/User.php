@@ -26,6 +26,16 @@ class User extends Database {
         $stmt->execute();
         return $stmt->get_result();
     }
+    public function selectAllByID($id){
+        $fetch_user_by_id = "SELECT * FROM users WHERE id=?";
+        $this->con->init();
+        $stmt = $this->con->prepare($fetch_user_by_id);
+        $stmt->bind_param("d", $id);
+        $stmt->execute();
+        return $stmt->get_result();
+    }
+
+
     public function  insertInstructor($first_name, $last_name, $username, $email, $password, $gender,
                                       $organization_type, $organization_name, $position, $country, $city){
             $user_type = '1';
@@ -126,6 +136,21 @@ class User extends Database {
             }
         }
     }
+    public function updateInfoInstructor($id, $first_name, $last_name, $email, $gender, $country, $organization_name, $position){
+        try {
+            $query = "update users set first_name=?, last_name=?, email=?, gender=?, country=?, organization_name=?, position=? 
+                        where id=?";
+            $this->con->init();
+            $stmt =  $this->con->prepare($query);
+            $stmt->bind_param("sssssssi", $first_name, $last_name, $email, $gender, $country, $organization_name, $position, $id);
+            $stmt->execute();
+            $stmt->close();
+            return true;
+        }catch (Exception $exception){
+            return false;
+        }
+    }
+
     public function resetPassword($password, $email){
         try {
             $query = "update users set password = ? where email = ?";

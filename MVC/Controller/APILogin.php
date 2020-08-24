@@ -13,6 +13,20 @@ class APILogin extends Controller {
                 "url"=>$url
             );
     }
+    public function updateTokenAPI($id){
+        setcookie("Authorization", false , time()-3600, "/", $_SERVER['SERVER_NAME']);
+        $user_model = $this->requireModel("User");
+        $user =  $user_model->selectAllByID($id);
+        $row = $user->fetch_assoc();
+        $jwt_handler = new JwtHandler();
+        $token_return = $jwt_handler->_jwt_encode_token(
+            "http:localhost:85/QuizSys/Home/InstructorHome",
+            $row['id']
+        );
+        $returnData = $this->messages(1, 200, 'Update success', $token_return);
+        setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);
+        return $returnData;
+    }
     public function checkLoginAPI(){
         $user_model = $this->requireModel("User");
         $data = $_REQUEST;

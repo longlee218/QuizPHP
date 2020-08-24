@@ -21,22 +21,4 @@
             console.log(error);
         }
     });
-    $('#btn_logout').click(function () {
-        var question_logout = confirm("Bạn có muốn đăng xuất không?");
-        if (question_logout === true){
-            $.ajax({
-                type: 'GET',
-                url: '../APILogout/logout',
-                success: function (data) {
-                    window.location.href = data['url'];
-                },
-                error: function (xhr, error){
-                    console.log(xhr);
-                    console.log(error);
-                }
-            })
-        }
-    });
-
-
 </script>

@@ -45,7 +45,7 @@ require_once "./MVC/core/controllers.php";
 
         protected function fetchUser($user_id){
             try{
-                $result = $this->db->selectByID($user_id);
+                $result = $this->db->selectAllByID($user_id);
                 if($result->num_rows):
                     $row = $result->fetch_assoc();
                     return $this->messages(1, 200, $row);
