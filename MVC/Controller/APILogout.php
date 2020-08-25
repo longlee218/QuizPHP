@@ -18,7 +18,7 @@ class APILogout extends Controller
     public function logout(){
         try{
             setcookie("Authorization", false , time()-3600, "/", $_SERVER['SERVER_NAME']);
-            $dataReturn = $this->messages(1, 200, "You are logout", "../Login");
+            $dataReturn = $this->messages(1, 200, "You are logout", "/../QuizSys/Login");
         }catch (Exception $exception){
             $dataReturn =  $this->messages(0, 500, "Sorry, somethings wrong");
         }

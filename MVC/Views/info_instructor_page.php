@@ -6,7 +6,7 @@ include_once './MVC/Views/navbar.php' ?>
         margin-right: 180px;
     }
 </style>
-<br>
+
 <div id="messages_update"></div>
 <div class="container bootstrap snippet">
     <div class="row justify-content-center">
@@ -26,16 +26,16 @@ include_once './MVC/Views/navbar.php' ?>
                         <div class="form-row">
                             <div class="col form-group">
                                 <label>Họ </label>
-                                <input type="text" class="form-control" placeholder="" id="first_name" >
+                                <input type="text" class="form-control" placeholder="" id="first_name" required >
                             </div> <!-- form-group end.// -->
                             <div class="col form-group">
                                 <label>Tên</label>
-                                <input type="text" class="form-control" placeholder=" " id="last_name" >
+                                <input type="text" class="form-control" placeholder=" " id="last_name" required>
                             </div> <!-- form-group end.// -->
                         </div> <!-- form-row end.// -->
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email"  disabled class="form-control" placeholder="example@examp.com" id="email" required>
+                            <input type="email" class="form-control" placeholder="example@examp.com" id="email" required>
                             <small class="text-danger" id="messages_email"></small>
                         </div> <!-- form-group end.// -->
                         <div class="form-row">
@@ -56,7 +56,7 @@ include_once './MVC/Views/navbar.php' ?>
                         </div> <!-- form-group end.// -->
                         <div class="form-row">
                             <div class="form-group">
-                                <a class="float-right" href="../QuizSys/reset_password">Thay đổi mật khẩu</a>
+                                <a class="float-right text-primary" id="reset_password" onclick="clickReset()">Thay đổi mật khẩu?</a>
                             </div>
                         </div>
                 </div>
@@ -65,11 +65,11 @@ include_once './MVC/Views/navbar.php' ?>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Thành phố</label>
-                            <input type="text" class="form-control" id="city">
+                            <input type="text" class="form-control" id="city" required>
                         </div> <!-- form-group end.// -->
                         <div class="form-group col-md-6">
                             <label>Quốc gia</label>
-                            <select id="country" class="form-control">
+                            <select id="country" class="form-control" required>
                                 <option> Choose</option>
                                 <option value="AX">Åland Islands</option>
                                 <option value="AL">Albania</option>
@@ -383,12 +383,13 @@ include_once './MVC/Views/navbar.php' ?>
                 success: function (data) {
                     console.log(data);
                     if (data['success'] === 1){
-                        $("#messages_update").html("<div class=\"alert alert-successlert-dismissible fade show\" role=\"alert\">\n" +
-                            "  <strong>Holy guacamole!</strong> Cập nhật thành công.\n" +
-                            "  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n" +
-                            "    <span aria-hidden=\"true\">&times;</span>\n" +
-                            "  </button>\n" +
-                            "</div>")
+                        $("#messages_update").html(' <div class="alert alert-success">\n' +
+                            '    <strong>Thành công!</strong> Tài khoản đã được cập nhật.\n' +
+                            '  </div>')
+                    }else{
+                        $("#messages_update").html(' <div class="alert alert-danger">\n' +
+                            '    <strong>Cập nhật thất bại!</strong>Tài khoản không được cập nhật.\n' +
+                            '  </div>')
                     }
                 },
                 error: function (xhr, error) {

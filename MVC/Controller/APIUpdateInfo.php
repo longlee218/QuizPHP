@@ -26,7 +26,7 @@ class APIUpdateInfo extends Controller
            if ($user_update){
                $data_return =$this->messages(1, 404, "Update success");
            }else{
-               $data_return = $this->messages(0, 404, "Error");
+               $data_return = $this->messages(0, 404, "Please fill all these fields");
            }
         }
         echo json_encode($data_return);

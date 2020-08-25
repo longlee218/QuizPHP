@@ -50,7 +50,9 @@
                     data: data_post_json,
                 }).done(function (data) {
                     if (data['success'] === 1){
-                        window.location.href = data['url'];
+                        setTimeout(function () {
+                            window.location.href = data['url'];
+                        },1000)
                     }
                     if (data['success'] === 0){
                         if (data['mess'] === "Your email is not validate"){
