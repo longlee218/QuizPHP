@@ -48,28 +48,16 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive">
-                    <table id="table_room" class="table table-bordred table-stripedr text-center">
+                    <table id="table_room" class="table table-bordred table-stripedr">
                         <thead>
                             <th><input type="checkbox" id="checkall" /></th>
                             <th>ID</th>
-                            <th>TRẠNG THÁI</th>
-                            <th>TÊN PHÒNG</th>
-                            <th>Email</th>
-                            <th>Contact</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
+                            <th colspan="2">TRẠNG THÁI</th>
+                            <th colspan="4">TÊN PHÒNG</th>
+                            <th colspan="2"></th>
+                            <th>CHỈNH SỬA</th>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td><input type="checkbox" class="checkthis" /></td>
-                            <td>Mohsin</td>
-                            <td>Irshad</td>
-                            <td>CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan</td>
-                            <td>isometric.mohsin@gmail.com</td>
-                            <td>+923335586757</td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-sm btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit"><small>Chỉnh sửa</small></button></p></td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-sm btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" ><small>Xóa</small></button></p></td>
-                        </tr>
                         </tbody>
 
                     </table>
@@ -87,30 +75,30 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                    <h4 class="modal-title custom_align" id="Heading">Edit Your Detail</h4>
+                    <h4 class="modal-title custom_align" id="Heading">Chỉnh sửa phòng</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <input class="form-control " type="text" placeholder="Mohsin">
+                        <label>Tên phòng</label>
+                        <input class="form-control " type="text" id="room_name_update">
                     </div>
                     <div class="form-group">
-
-                        <input class="form-control " type="text" placeholder="Irshad">
+                        <label>Mật khẩu</label>
+                        <input class="form-control " type="text" id="room_password">
                     </div>
                     <div class="form-group">
-                        <textarea rows="2" class="form-control" placeholder="CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan"></textarea>
-
+                        <label>Nhập lại mật khẩu</label>
+                        <input class="form-control " type="text" id="room_password_confirm">
                     </div>
                 </div>
                 <div class="modal-footer ">
-                    <button type="button" class="btn btn-warning btn-lg" style="width: 100%;"><span class="glyphicon glyphicon-ok-sign"></span> Update</button>
+                    <button type="button" class="btn btn-outline-info btn-lg" style="width: 100%;"><span class="glyphicon glyphicon-ok-sign"></span> Cập nhật phòng</button>
                 </div>
             </div>
             <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
     </div>
-
     <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -139,12 +127,29 @@
         url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
         success: function (data){
             console.log(data);
-            var myTable1 = document.getElementById("table_room").getElementsByTagName("tbody")[0];
-            var newRow = myTable1.insertRow();
-            var newCell = newRow.insertCell(0);
-            var newCell2 = newRow.insertCell(1)
-            // newCell.appendChild(document.createTextNode("LongLeHoang"));
-            // newCell2.appendChild(document.createTextNode("Kakak"));
+            console.log(data[0]['room_name']);
+            for (let i=0; i<data.length; i++){
+                var room = data[i];
+                var status = 'Không hoạt động';
+                if (i['status'] === '1'){
+                    status = 'Đang hoạt động';
+                }
+                console.log(room['status']);
+               $("#table_room > tbody:last-child").append("" +
+                   "<tr>" +
+                   "    <td><input type=\"checkbox\" class=\"checkthis\" /></td>" +
+                   "    <td class='id_room'>"+room['id']+"</td>" +
+                   "    <td class='status' colspan='2'> "+status+"</td>" +
+                   "    <td class='room_name' colspan='4'>"+room['room_name']+"</td>" +
+                   "    <td colspan=\"2\"></td>" +
+                   "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
+                   "        <div class='btn-group ' role='group'>" +
+                   "            <button class=\"btn btn-warning btn-xs\" data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" id='edit-"+room['id']+"'>Chỉnh sửa</button>" +
+                   "            <button class=\"btn btn-danger btn-xs\" data-title=\"Delete\" data-toggle=\"modal\" data-target=\"#delete\" id='delete-"+room['id']+"'>Xóa</button>" +
+                   "        </div>" +
+                   "    </p></td>" +
+                   "</tr>")
+            }
         },
         error: function (xhr, error) {
             console.log(xhr, error);
@@ -160,6 +165,7 @@
                 url: "/../QuizSys/APIRoom/createRoom",
                 data: data_post_json,
                 success: function (data) {
+                    console.log(data);
                     var success = data['success'];
                     if (success === 0){
                         $("#message_room").html("*Tên này đã được chọn, vui lòng thử tên khác");
@@ -175,5 +181,11 @@
                 }
             })
         })
-    })
+    });
+    
+    function passVariableToToggle() {
+
+    }
+
+
 </script>

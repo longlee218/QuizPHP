@@ -47,4 +47,18 @@ class Room extends Database
         $stmt->execute();
         return $stmt->get_result();
     }
+
+    public function updateRoom($room_id, $room_name, $password){
+        $query = "update room set room_name= ?, password=? where id=?";
+        $this->con->init();
+        try {
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param("ssi", $room_name, $password, $room_id);
+            $stmt->execute();
+            return true;
+        }catch (Exception $exception){
+            echo $exception;
+            return false;
+        }
+    }
 }

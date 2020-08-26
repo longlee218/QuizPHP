@@ -55,13 +55,13 @@ class APILogin extends Controller {
                             "http:localhost:85/QuizSys/Home/InstructorHome",
                             $row['id']
                         );
-                        $url = "Home/InstructorHome";
+                        $url = "/../QuizSys/Home/InstructorHome";
                     }else if ($row['user_type'] == 2){
                         $token_return = $jwt_handler->_jwt_encode_token(
                             "http:localhost:85/QuizSys/Home/StudentHome",
                             $row['id']
                         );
-                        $url = "Home/StudentHome";
+                        $url = "/../QuizSys/Home/StudentHome";
                     }
                     $returnData = $this->messages(1, 200, 'You are login', $token_return, $url);
                     setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);

@@ -44,7 +44,7 @@
                 var data_post_json = {email:email, password:password};
                 console.log(data_post_json);
                 $.ajax({
-                    url: './APILogin/checkLoginAPI',
+                    url: '/../QuizSys/APILogin/checkLoginAPI',
                     type: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     data: data_post_json,
