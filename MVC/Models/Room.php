@@ -47,7 +47,28 @@ class Room extends Database
         $stmt->execute();
         return $stmt->get_result();
     }
+    public function selectAllByIDRoom($id){
+        $query = "select * from room where id = ?";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result();
+    }
 
+    public function updateRoomWithoutName($room_id, $password){
+        $query = "update room set password=? where id=?";
+        $this->con->init();
+        try {
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param("si",  $password, $room_id);
+            $stmt->execute();
+            return true;
+        }catch (Exception $exception){
+            echo $exception;
+            return false;
+        }
+    }
     public function updateRoom($room_id, $room_name, $password){
         $query = "update room set room_name= ?, password=? where id=?";
         $this->con->init();

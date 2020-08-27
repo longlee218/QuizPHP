@@ -1,53 +1,68 @@
 <?php include_once './MVC/Views/inc/master.php'?>
 
 <style>
-    #navbarSupportedContent,#navbarMain, #username, #brand {
+    .main, navbar-expand-lg,.page-footer {
+        background-color: rgb(119, 170, 209);
+        border: none;
+    }
+    .page-footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        color: white;
+        text-align: center;
+        padding: 15px;
+    }
+    #username {
+        text-align: center;
+        font-size: x-large;
+        padding: 40px;
+    }
+    .text-size {
+        font-style: unset;
+        color: white;
+        margin-right: 30px;
+    }
+    .nav-item{
+        margin-right: 20px;
+        margin-top: 10px;
+    }
+    .link_size:focus {
         background-color: rgb(119, 170, 209);
     }
-    #username{
-        font-size: xx-large;
-    }
-    .text_size{
-        font-size: 13px;
-        text-transform: uppercase;
-    }
-    #btn_logout:active{
-        background: white;
-    }
 </style>
-<div>
-    <div id="brand">
-<!--        <a class="navbar-brand text-light justify-content-between" href="#"><h3>QUIZ</h3></a>-->
-        <div class="d-flex justify-content-center text-light text-uppercase pt-3" id="username">
-    </div>
-    </div>
-    <nav class="navbar navbar-expand-lg navbar-light" id="navbarMain">
+<div class="main">
+    <div class="text-center text-size text-uppeercase" id="username"><i class="fa fas-wifi"></i></div>
+    <span class="glyphicon glyphicon-user"></span>
+    <nav class="navbar navbar-expand-lg navbar-light ">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active mr-3">
-                    <a class="nav-link text-light text_size" href="/../QuizSys/Home/InstructorHome">Trang chủ <span class="sr-only">(current)</span></a>
+                <li class="nav-item active">
+                    <a class="text-size" href="/../QuizSys/Home/InstructorHome" >Trang chủ <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link text-light text_size" href="#">Bộ đề</a>
+                <li class="nav-item active">
+                    <a class="text-size" href="#">Bộ đề <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link text-light text_size" href="/../QuizSys/RoomAction/defaultFunction">Phòng thi</a>
+                <li class="nav-item active">
+                    <a class=" text-size" href="/../QuizSys/RoomAction">Phòng thi <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link text-light text_size" href="#">Báo cáo</a>
+                <li class="nav-item active">
+                    <a class="text-size" href="#">Báo cáo <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link text-light text_size" href="#">Kết quả</a>
+                <li class="nav-item active text-size">
+                    <a class="text-size" href="#">Kết quả <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item dropdown float-right">
-                    <a class="nav-link dropdown-toggle text_size text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-size" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/../QuizSys/ProfileInstructor">Tài khoản</a>
+                        <a class="dropdown-item" href="/../QuizSys/ProfileInstructor">Thông tin</a>
                         <a class="dropdown-item" id="btn_logout">Đăng xuất</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Something else here</a>
@@ -57,38 +72,7 @@
         </div>
     </nav>
 </div>
-<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>-->
-<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">Open modal for @fat</button>-->
-<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Open modal for @getbootstrap</button>-->
-<!---->
-<!--<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog" role="document">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--                <h5 class="modal-title" id="exampleModalLabel">New message</h5>-->
-<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                    <span aria-hidden="true">&times;</span>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--                <form>-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="recipient-name" class="col-form-label">Recipient:</label>-->
-<!--                        <input type="text" class="form-control" id="recipient-name">-->
-<!--                    </div>-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="message-text" class="col-form-label">Message:</label>-->
-<!--                        <textarea class="form-control" id="message-text"></textarea>-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--            <div class="modal-footer">-->
-<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-<!--                <button type="button" class="btn btn-primary">Send message</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+
 <script>
     var id;
     function selectRadioButton(name, value){
@@ -156,4 +140,3 @@
         return tmp;
     }();
 </script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

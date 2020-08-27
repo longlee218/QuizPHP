@@ -6,7 +6,6 @@ include_once './MVC/Views/navbar.php' ?>
         margin-right: 180px;
     }
 </style>
-
 <div id="messages_update"></div>
 <div class="container bootstrap snippet">
     <div class="row justify-content-center">
@@ -22,7 +21,6 @@ include_once './MVC/Views/navbar.php' ?>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                    <br>
                         <div class="form-row">
                             <div class="col form-group">
                                 <label>Họ </label>
@@ -340,7 +338,7 @@ include_once './MVC/Views/navbar.php' ?>
                     <div class="form-group">
                         <div class="col-xs-12">
                             <br>
-                            <button class="btn  btn-outline-primary" id="save" > Lưu</button>
+                            <button class="btn  btn-" id="save" > Lưu</button>
                             <button class="btn " type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
                         </div>
                     </div>
@@ -349,6 +347,7 @@ include_once './MVC/Views/navbar.php' ?>
         </div><!--/col-3-->
     </div><!--/col-9-->
 </div><!--/row-->
+
 <script>
     var id;
     function selectRadioButton(name, value){
@@ -401,4 +400,3 @@ include_once './MVC/Views/navbar.php' ?>
         });
     });
 </script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
