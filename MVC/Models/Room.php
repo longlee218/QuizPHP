@@ -22,9 +22,14 @@ class Room extends Database
         if ($password == null){
             $query = "insert into room(room_name, users_id) value (?, ?)";
             $this->con->init();
-            $stmt = $this->con->prepare($query);
-            $stmt->bind_param("si", $room_name, $id);
-            return true;
+            try {
+                $stmt = $this->con->prepare($query);
+                $stmt->bind_param("si", $room_name, $id);
+                $stmt->execute();
+                return true;
+            }catch (Exception $e){
+                return false;
+            }
         }else{
             $query = "insert into room(room_name, password, users_id) value (?, ?, ?)";
             $this->con->init();
@@ -34,7 +39,7 @@ class Room extends Database
                 $stmt->execute();
                 return true;
             }catch (Exception $exception){
-                return $exception->getMessage();
+                return false;
             }
 
         }

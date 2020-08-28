@@ -87,7 +87,7 @@
                         <div class="text-danger" id="messages_update"></div>
                     </div>
                     <div class="form-group">
-                        <label>Mật khẩu</label>
+                        <label>Mật khẩu mới</label>
                         <input class="form-control " type="password" id="room_password">
                     </div>
                     <div class="form-group">
@@ -128,6 +128,7 @@
 <script>
     $(document).one("click", ".button_edit", function () {
         var room_id = $(this).data('id');
+        $('[name='+room_id+']').val(room_id);
         $(".modal-content #Heading").html('Chỉnh sửa phòng số '+room_id);
         $("#update_btn_room").click(function () {
             var room_name = $('.modal-body .form-group #room_name_update').val();
@@ -141,24 +142,25 @@
                 data: data_post_json,
                 success: function (data) {
                     if (data['success'] === 1){
-                        $('.modal-dialog').modal('hide');
-                        // $('#messages_update').html('<p class="alert alert-success" role="alert">Cập nhật thành công</p>');
+                        var confirm_submit = confirm("Phòng đã được cập nhật, vui lòng click OK để tải lại trang");
+                        if (confirm_submit === true){
+                            window.location.reload();
+                        }
                     }else{
-                        $('.modal-dialog #messages_update').html("<smal>*Vui lòng thử tên khác</smal>")
+                        $('.modal-dialog #messages_update').html("<small>*Vui lòng thử tên khác</small>")
                     }
                 },
                 error: function (xhr, error) {
                     console.log(xhr, error);
                 }
             });
-        })
-    });
+        });
+     });
     $.ajax({
         type: "GET",
         url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
         success: function (data){
             console.log(data);
-            console.log(data[0]['room_name']);
             for (let i=0; i<data.length; i++){
                 var room = data[i];
                 var status = 'Không hoạt động';
@@ -171,7 +173,7 @@
                    "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
                    "    <td class='id_room align-middle'>"+room['id']+"</td>" +
                    "    <td class='status align-middle'> "+status+"</td>" +
-                   "    <td class='room_name align-middle'>"+room['room_name']+"</td>" +
+                   "    <td class='room_name align-middle' name='"+room['id']+"'>"+room['room_name']+"</td>" +
                    "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
                    "        <div class='btn-group ' role='group'>" +
                    "            <button class=\"btn btn-xs button_edit\" name='button_edit' data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" data-id='"+room['id']+"'><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i></button>" +

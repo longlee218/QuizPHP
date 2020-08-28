@@ -33,7 +33,7 @@
     }
 </style>
 <div class="main">
-    <div class="text-center text-size text-uppeercase" id="username"><i class="fa fas-wifi"></i></div>
+    <div class="text-center text-size text-uppeercase" id="username"></i></div>
     <span class="glyphicon glyphicon-user"></span>
     <nav class="navbar navbar-expand-lg navbar-light ">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
         success:function (data){
             var data_parse = JSON.parse(data);
             if (data_parse['success'] === 1){
-                $('#username').html(data_parse['user']['username']);
+                $('#username').html(data_parse['user']['username']+' <i class="fa fa-wifi" aria-hidden="true">');
                 $('#navbarDropdown').html(data_parse['user']['username']);
                 id = data_parse['user']['id'];
                 $("#email").val(data_parse['user']['email']);
