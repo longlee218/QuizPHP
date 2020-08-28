@@ -57,15 +57,13 @@
                     <a class="text-size" href="#">Kết quả <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav mr-lg-5 navbar-left">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-size" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    </a>
+                    <a class="dropdown-toggle"  id="navbarDropdown" role="button" data-toggle="dropdown" ><i class="fa fa-user" aria-hidden="true"></i></a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/../QuizSys/ProfileInstructor">Thông tin</a>
-                        <a class="dropdown-item" id="btn_logout">Đăng xuất</a>
+                        <a class="dropdown-item" href="/../QuizSys/ProfileInstructor"><i class="fa fa-info" aria-hidden="true"></i> Thông tin</a>
+                        <a class="dropdown-item" id="btn_logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Đăng xuất </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>
             </ul>
@@ -78,33 +76,34 @@
     function selectRadioButton(name, value){
         $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
     }
-    $.ajax({
-        type: 'GET',
-        url: "/../QuizSys/Home/infoUserJWT",
-        success:function (data){
-            var data_parse = JSON.parse(data);
-            if (data_parse['success'] === 1){
-                $('#username').html(data_parse['user']['username']+' <i class="fa fa-wifi" aria-hidden="true">');
-                $('#navbarDropdown').html(data_parse['user']['username']);
-                id = data_parse['user']['id'];
-                $("#email").val(data_parse['user']['email']);
-                $('#first_name').val(data_parse['user']['first_name']);
-                $('#last_name').val(data_parse['user']['last_name']);
-                $('#city').val(data_parse['user']['city']);
-                $('#country').val(data_parse['user']['country']);
-                $('#organization_name').val(data_parse['user']['organization_name']);
-                $('#position').val(data_parse['user']['position']);
-                var value_gender = data_parse['user']['gender'];
-                selectRadioButton("gender", value_gender);
-            }else {
-                window.location.href = "/../QuizSys/MVC/Views/inc/404_page.php";
+    // window.setInterval(function () {
+        $.ajax({
+            type: 'GET',
+            url: "/../QuizSys/Home/infoUserJWT",
+            success:function (data){
+                var data_parse = JSON.parse(data);
+                if (data_parse['success'] === 1){
+                    $('#username').html(data_parse['user']['username']+' <i class="fa fa-wifi" aria-hidden="true">');
+                    id = data_parse['user']['id'];
+                    $("#email").val(data_parse['user']['email']);
+                    $('#first_name').val(data_parse['user']['first_name']);
+                    $('#last_name').val(data_parse['user']['last_name']);
+                    $('#city').val(data_parse['user']['city']);
+                    $('#country').val(data_parse['user']['country']);
+                    $('#organization_name').val(data_parse['user']['organization_name']);
+                    $('#position').val(data_parse['user']['position']);
+                    var value_gender = data_parse['user']['gender'];
+                    selectRadioButton("gender", value_gender);
+                }else {
+                    window.location.href = "/../QuizSys/MVC/Views/inc/404_page.php";
+                }
+            },
+            error: function (xhr, error) {
+                console.log(xhr);
+                console.log(error);
             }
-        },
-        error: function (xhr, error) {
-            console.log(xhr);
-            console.log(error);
-        }
-    });
+        });
+    // }, 5000);
     $('#btn_logout').click(function () {
         var question_logout = confirm("Bạn có muốn đăng xuất không?");
         if (question_logout === true){
