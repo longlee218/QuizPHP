@@ -87,8 +87,10 @@ class Room extends Database
             return false;
         }
     }
-    public function setOfflineRoomBack($room_id, $time_now){
+    public function setOfflineRoomBack($room_id){
         $query = 'update room set status=?, time_end=? where  id=?';
+        date_default_timezone_set('Asia/Bangkok');
+        $time_now =  date('Y-m-d H:i');
         $status = '0';
         $this->con->init();
         $stmt = $this->con->prepare($query);

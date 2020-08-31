@@ -78,17 +78,38 @@ create table ResultDetail(
     question_id int,
     answer varchar(255) null,
     correct boolean,
+//add
+//    result_id int,
     constraint fk_users_detail_id foreign key (users_id) references Users(id),
-    constraint fk_question_detail_id foreign key (question_id) references Question(id)
+    constraint fk_question_detail_id foreign key (question_id) references Question(id),
+//add
+//    constraint fk_result_id foreign key(result_id) references Result(id)
 );
 
 #Table Result
 create table Result(
     id int not null auto_increment primary key ,
     score varchar(255),
-    result_detail_id int,
+//delete
+//    result_detail_id int,
     start_at timestamp null ,
     finish_at timestamp null ,
     update_at timestamp null ,
-    constraint fk_result_detail_id foreign key (result_detail_id) references ResultDetail(id)
+//delete
+//  constraint fk_result_detail_id foreign key (result_detail_id) references ResultDetail(id)
 );
+
+
+//Script change database for home:
+alter table result
+drop foreign key fk_result_detail_id;
+
+
+alter table result
+drop column result_detail_id;
+
+alter table resultdetail
+add result_id int not null;
+
+alter table resultdetail
+add constraint fk_result_id foreign key(result_id) references  result(id);

@@ -1,4 +1,5 @@
 <?php require_once './MVC/Views/navbar.php'?>
+
 <style>
     /* The switch - the box around the slider */
     .switch {
@@ -79,7 +80,7 @@
         </div>
     </div>
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Tạo phòng mới</h5>
@@ -138,7 +139,7 @@
         </div>
     </div>
     <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
@@ -151,7 +152,7 @@
                         <div class="text-danger" id="messages_update"></div>
                     </div>
                     <div class="form-group">
-                        <label>Mật khẩu mới</label>
+                        <label>Mật khẩu</label>
                         <input class="form-control " type="password" id="room_password">
                     </div>
                     <div class="form-group">
@@ -172,14 +173,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                    <h4 class="modal-title custom_align" id="Heading">Delete this entry</h4>
+                    <h4 class="modal-title custom_align" id="Heading">Xóa phòng</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span> Are you sure you want to delete this Record?</div>
+                    <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>Bạn có chắc muốn xóa phòng này không?</div>
                 </div>
                 <div class="modal-footer ">
-                    <button type="button" class="btn btn-success" ><span class="glyphicon glyphicon-ok-sign"></span> Yes</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> No</button>
+                    <button type="button" class="btn btn-success" ><span class="glyphicon glyphicon-ok-sign"></span> Có</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Không</button>
                 </div>
             </div>
         </div>
@@ -202,6 +203,9 @@
                         <br>
                         <input type="datetime-local" id="time_end">
                     </div>
+                    <div class="form-group">
+                        <div id="messages-time" class="text-danger"></div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer ">
@@ -213,8 +217,36 @@
     <!-- /.modal-dialog -->
 </div>
 </div>
+<?php require_once './MVC/Views/footer.php' ?>
 <script>
-    function post_time_online(id_room){
+    $('.modal-content #time_start').focusout(function (e) {
+        // e.preventDefault();
+        var time_start =  ($("#time_start").val()).split('T');
+        var time_end = ($("#time_end").val()).split('T');
+        time_start = time_start[0]+' '+time_start[1];
+        time_end = time_end[0]+' '+time_end[1];
+        $.ajax({
+            type: 'GET',
+            url: '/../QuizSys/APIRoom/checkTime/'+time_start+'/'+time_end,
+            success: function (data) {
+                if (data['success'] === '0'){
+                    if (data['messages'] === 'Please fill all these fill'){
+                        $('#time_start').focus();
+                        $('.modal-content #messages-time').html('<small>*Vui phòng nhập đủ các trường</small>')
+                    }else if (data['messages'] === 'Not valid time start. Please try again'){
+                        $("#time_start").val('');
+                        $('#time_start').focus();
+                        $('.modal-content #messages-time').html('<small>*Ngày bắt đầu không thỏa mãn. Vui lòng nhập lại</small>')
+                    }else if (data['messages'] === 'Not valid time end. Please try again'){
+                        $("#time_end").focusout().val('');
+                        $('.modal-content #messages-time').html('<small>*Ngày kết thúc không thỏa mãn. Vui lòng nhập lại</small>')
+                }
+            }
+                },
+                error: function (xhr, error){console.log(xhr, error);}
+        })
+    })
+    function post_time_online(id_room, return_first){
         $("#btn_settime").click(function () {
             var time_start =  ($("#time_start").val()).split('T');
             var time_end = ($("#time_end").val()).split('T');
@@ -231,8 +263,8 @@
                     success: function (data) {
                         if (data['success'] === '1'){
                             clearInterval(time);
-                            $("form[name='form-set-time']")[0].reset();
-                            $( "#setTime" ).modal('hide');
+                            alert('Phòng '+id_room+' đã online');
+                            location.reload();
                         }
                         console.log(data);
                     },
@@ -241,20 +273,39 @@
                     }
                 })
             }, 5000);
-        })
+
+        });
     }
-    function post_time_offline(room_id){
+    function post_time_offline(room_id, check_radio, return_first){
        var confirm_offline = confirm("Bạn muốn phòng này offline ngay lập tức ?");
        if (confirm_offline === true){
-           $.ajax({
-               type: 'POST',
-               url: '/../QuizSys/APIRoom/setTime'
+           console.log({
+               room_id: room_id
+           });
+           $(document).ready(function () {
+               $.ajax({
+                   method: 'POST',
+                   url: '/../QuizSys/APIRoom/setRoomOffline',
+                   data: {
+                       room_id: room_id
+                   },
+                   success: function (req) {
+                       console.log(req)
+                       alert('Phòng '+room_id+' đã offline');
+                       loadListRoom(return_first);
+                   },
+                   error: function (xhr, error) {
+                       console.log(xhr, error);
+                   }
+               })
            })
+       }else{
+           check_radio.checked = true;
        }
     }
     $(document).on("click", ".button_edit", function () {
         var room_id = $(this).data('id');
-        $(".modal-content #Heading").html('Chỉnh sửa phòng số '+room_id);
+        $("#edit .modal-content #Heading").html('Phòng số '+room_id);
         var room_name = $("#table_room tbody tr#"+room_id+" td.room_name").text();
         $("input[name='room_name']").val(room_name);
      });
@@ -270,11 +321,12 @@
             data: data_post_json,
             success: function (data) {
                 if (data['success'] === 1){
-                    var confirm_submit = confirm("Phòng đã được cập nhật, vui lòng click OK để tải lại trang");
-                    if (confirm_submit === true){
-                        window.location.reload();
-                    }
+                    alert("Phòng đã được cập nhật.");
+                    loadListRoom(return_first);
                 }else{
+                    $('.modal-body .form-group #room_name_update').val('');
+                    $('.modal-body .form-group #room_password').val('');
+                    $('.modal-body .form-group #room_password_confirm').val('');
                     $('.modal-dialog #messages_update').html("<small>*Vui lòng thử tên khác</small>")
                 }
             },
@@ -283,53 +335,64 @@
             }
         });
     });
-    $.ajax({
-        type: "GET",
-        url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
-        success: function (data){
-            for (let i=0; i<data.length; i++){
-                var room = data[i];
-                var status = '<label class="switch">\n' +
-                    '  <input name="setStatus" type="checkbox">\n' +
-                    '  <span class="slider round"></span>\n' +
-                    '</label>';
-                if (room['status'] === '1'){
-                    status = '<label class="switch">\n' +
-                        '  <input name="setStatus" type="checkbox" checked>\n' +
+    function loadListRoom(return_first) {
+        $.ajax({
+            type: "GET",
+            url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+            success: function (data){
+                for (let i=0; i<data.length; i++){
+                    var room = data[i];
+                    var status = '<label class="switch">\n' +
+                        '  <input name="setStatus" type="checkbox">\n' +
                         '  <span class="slider round"></span>\n' +
                         '</label>';
-                }
-               $("#table_room > tbody:last-child").append("" +
-                   "<tr id='"+room['id']+"'>" +
-                   "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
-                   "    <td class='id_room align-middle'>"+room['id']+"</td>" +
-                   "    <td class='status align-middle'> "+status+"</td>" +
-                   "    <td class='room_name align-middle'>"+room['room_name']+"</td>" +
-                   "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
-                   "        <div class='btn-group ' role='group'>" +
-                   "            <button class=\"btn btn-xs button_edit\" name='button_edit' data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" data-id='"+room['id']+"'><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i></button>" +
-                   "            <button class=\"btn btn-xs\" name='button_delete' data-title=\"Delete\" data-toggle=\"modal\" data-target=\"#delete\" data-id='"+room['id']+"'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></button>" +
-                   "        </div>" +
-                   "    </p></td>" +
-                   "</tr>");
-            }
-            for (let i=0; i < data.length; i++){
-                var check_time = $('input[name="setStatus"]')[i];
-                check_time.addEventListener('change', function () {
-                    if ($(this).is(':checked')){
-                        $( "#setTime" ).modal();
-                        post_time_online(data[i]['id']);
-                    }else{
-                        post_time_offline(data[i]['id']);
+                    if (room['status'] === '1'){
+                        status = '<label class="switch">\n' +
+                            '  <input name="setStatus" type="checkbox" checked>\n' +
+                            '  <span class="slider round"></span>\n' +
+                            '</label>';
                     }
-                })
-            }
-        },
-        error: function (xhr, error) {
-            console.log(xhr, error);
-        }
-    });
+                    $("#table_room > tbody:last-child").append("" +
+                    "<tr id='"+room['id']+"'>" +
+                    "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
+                    "    <td class='id_room align-middle'>"+room['id']+"</td>" +
+                    "    <td class='status align-middle'> "+status+"</td>" +
+                    "    <td class='room_name align-middle'>"+room['room_name']+"</td>" +
+                    "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
+                    "        <div class='btn-group ' role='group'>" +
+                    "            <button class=\"btn btn-xs button_edit\" name='button_edit' data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" data-id='"+room['id']+"'><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i></button>" +
+                    "            <button class=\"btn btn-xs\" name='button_delete' data-title=\"Delete\" data-toggle=\"modal\" data-target=\"#delete\" data-id='"+room['id']+"'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></button>" +
+                    "        </div>" +
+                    "    </p></td>" +
+                    "</tr>");
+                }
+                for (let i=0; i < data.length; i++){
+                    var check_time = $('input[name="setStatus"]')[i];
+                    check_time.addEventListener('change', function () {
+                        if ($(this).is(':checked')){
+                            $( "#setTime" ).modal();
+                            console.log(data[i]['id']);
+                            post_time_online(data[i]['id'], return_first);
+                        }else{
+                            post_time_offline(data[i]['id'],$('input[name="setStatus"]')[i], return_first);
+                        }
+                        hiddenChecked($('input[name="setStatus"]')[i]);
 
+                    });
+                }
+            },
+            error: function (xhr, error) {
+                console.log(xhr, error);
+            }
+        });
+    }
+    function hiddenChecked(check_radio){
+        $('#setTime').on('hidden.bs.modal', function () {
+            $(this).find("input, small").val('').end();
+            check_radio.checked = false;
+        })
+    }
+    loadListRoom(return_first);
     $(document).ready(function () {
         $("#create_room").click(function () {
             var room_name = $("#room_name").val();
@@ -343,6 +406,8 @@
                     console.log(data);
                     var success = data['success'];
                     if (success === 0){
+                        $('#room_name').val('');
+                        $('room_name').focus();
                         $("#message_room").html("*Tên này đã được chọn, vui lòng thử tên khác");
                     }else if (success === 1){
                        var confirm_submit = confirm("Phòng đã được tạo, vui lòng click OK để tải lại trang");

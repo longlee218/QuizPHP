@@ -40,7 +40,9 @@ class APISendEmail extends Controller {
             echo json_encode($dataReturn);
         }
     }
-
+    public function sendEmailActivateAccount(){
+        return true;
+    }
     public function sendEmail($to_email, $subject, $body)
     {
         $mail = new PHPMailer\PHPMailer\PHPMailer();
