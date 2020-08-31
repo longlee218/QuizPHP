@@ -245,7 +245,7 @@
     }
     function post_time_offline(room_id){
        var confirm_offline = confirm("Bạn muốn phòng này offline ngay lập tức ?");
-       if (confirm_offline == true){
+       if (confirm_offline === true){
            $.ajax({
                type: 'POST',
                url: '/../QuizSys/APIRoom/setTime'
