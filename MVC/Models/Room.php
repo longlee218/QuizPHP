@@ -87,4 +87,23 @@ class Room extends Database
             return false;
         }
     }
+    public function setOfflineRoomBack($room_id, $time_now){
+        $query = 'update room set status=?, time_end=? where  id=?';
+        $status = '0';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("ssi", $status, $time_now, $room_id);
+        $stmt->execute();
+        return true;
+    }
+
+    public function setOnlineRoomInTime($room_id, $time_start, $time_end){
+        $query = "update room set status=?, time_start= ?, time_end=? where id=?";
+        $status = '1';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("sssi", $status,$time_start, $time_end, $room_id);
+        $stmt->execute();
+        return true;
+    }
 }

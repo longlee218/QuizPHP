@@ -191,7 +191,7 @@
                 <h4 class="modal-title custom_align" id="Heading">Thiết lập thời gian Online</h4>
             </div>
             <div class="modal-body">
-                <form>
+                <form name="form-set-time">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Bắt đầu</label>
                         <br>
@@ -214,23 +214,44 @@
 </div>
 </div>
 <script>
-
-    $(document).on("change", "input[name='setStatus']", function () {
-        if ($(this).is(':checked')){
-            $( "#setTime" ).modal();
-        }
-    });
-    $(document).ready(function () {
+    function post_time_online(id_room){
         $("#btn_settime").click(function () {
             var time_start =  ($("#time_start").val()).split('T');
-            time_start = time_start[0]+' '+time_start[1];
             var time_end = ($("#time_end").val()).split('T');
+            time_start = time_start[0]+' '+time_start[1];
             time_end = time_end[0]+' '+time_end[1];
-            console.log(time_start);
-            console.log(time_end);
+            var time = setInterval(function () {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        'time-start': time_start,
+                        'time-end': time_end
+                    },
+                    url: '/../QuizSys/APIRoom/setTimeOnline/' + id_room,
+                    success: function (data) {
+                        if (data['success'] === '1'){
+                            clearInterval(time);
+                            $("form[name='form-set-time']")[0].reset();
+                            $( "#setTime" ).modal('hide');
+                        }
+                        console.log(data);
+                    },
+                    error: function (xhr, error) {
+                        console.log(xhr, error);
+                    }
+                })
+            }, 5000);
         })
-    })
-
+    }
+    function post_time_offline(room_id){
+       var confirm_offline = confirm("Bạn muốn phòng này offline ngay lập tức ?");
+       if (confirm_offline == true){
+           $.ajax({
+               type: 'POST',
+               url: '/../QuizSys/APIRoom/setTime'
+           })
+       }
+    }
     $(document).on("click", ".button_edit", function () {
         var room_id = $(this).data('id');
         $(".modal-content #Heading").html('Chỉnh sửa phòng số '+room_id);
@@ -266,7 +287,6 @@
         type: "GET",
         url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
         success: function (data){
-            console.log(data);
             for (let i=0; i<data.length; i++){
                 var room = data[i];
                 var status = '<label class="switch">\n' +
@@ -279,7 +299,6 @@
                         '  <span class="slider round"></span>\n' +
                         '</label>';
                 }
-                console.log(room['status']);
                $("#table_room > tbody:last-child").append("" +
                    "<tr id='"+room['id']+"'>" +
                    "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
@@ -293,6 +312,17 @@
                    "        </div>" +
                    "    </p></td>" +
                    "</tr>");
+            }
+            for (let i=0; i < data.length; i++){
+                var check_time = $('input[name="setStatus"]')[i];
+                check_time.addEventListener('change', function () {
+                    if ($(this).is(':checked')){
+                        $( "#setTime" ).modal();
+                        post_time_online(data[i]['id']);
+                    }else{
+                        post_time_offline(data[i]['id']);
+                    }
+                })
             }
         },
         error: function (xhr, error) {

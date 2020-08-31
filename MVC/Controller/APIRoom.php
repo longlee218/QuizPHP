@@ -69,7 +69,24 @@ class APIRoom extends Controller
         }
         echo json_encode($data_return);
     }
-    public function  setTimeOnline(){
-        echo date('Y-m-d H:i');
+    public function setRoomOffline($id_room){
+        date_default_timezone_set('Asia/Bangkok');
+        $time_now =  date('Y-m-d H:i');
+        $this->room_model->setOfflineRoomBack($id_room, $time_now);
+        echo json_encode($this->messages(1, 'Success', '200'));
+    }
+    public function  setTimeOnline($id_room){
+        $data = $_REQUEST;
+        $data_return = [];
+        date_default_timezone_set('Asia/Bangkok');
+        $time_now =  date('Y-m-d H:i');
+        if ($data['time-start'] == $time_now){
+            $this->room_model->setOnlineRoomInTime($id_room ,$data['time-start'], $data['time-end']);
+            $data_return = $this->messages("1", "Success update", "200");
+        }
+        else {
+            $data_return = $this->messages("0", ["time-server"=>$time_now, "room_id"=>$id_room], "400");
+        }
+        echo json_encode($data_return);
     }
 }
