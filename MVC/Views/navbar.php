@@ -58,6 +58,9 @@
                 <li class="nav-item active text-size">
                     <a class="text-size" href="#">Kết quả <span class="sr-only">(current)</span></a>
                 </li>
+                <li class="nav-item active text-size">
+                    <a class="text-size" href="/../QUizSys/RegisterAccount/registerPageInstructor/">Thêm người dùng <span class="sr-only">(current)</span></a>
+                </li>
             </ul>
             <ul class="nav navbar-nav mr-lg-5 navbar-left">
                 <li class="nav-item dropdown">

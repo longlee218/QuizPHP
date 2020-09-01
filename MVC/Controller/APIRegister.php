@@ -14,36 +14,39 @@ class APIRegister extends Controller {
     }
     public function registerUserInstructor(){
         $user_model = $this->requireModel("User");
-//        $instructor_model = $this->requireModel("Instructor");
-
-        //Data POST and data return
         $data = json_decode(file_get_contents("php://input"));
-        $data = $_REQUEST;
         $returnData = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){
             $returnData = $this->messages(0, 404, "Not allow this method");
         }
         else{
             if (!isset($data->first_name) || !isset($data->last_name) || !isset($data->email)
-            ||! isset($data->username)||! isset($data->password) || empty(trim($data->first_name)) ||
-            empty(trim($data->last_name)) || empty(trim($data->username)) || empty(trim($data->email)) || empty($data->password)){
+            ||!isset($data->password) || empty(trim($data->first_name)) ||
+            empty(trim($data->last_name)) || empty(trim($data->email)) || empty($data->password)){
                 $returnData = $this->messages(0, 400, "Please fill these fields");
             }
             else{
-                $first_name = trim($data['first_name']);
-                $last_name = trim($data['last_name']);
-                $email = trim($data['email']);
-                $username = trim($data['username']);
-                $password = trim($data['password']);
-
-                if ($user_model->checkUsername($username)){
-                    $returnData = $this->messages(0, 400, "This username have been exists");
-                }elseif ($user_model->checkEmail($email)){
+                $first_name = trim($data->first_name);
+                $last_name = trim($data->last_name);
+                $username = $first_name.$last_name.mt_rand(100000, 999999);
+                $email = trim($data->email);
+                $password = trim($data->password);
+                $gender = trim($data->gender);
+                $city = trim($data->city);
+                $country = trim($data->country);
+                $organization_name = trim($data->organization_name);
+                $organization_type = trim($data->organization_type);
+                $position = trim($data->position);
+                if ($user_model->checkEmail($email)){
+                    $returnData = $this->messages(0, 200, "This email have been exists");
+                }
+                else if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
                     $returnData = $this->messages(0, 400, "This email have been exists");
-                }else{
+                }
+                else{
                     $user =  $user_model->insertInstructor($first_name, $last_name, $username, $email, $password, $gender,
                                                             $organization_type, $organization_name, $position, $country, $city);
-                    $returnData = $this->messages(1, 200, 'You are register success');
+                    $returnData = $this->messages(1, 200, 'You are register success', '/../QuizSys/RegisterAccount/registerPageInstructor/');
                 }
             }
         }
@@ -87,7 +90,7 @@ class APIRegister extends Controller {
                 else{
                     $user =  $user_model->insertStudent($first_name, $last_name, $username, $email, md5($password), $gender,
                                                     $school_name, $class_name, $country, $city);
-                    $returnData = $this->messages(1, 200, 'You are register success', '../QuizSys/Login');
+                    $returnData = $this->messages(1, 200, 'You are register success', '/../QuizSys/Login');
                 }
             }
         }
