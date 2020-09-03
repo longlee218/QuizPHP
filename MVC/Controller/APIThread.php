@@ -34,6 +34,11 @@ class APIThread extends Controller
                $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
            }
         }
-        echo json_encode($thread_obj->fetch_assoc()['id']);
+        if ($thread_obj->num_rows > 0){
+            while ($row = $thread_obj->fetch_assoc()){
+                array_push($row, $data_return);
+            }
+        }
+        echo json_encode($data_return);
     }
 }

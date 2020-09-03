@@ -33,10 +33,73 @@
     .wifi-symbol {display: none;}
     .wifi-symbol {display: inline-block;width: 10px;height: 10px;margin-top: -187.5px;-ms-transform: rotate(-45deg) translate(-100px);-moz-transform: rotate(-45deg) translate(-100px);-o-transform: rotate(-45deg) translate(-100px);-webkit-transform: rotate(-45deg) translate(-100px);transform: rotate(-45deg) translate(-100px);}
     .wifi-symbol .wifi-circle {box-sizing: border-box;-moz-box-sizing: border-box;display: block;width: 20%;height: 20%;font-size: 21.42857px;position: absolute;bottom: 0;left: 0;border-color: aqua;border-style: solid;border-width: 1em 1em 0 0;-webkit-border-radius: 0 100% 0 0;border-radius: 0 100% 0 0;opacity: 0;-o-animation: wifianimation 3s infinite;-moz-animation: wifianimation 3s infinite;-webkit-animation: wifianimation 3s infinite;animation: wifianimation 3s infinite;}.wifi-symbol .wifi-circle.first {-o-animation-delay: 800ms;-moz-animation-delay: 800ms;-webkit-animation-delay: 800ms;animation-delay: 800ms;}.wifi-symbol .wifi-circle.second {width: 5em;height: 5em;-o-animation-delay: 400ms;-moz-animation-delay: 400ms;-webkit-animation-delay: 400ms;animation-delay: 400ms;}.wifi-symbol .wifi-circle.third {width: 3em;height: 3em;}.wifi-symbol .wifi-circle.fourth {width: 1em;height: 1em;opacity: 1;background-color: white;-o-animation: none;-moz-animation: none;-webkit-animation: none;animation: none;}@-o-keyframes wifianimation {0% {opacity: 0.4;}5% {opactiy: 1;}6% {opactiy: 0.1;}100% {opactiy: 0.1;}}@-moz-keyframes wifianimation {0% {opacity: 0.4;}5% {opactiy: 1;}6% {opactiy: 0.1;}100% {opactiy: 0.1;}}@-webkit-keyframes wifianimation {0% {opacity: 0.4;}5% {opactiy: 1;}6% {opactiy: 0.1;}100% {opactiy: 0.1;}}
+
+
+         /* The switch - the box around the slider */
+     .switch {
+         position: relative;
+         display: inline-block;
+         width: 60px;
+         height: 34px;
+     }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
 </style>
 <div class="main">
     <div class="text-center text-size text-uppeercase" id="username"></i></div>
-    <span class="glyphicon glyphicon-user"></span>
     <nav class="navbar navbar-expand-lg navbar-light ">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -47,7 +110,7 @@
                     <a class="text-size" href="/../QuizSys/Home/InstructorHome" >Trang chủ <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="text-size" href="#">Bộ đề <span class="sr-only">(current)</span></a>
+                    <a class="text-size" href="/../QuizSys/QuizPage/">Bộ đề <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
                     <a class=" text-size" href="/../QuizSys/RoomAction">Phòng thi <span class="sr-only">(current)</span></a>
@@ -88,12 +151,13 @@
             success:function (data){
                 var data_parse = JSON.parse(data);
                 if (data_parse['success'] === 1){
-                    $('#username').html(data_parse['user']['username']+'<div class="wifi-symbol">\n' +
-                        '<div class="wifi-circle first"></div>\n' +
-                        '<div class="wifi-circle second"></div>\n' +
-                        '<div class="wifi-circle third"></div>\n' +
-                        '<div class="wifi-circle fourth"></div>\n' +
-                        '</div>');
+                    $('#username').html(data_parse['user']['username']);
+                    // $('#username').html(data_parse['user']['username']+'<div class="wifi-symbol">\n' +
+                    // '<div class="wifi-circle first"></div>\n' +
+                    // '<div class="wifi-circle second"></div>\n' +
+                    // '<div class="wifi-circle third"></div>\n' +
+                    // '<div class="wifi-circle fourth"></div>\n' +
+                    // '</div>');
                     id = data_parse['user']['id'];
                     $("#email").val(data_parse['user']['email']);
                     $('#first_name').val(data_parse['user']['first_name']);

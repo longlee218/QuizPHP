@@ -292,7 +292,7 @@
                    success: function (req) {
                        console.log(req)
                        alert('Phòng '+room_id+' đã offline');
-                       loadListRoom(return_first);
+                       // loadListRoom(return_first);
                    },
                    error: function (xhr, error) {
                        console.log(xhr, error);
