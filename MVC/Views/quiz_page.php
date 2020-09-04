@@ -11,27 +11,49 @@
         width: 150px;
         background-color: #555;
     }
+    .qs_correct{
+        width: 25px;
+        height: 30px;
+    }
+    label {
+        cursor: pointer;
+    }
+
+    #upload-photo {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
 </style>
 <div class="container" id="main-content">
     <form id="form_quiz">
         <div class="row mt-auto mt-5 pt-5">
             <div class="col-6">
                 <div class="form-row">
-                    <input class="form-control" id="title_quiz" value="Tiêu đề mặc định">
+                    <input class="form-control" id="title_quiz" value="Tiêu đề mặc định" required>
                 </div>
             </div>
             <div class="col col-4"></div>
             <div class="col-2 form-group">
-                <button class="btn btn-outline-primary btn-lg" type="button" id="save_and_exit">Lưu và thoát</button>
+                <button class="btn btn-outline-primary btn-lg" type="submit" id="save_and_exit">Lưu và thoát</button>
             </div>
         </div>
         <hr>
            <div class="form-row">
-               <label class="switch">
-                   <input id="quiz_setting_switch" name="setting_quiz" type="checkbox">
-                   <span class="slider round"></span>
-               </label>
-               <div class="ml-2 text-dark font-weight-bold">Tùy chỉnh cài đặt bộ đề</div>
+             <div class="col col-xs-3 col-md-6">
+                 <label class="switch">
+                     <input id="quiz_setting_switch" name="setting_quiz" type="checkbox">
+                     <span class="slider round"></span>
+                 </label>
+                 <div class="ml-2 text-dark font-weight-bold">Tùy chỉnh cài đặt bộ đề</div>
+             </div>
+               <div class="col col-xs-3 col-md-6 text-right">
+                   <label class="switch">
+                       <input id="sharing_room" name="sharing_room" type="checkbox">
+                       <span class="slider round"></span>
+                   </label>
+                   <div class="ml-2 text-dark font-weight-bold">Phòng muốn share</div>
+               </div>
            </div>
             <div id="content_thread">
                 <br>
@@ -48,11 +70,22 @@
                             <option value="4">Khác</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <button class="btn btn-outline-primary">Lưu</button>
-                        <button class="btn btn-light" onclick="$('#content_thread').hide()">Hủy</button>
-                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <button class="btn btn-outline-primary" type="button" onclick="$('#content_thread').hide()">Lưu</button>-->
+<!--                        <button class="btn btn-light">Hủy</button>-->
+<!--                    </div>-->
             </div>
+        <div id="list_room">
+            <br>
+            <div class="form-group">
+                <label>Danh sách các phòng</label>
+                <select type="text" class="form-control" id="room_list"></select>
+            </div>
+<!--            <div class="form-group">-->
+<!--                <button class="btn btn-outline-primary" type="button" onclick="$('#list_room').hide()">Lưu</button>-->
+<!--                <button class="btn btn-light">Hủy</button>-->
+<!--            </div>-->
+        </div>
         <hr>
         <div>
             <div class="form_question" id="form_question"></div>
@@ -77,7 +110,31 @@
            }
        })
     });
-
+    $(document).ready(function () {
+        $("#list_room").hide();
+        $("#sharing_room").change(function () {
+            if (this.checked){
+                $("#list_room").fadeIn();
+            }else{
+                $("#list_room").fadeOut();
+            }
+        })
+    });
+    $.ajax({
+        type: 'GET',
+        url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+        success: function (data) {
+            console.log(data);
+            $.each(data, function (i, room) {
+                console.log(i);
+                console.log(room['room_name']);
+                $('#room_list').append($('<option>', {
+                    value: room['id'],
+                    text: room['room_name']
+                }));
+            })
+        }
+    })
     // this function copy
     const qtnList = document.getElementById("form_question");
     const addQtnBtn = document.getElementById("add_question");
@@ -96,26 +153,27 @@
         qtnForm.setAttribute("id", `${qtnId}`)
         const qtnFormContent = `
                         <div class="row">
-                        <div class="col-xl-1 qs_label">
-                                <label for="question_title" class="font-weight-bold" name="label-question">Câu ${qtnId + 1}</label>
-                        </div>
-                        <div class="col-7 qs">
-                           <div class="form-row">
-                                <input type="text" id="question_title" name="question_title" placeholder="Nhập tiêu đề cho câu hỏi ?" class="form-control font-weight-bold">
+                            <div class="col-xl-1 qs_label">
+                                    <label for="question_title" class="font-weight-bold" name="label-question">Câu ${qtnId + 1}</label>
                             </div>
-                           <div class="form-group">
-                                 <div class="question_wrapper" id="all_answer"></div>
+                            <div class="col-8 qs">
+                               <div class="form-row">
+                                    <input type="text" id="question_title" name="question_title" placeholder="Nhập tiêu đề cho câu hỏi ?" class="form-control font-weight-bold">
+                                </div>
+                               <div class="form-group">
+                                     <div class="question_wrapper" id="all_answer"></div>
+                                </div>
+                               <div class="form-group">
+                                    <button class="add_selector btn btn-outline-primary" type="button">&#43</button>
+                                </div>
+                                <div class="explain form-group">
+                                    <input type="text" class="question_explain form-control font-weight-bold" id="exp"
+                                           placeholder="Thêm câu giải thích">
+                                </div>
                             </div>
-                           <div class="form-group">
-                                <button class="add_selector btn btn-outline-primary" type="button">&#43</button>
-                            </div>
-                            <div class="explain form-group">
-                                <input type="text" class="question_explain form-control font-weight-bold" id="exp"
-                                       placeholder="Thêm câu giải thích">
-                            </div>
-                        </div>
-                        <div class="col col-2">
-                            <div class="square"></div>
+                        <div class="col col-2 picture">
+                            <label for="upload-photo"><div class="square"></div></label>
+                            <input type="file" name="photo" id="upload-photo" />
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -135,9 +193,9 @@
     })
     qtnList.addEventListener("click", (event) => {
         const target = event.target;
-        console.log(target);
+        // console.log(target);
         const targetClass = target.className;
-        console.log(targetClass);
+        // console.log(targetClass);
         if (targetClass === null) return;
 
         if (targetClass === "fa fa-trash fa-2x") {
@@ -146,15 +204,15 @@
         if (targetClass === "add_selector btn btn-outline-primary") {
             addAnswer(target);
         }
-        if (targetClass === "fas fa-minus inline faw") {
-            console.log('hi');
+        if (targetClass === "fa fa-times fa-2x") {
+            // console.log('hi');
             deleteAnswer(target);
         }
     })
 
     const deleteQuestion = (target) => {
         const currentQtn = target.parentNode.parentNode.parentNode.parentNode.parentNode;
-        console.log(currentQtn);
+        // console.log(currentQtn);
         let lastQtn = qtnList.lastChild;
 
         while (lastQtn !== currentQtn) {
@@ -178,18 +236,19 @@
             ansForm.setAttribute("class", "test");
             ansForm.setAttribute("id", `${ansId}`)
             const ansFormContent = `
-              <div class="form-row">
-                <label for="slt" class="incr2 font-weight-bold">${ansId}</label>
-                <div class="col col-8">
-                    <input type="checkbox" class="qs_correct inline">
+                <br>
+               <div class="row ml-2">
+               <label for="slt" style="font-size: 20px" class="incr2 font-weight-bold">${ansId}</label>
+               <input type="checkbox" class="qs_correct inline ml-2" name="correct">
+                <div class="col-9">
                     <input type="text" id="slt" name="question" placeholder="Câu trả lời..." class="question_selector inline sel_data form-control">
                 </div>
-                <div class="col col-3">
+                <div class="col col-1">
                     <a href="javascript:void(0);" class="remove_button">
-                        <i class="fas fa-minus inline faw"></i>
+                        <i class="fa fa-times fa-2x" aria-hidden="true"></i>
                     </a>
                 </div>
-</div>
+            </div>
 
         `;
             ansForm.innerHTML = ansFormContent;
@@ -200,11 +259,11 @@
 
     const deleteAnswer = (target) => {
         const currentAns = target.parentNode.parentNode.parentNode.parentNode;
-        console.log(currentAns)
+        // console.log(currentAns)
         const ansList = currentAns.parentNode;
-        console.log(ansList);
+        // console.log(ansList);
         let lastAns = ansList.lastChild;
-        console.log(lastAns);
+        // console.log(lastAns);
         while (lastAns !== currentAns) {
             const prevAns = lastAns.previousSibling;
             lastAns.setAttribute("id", `${prevAns.id}`);
@@ -222,29 +281,100 @@
     $(document).ready(function () {
       $('#save_and_exit').click(function (e) {
           e.preventDefault();
+
           var subject = $('#content_thread #subject').val();
           var grade = $('#content_thread #grade').val();
           var title = $('#title_quiz').val();
           var form_question = $('#form_question');
+          var room_id = $('#room_list').val();
           var question_data = [];
-          var choice_data = [];
           var quiz = {};
           quiz = {
               subject: subject,
               grade: grade,
               title: title,
+              room_id: room_id,
               questions: question_data,
           }
           form_question.each(function () {
-              // console.log($(this).find('.qtn-form .row .qs-label label[name="label-question"]').text());
-              // question_data[$(this).find('.qtn-form .row .qs-label .font-weight-bold').text().split(" ")[1]] = $(this).find('.qtn-form .row .qs .form-row #question_title').val();
               $(this).find('.qtn-form').each(function () {
-                    question_data.push($(this).find('.row .qs #question_title').val());
-
+                    var single_question = {};
+                    single_question['explain'] = $(this).find('.row .qs #exp').val();
+                    single_question['image'] = $(this).find('.row .picture input[name="photo"]').val();
+                    single_question['description'] = $(this).find('.row .qs #question_title').val();
+                    var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
+                    var choice_data = [];
+                    choice_group.find('.test').each(function () {
+                        var single_choice = {};
+                        single_choice['choice_name'] = $(this).attr('id');
+                        single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
+                        console.log($(this).find('.row input[name="correct"]').is(':checked'));
+                        single_choice['correct'] = '0';
+                        if ($(this).find('.row input[name="correct"]').is(':checked')){
+                            single_choice['correct'] = '1';
+                        }
+                        choice_data.push(single_choice);
+                    })
+                    single_question['choices'] = choice_data;
+                    question_data.push(single_question);
               })
           })
-          console.log(question_data);
+          console.log(quiz);
+          $.ajax({
+              type: 'POST',
+              url: '/../QuizSys/APIThread/checkValidateQuiz',
+              data: JSON.stringify(quiz),
+              headers: {
+                  'Content-type': 'application/json'
+              },
+              success: function (data) {
+                  if (data['success'] === 1){
+                      var validate_data = JSON.stringify(quiz);
+                      $.ajax({
+                          type : 'POST',
+                          url: '/../QuizSys/APIThread/createQuiz',
+                          data: validate_data,
+                          headers: {
+                              'Content-type': 'application/json'
+                          },
+                          success: function (data) {
+                              alert('Bộ đề đã được lưu');
+                              location.reload();
+                          },
+                          error: function (xhr, error) {
+                              console.log(xhr, error);
+                          }
+                      })
+                  }else{
+                      switch (data['mess']) {
+                        case "Can't not submit because don't have any question":
+                            alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
+                            break;
+                        case "Require title or Room ID":
+                            alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
+                            break;
+                         case "Need more than 1 selection":
+                             alert("Cần nhiều hơn 1 đáp án");
+                             break;
+                          case "Question can't wrong all or correct all":
+                              alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
+                              break;
+                          case "Please fill the content of question":
+                              alert("Vui lòng điền nội dung câu hỏi");
+                              break;
+                          case "'Please fill the content of answer":
+                              alert("Vui lòng nhập nội dung câu trả lời");
+                              break;
+                      }
+                  }
+              },
+              error: function (xhr, error) {
+                  console.log(xhr, error);
+              }
+          })
       })
-
-    })
+    });
+    $(".square").on("click", function() {
+        alert('hello');
+    });
 </script>
