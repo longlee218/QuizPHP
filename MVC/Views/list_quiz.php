@@ -21,25 +21,7 @@
             <div class="nav flex-column nav-pills" id="list_room_tab" role="tablist" aria-orientation="vertical"></div>
         </div>
         <div class="col col-md-10">
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-sm-6"></div>
-                        <div class="col-sm-5">
-                            <div class="custom-control custom-checkbox ">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                <label class="custom-control-label float-right" for="checkall">All</label>
-                                <button type="button" class="btn btn outline-info">Delete</button>
-                                <input type="checkbox" class="custom-control-input float-right" id="checkall" onchange="checkAll(this)">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-1"></div>
             <div class="col-10">
-                <div></div>
                <div class="nab-content tab-content" ></div>
             </div>
         </div>
@@ -56,30 +38,28 @@
                     var element = ``;
                     if (i === 0){
                         element = $(`
-                    <a class="nav-link active room_nav" id="${room['id']}" data-toggle="pill" href="#room-${room['id']}" role="tab" aria-controls="v-pills-home" aria-selected="true">${room['room_name']}</a>
+                    <a class="nav-link active room_nav" id="${room['id']}" onclick="getQuizListActive(${room['id']})" data-toggle="pill" href="#room-${room['id']}" role="tab" aria-controls="v-pills-home" aria-selected="true">${room['room_name']}</a>
            `);
                         list_room_tab.append(element);
                         element.trigger('click');
-                        element.one('click', getQuizListActive(room['id']));
-                        $(".table-list-quiz tbody").empty();
-                        console.log('hello');
-                    }else{
+                        //element.one('click', getQuizListActive(room['id']));
+                    }
+
+                    else{
                         element = $(`
-                    <a class="nav-link  room_nav" id="${room['id']}" data-toggle="pill" href="#room-${room['id']}" role="tab" aria-controls="v-pills-home" aria-selected="true">${room['room_name']}</a>
+                    <a class="nav-link  room_nav" id="${room['id']}" onclick="getQuizList(${room['id']})"  data-toggle="pill" href="#room-${room['id']}" role="tab" aria-controls="v-pills-home" aria-selected="true">${room['room_name']}</a>
            `);
                         $(".table-list-quiz > tbody:last-child").empty().html('');
                         list_room_tab.append(element);
-                        element.one('click', getQuizList(room['id']));
+
+                        // element.on('click', getQuizList(room['id']));
                     }
                 })
             }
         })
     })
-    $("#list_room_tab").on('hover', function () {
-        console.log($(this));
-    })
+
     function getQuizListActive(click_id) {
-        console.log('activee');
         $(".table-list-quiz > tbody:last-child").empty().html('');
         $.ajax({
             method: 'GET',
@@ -95,9 +75,12 @@
                                <table class="table sortable table-list-quiz">
                                    <thead>
                                    <tr>
-                                       <th data-column="title" style="font-weight: normal">Title</th>
-                                       <th data-column="date" style="font-weight: normal">Date</th>
-                                       <th data-column="#" style="font-weight: normal"></th>
+                                        <th data-column="title" style="font-weight: normal">
+                                            <input type="checkbox">
+                                        </th>
+                                       <th data-column="title" style="font-weight: normal"><strong>Tiêu đề</strong></th>
+                                       <th data-column="date" style="font-weight: normal"><strong>Ngày tạo</strong></th>
+                                       <th data-column="#" style="font-weight: normal"><strong>Lần sửa gần nhất</strong></th>
                                    </tr>
                                    </thead>
                                    <tbody>
@@ -111,18 +94,17 @@
                     $.each(data['data'], function (index, values) {
                         list =  $(`
                                 <tr id="quiz-${values['id']}">
-                                    <td class="align-middle">${values['title']}</td>
+                                    <td class="align-middle"><input type="checkbox"></td>
+                                   <td class="align-middle"><a href="/../QuizSys/QuizPage/detail/${values['id']}">${values['title']}</a></td>
                                     <td class="align-middle">${values['create_at']}</td>
-                                    <td class="align-middle">${values['create_at']}</td>
+                                    <td class="align-middle">${values['update_at']}</td>
                                 </tr>
                            `);
                         ($(".table-list-quiz > tbody:last-child")).append(list);
                     })
-                    console.log(list);
                     list = $('');
 
                 }
-                console.log(data);
             },
             error: function (xhr, error) {
                 console.log(xhr, error);
@@ -130,9 +112,9 @@
         })
     }
     function getQuizList(click_id) {
-        console.log('Day ne');
-        console.log($(".nab-content"));
-        $('.nab-content').empty().html('');
+        // $('.nab-content').empty().html('');
+        // alert(click_id);
+        $(".table-list-quiz > tbody:last-child").empty().html('');
         var table = $('');
             $.ajax({
                 method: 'GET',
@@ -147,9 +129,12 @@
                                <table class="table sortable table-list-quiz">
                                    <thead>
                                    <tr>
-                                       <th data-column="title" style="font-weight: normal">Title</th>
-                                       <th data-column="date" style="font-weight: normal">Date</th>
-                                       <th data-column="#" style="font-weight: normal"></th>
+                                        <th data-column="title" style="font-weight: normal">
+                                            <input type="checkbox">
+                                        </th>
+                                       <th data-column="title" style="font-weight: normal"><strong>Tiêu đề</strong></th>
+                                       <th data-column="date" style="font-weight: normal"><strong>Ngày tạo</strong></th>
+                                       <th data-column="#" style="font-weight: normal"><strong>Lần sửa gần nhất</strong></th>
                                    </tr>
                                    </thead>
                                    <tbody>
@@ -159,19 +144,19 @@
 
 `);
                         $(".col-10 div.nab-content").append(table);
+
                         var list = $(``);
                         $.each(data['data'], function (index, values) {
                                list= $(`
                                 <tr id="quiz-${values['id']}">
-                                    <td class="align-middle">${values['title']}</td>
+                                    <td class="align-middle"><input type="checkbox"></td>
+                                    <td class="align-middle"><a href="/../QuizSys/QuizPage/detail/${values['id']}">${values['title']}</a></td>
                                     <td class="align-middle">${values['create_at']}</td>
                                 </tr>
                            `);
-                                    list.appendTo($(".table-list-quiz > tbody:last-child"));
+                            ($(".table-list-quiz > tbody:last-child")).append(list);
                         });
-
                     }
-
                 },
                 error: function (xhr, error) {
                     console.log(xhr, error);
