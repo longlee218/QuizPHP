@@ -110,7 +110,7 @@
                     <a class="text-size" href="/../QuizSys/Home/InstructorHome" >Trang chủ <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="text-size" href="/../QuizSys/QuizPage/">Bộ đề <span class="sr-only">(current)</span></a>
+                    <a class="text-size" href="/../QuizSys/QuizPage/listQuiz/">Bộ đề <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
                     <a class=" text-size" href="/../QuizSys/RoomAction">Phòng thi <span class="sr-only">(current)</span></a>

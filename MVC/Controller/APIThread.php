@@ -36,7 +36,7 @@ class APIThread extends Controller
                         $list_choice = $question->choices;
                         $temp = 1;
                         foreach ($list_choice as $choice){
-                            if ($choice->choice_content){
+                            if (empty(trim($choice->choice_content))){
                                 $data_return = $this->messages(0, 400, 'Please fill the content of answer');
                             }else{
                                 $temp *= (int)$choice->correct;
@@ -81,5 +81,54 @@ class APIThread extends Controller
           $data_return = $this->messages('1', '200', 'Success', 'null');
       }
         echo json_encode($data_return);
+    }
+
+    public function queryQuiz($id_room){
+        $data_return = [];
+        if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+            $data_return = $this->messages(0, 402, "Not allow this method");
+        }else{
+            $list_thread = [];
+            $result = $this->requireModel('Thread')->queryThreadByRoomID($id_room);
+            if ($result->num_rows > 0){
+                while ($row = $result->fetch_assoc()){
+                    array_push($list_thread, $row);
+                }
+            }
+            $data_return = $this->messages(1, 200, "Success", $list_thread);
+        }
+        echo json_encode($data_return);
+    }
+
+    public function arrayGroupBy($array, $id){
+        $groups = [];
+        foreach( $array as $row ) array_push($groups, $row);
+        return $groups;
+    }
+
+    public function queryQuizDetail($id_thread){
+        $data_return = [];
+        $data = [];
+        if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+            $data_return = $this->messages(0, 402, "Not allow this method");
+        }else{
+            $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread), $id_thread);
+            $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread), $id_thread);
+            $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoin($id_thread), $id_thread);
+
+            try {
+                foreach ($result_thread as $index=>$single_thread){
+                    $single_thread['questions'] =  $result_question;
+                    foreach ($single_thread['questions'] as $index2=>&$single_question){
+                       $single_question['choices'] = $result_choices;
+                    }
+                }
+                $data = $single_thread;
+            }catch (Exception $exception){
+                echo $exception;
+            }
+
+        }
+        echo json_encode($data);
     }
 }

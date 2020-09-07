@@ -7,4 +7,7 @@ class QuizPage extends Controller
     public function defaultFunction(){
         $this->requireView("quiz_page");
     }
+    public function listQuiz(){
+        $this->requireView("list_quiz");
+    }
 }
