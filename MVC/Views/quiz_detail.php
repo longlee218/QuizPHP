@@ -99,6 +99,14 @@
     </div>
 </div>
 <script>
+    function getDetail() {
+        var segment_str = window.location.pathname;
+        var segment_array = segment_str.split( '/' );
+        segment_array.splice(0,4);
+        return segment_array;
+    }
+    var id_quiz =  getDetail()[0];
+
     $(document).ready(function () {
         $("#content_thread").hide();
         $("#quiz_setting_switch").change(function () {
@@ -288,6 +296,7 @@
             var question_data = [];
             var quiz = {};
             quiz = {
+                id: id_quiz,
                 subject: subject,
                 grade: grade,
                 title: title,
@@ -306,7 +315,7 @@
                         var single_choice = {};
                         single_choice['choice_name'] = $(this).attr('id');
                         single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
-                        console.log($(this).find('.row input[name="correct"]').is(':checked'));
+                        // console.log($(this).find('.row input[name="correct"]').is(':checked'));
                         single_choice['correct'] = '0';
                         if ($(this).find('.row input[name="correct"]').is(':checked')){
                             single_choice['correct'] = '1';
@@ -329,15 +338,15 @@
                     if (data['success'] === 1){
                         var validate_data = JSON.stringify(quiz);
                         $.ajax({
-                            type : 'POST',
-                            url: '/../QuizSys/APIThread/createQuiz',
+                            type : 'PUT',
+                            url: '/../QuizSys/APIThread/updateQuiz',
                             data: validate_data,
                             headers: {
                                 'Content-type': 'application/json'
                             },
                             success: function (data) {
-                                alert('Bộ đề đã được lưu');
-                                location.reload();
+                              alert('Cập nhật thành công');
+                              location.reload();
                             },
                             error: function (xhr, error) {
                                 console.log(xhr, error);
@@ -372,17 +381,6 @@
             })
         })
     });
-    $(".square").on("click", function() {
-        alert('hello');
-    });
-    function getDetail() {
-        var segment_str = window.location.pathname; // return segment1/segment2/segment3/segment4
-        var segment_array = segment_str.split( '/' );
-        segment_array.splice(0,4);
-        return segment_array;
-    }
-    var id_quiz =  getDetail()[0];
-
     $(document).ready(function () {
         $.ajax({
             method: 'GET',
@@ -391,7 +389,7 @@
                 'Content-type': 'application/json'
             },
             success: function (data) {
-                // console.log(data);
+                console.log(data);
                 $('#title_quiz').val(data['title']);
                 $('#content_thread #subject').val(data['subject']);
                 $('#content_thread #grade').val(data['grade']);

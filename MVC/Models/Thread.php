@@ -26,10 +26,11 @@ class Thread extends Database
     }
 
     public function queryThreadByRoomID($room_id){
-        $query = 'select * from thread where room_id=?';
+        $query = 'select * from thread where (room_id=? and flag_delete = ?)';
+        $flag_delete = '0';
         $this->con->init();
         $stmt = $this->con->prepare($query);
-        $stmt->bind_param('i', $room_id);
+        $stmt->bind_param('is', $room_id, $flag_delete);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
@@ -46,5 +47,31 @@ class Thread extends Database
         $stmt->close();
         return $result;
     }
-
+    public function updateThread($thread_id, $grade, $room_id, $subject, $title){
+        try {
+            $query = 'update thread set grade = ? , room_id = ?, subject = ?, title = ? where id = ?';
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param('sissi', $grade, $room_id, $subject, $title, $thread_id);
+            $stmt->execute();
+            $stmt->close();
+            return 1;
+        }catch (PDOException $exception){
+            echo $exception;
+            return 0;
+        }
+    }
+    public function setFlagDeleteTo0($id){
+        try {
+            $query = 'update thread set flag_delete = ? where id = ?';
+            $stmt = $this->con->prepare($query);
+            $flag_delete = '1';
+            $stmt->bind_param('si', $flag_delete, $id);
+            $stmt->execute();
+            $stmt->close();
+            return 1;
+        }catch (PDOException $exception){
+            echo $exception;
+            return 0;
+        }
+    }
 }

@@ -34,15 +34,15 @@ class APIThread extends Controller
                     }
                     else{
                         $list_choice = $question->choices;
-                        $temp = 1;
-                        foreach ($list_choice as $choice){
+                        $array_check = [];
+                        foreach ($list_choice as $index => $choice){
                             if (empty(trim($choice->choice_content))){
                                 $data_return = $this->messages(0, 400, 'Please fill the content of answer');
                             }else{
-                                $temp *= (int)$choice->correct;
+                                array_push($array_check, $choice->correct);
                             }
                         }
-                        if ($temp == 1){$data_return = $this->messages(0, 400, "Question can't wrong all or correct all");}
+                        if (min($array_check) == 0 && max($array_check) == 0){$data_return = $this->messages(0, 400, "Question can't wrong all or correct all");}
                         else{ $data_return = $this->messages(1, 200, "Validate data");}
                     }
                 }
@@ -120,7 +120,12 @@ class APIThread extends Controller
                 foreach ($result_thread as $index=>$single_thread){
                     $single_thread['questions'] =  $result_question;
                     foreach ($single_thread['questions'] as $index2=>&$single_question){
-                       $single_question['choices'] = $result_choices;
+                       $single_question['choices'] = [];
+                       foreach ($result_choices as  $index3 => $single_choice){
+                           if ($single_choice['question_id'] == $single_question['id']){
+                               array_push($single_question['choices'], $single_choice);
+                           }
+                       }
                     }
                 }
                 $data = $single_thread;
@@ -130,5 +135,62 @@ class APIThread extends Controller
 
         }
         echo json_encode($data);
+    }
+
+    public function  updateQuiz(){
+        $data_return = [];
+        if ($_SERVER['REQUEST_METHOD'] != 'PUT'){
+            $data_return = $this->messages(0, 405, "Not allowed this method");
+        }else{
+            $data = json_decode(file_get_contents("php://input"));
+           if (!array_key_exists('id', $data)){
+               $data_return = $this->messages(0, 500, "Can't not update!");
+           }
+           else{
+               $id_thread = $data->id;
+               $modelThread = $this->requireModel('Thread');
+               $model_question = $this->requireModel('Question');
+               $model_choices = $this->requireModel('Choices');
+               $this_is_test = $modelThread->selectAllByID($id_thread)->fetch_assoc()['is_test'];
+               if ($this_is_test != 0){
+                   $data_return = $this->messages(0, 500, "Can't not update!");
+               }else{
+                   try {
+                       $modelThread->updateThread($data->id, $data->grade, $data->room_id, $data->subject, $data->title);
+                       if ($model_choices->deleteAllByThreadIDJoin($data->id) && $model_question->deleteAllByThreadID($data->id)){
+                           foreach ($data->questions as $index=>$single_question){
+                               $question_obj = new APIQuestion();
+                               $id_question = $question_obj->createQuestion($single_question->explain, $single_question->image, $single_question->description, $id_thread)->fetch_assoc()['id'];
+                               foreach ($single_question->choices as $index2=>$single_choice){
+                                   $choice_obj = new APIChoices();
+                                   $choice_obj->createChoices($single_choice->choice_name, $single_choice->choice_content, $single_choice->correct, $id_question);
+                               }
+                           }
+                           $data_return = $this->messages(1, 200, "Success update");
+                       }
+                   }catch (BadFunctionCallException $exception){
+                       $data_return = $this->messages(0, 400, $exception);
+                   }
+               }
+           }
+        }
+        echo json_encode($data_return);
+    }
+    public function deleteQuiz(){
+        $data_return = [];
+        if ($_SERVER['REQUEST_METHOD'] != 'PUT'){
+            $data_return = $this->messages(0, 405, 'Not allow this method');
+        }else{
+            $data = json_decode(file_get_contents('php://input'));
+            $model_thread = $this->requireModel('Thread');
+            foreach ($data->list_delete as $index=>$single){
+              if ($model_thread->setFlagDeleteTo0($single)){
+                  $data_return = $this->messages(1, 200, 'Delete success');
+              }else{
+                  $data_return =$this->messages(0, 400, 'Error');
+              }
+            }
+        }
+        echo json_encode($data_return);
     }
 }

@@ -31,5 +31,18 @@ class Choices extends Database
         $stmt->close();
         return $result;
     }
-
+    public function deleteAllByThreadIDJoin($thread_id){
+        try {
+            $query = 'delete from choices where question_id in (select id from question where thread_id = ?)';
+            $this->con->init();
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param('i', $thread_id);
+            $stmt->execute();
+            $stmt->close();
+            return 1;
+        }catch (Exception $exception){
+            echo $exception;
+            return 0;
+        }
+    }
 }
