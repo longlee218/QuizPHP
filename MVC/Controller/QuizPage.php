@@ -13,4 +13,7 @@ class QuizPage extends Controller
     public function detail($id_quiz){
         $this->requireView("quiz_detail", ['idQuiz'=>$id_quiz]);
     }
+    public function hi(){
+        $this->requireView("hi");
+    }
 }

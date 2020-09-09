@@ -26,7 +26,7 @@
     }
 </style>
 <div class="container" id="main-content">
-    <form id="form_quiz">
+    <form id="form_quiz"  enctype="multipart/form-data">
         <div class="row mt-auto mt-5 pt-5">
             <div class="col-6">
                 <div class="form-row">

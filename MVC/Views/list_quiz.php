@@ -194,7 +194,6 @@
       if (current.checked === true){
             $("input[type='checkbox']").each(function () {
                 this.checked = true;
-                $()
             })
       }else{
           $("input[type='checkbox']").each(function () {
@@ -234,6 +233,49 @@
             })
         }
     }
+    $(document).on("click", '.button_delete', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        var confirm_delete = confirm("Bạn muốn xóa đề "+id+ " này chứ ?");
+        if (confirm_delete){
+            var array = [id];
+            $.ajax({
+                type: 'PUT',
+                url: '/../QuizSys/APIThread/deleteQuiz/',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                data: JSON.stringify({list_delete: array}),
+                success: function (data) {
+                    if (data['success'] == 1){
+                        alert('Xóa thành công');
+                        location.reload();
+                    }
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error)
+                }
+            })
+        }
+    })
+    // $(document).on("click", '.button_download', function (e) {
+    //     e.preventDefault();
+    //     var quiz_id = $(this).data('id');
+    //     // console.log($(this).parent().parent().parent().parent());
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: '/../QuizSys/APIThread/exportQuiz/'+quiz_id,
+    //         headers:{
+    //             'Content-type': 'application/vnd.ms-excel',
+    //             'Content-Disposition': 'attachment; filename=data.xls',
+    //         },
+    //         success: function (data) {
+    //             console.log(data);
+    //         },
+    //         error: function (xhr, error) {
+    //             console.log(xhr, error);
+    //         }
+    //     })
+    // })
 </script>
-
 <?php include_once './MVC/Views/footer.php'?>

@@ -4,6 +4,7 @@ require_once "JwtHandler.php";
 require_once __DIR__."/../core/controllers.php";
 require_once  __DIR__."/APIQuestion.php";
 require_once __DIR__."/APIChoices.php";
+require_once __DIR__."/../lib/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php";
 
 class APIThread extends Controller
 {
@@ -66,12 +67,24 @@ class APIThread extends Controller
           $question_array = $data->questions;
           foreach($question_array as $question){
               $question_obj = new APIQuestion();
-              $question_id =  $question_obj->createQuestion($question->explain, $question->image, $question->description, $thread_id)->fetch_assoc()['id'];
-              $choice_array = $question->choices;
-              foreach ($choice_array as $choice){
-                  $choice_obj = new APIChoices();
-                  $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
+              $target_dir = __DIR__."/../../upload/";
+              $target_file = $target_dir.basename($question->image);
+              $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+              $extensions_arr = array("jpg","jpeg","png","gif");
+              if (in_array($imageFileType, $extensions_arr)){
+                  $image_base64 = base64_encode($question->image);
+                  $img = 'data::image/'.$imageFileType.';base64,'.$image_base64;
+                  $question_id =  $question_obj->createQuestion($question->explain, $img, $question->description, $thread_id)->fetch_assoc()['id'];
+                 if (move_uploaded_file($question->image, $target_dir.$question->image)){
+                     echo 'yes';
+                 }
+                  $choice_array = $question->choices;
+                  foreach ($choice_array as $choice){
+                      $choice_obj = new APIChoices();
+                      $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
+                  }
               }
+//              var_dump($question->image);
           }
           if ($thread_obj->num_rows > 0){
               while ($row = $thread_obj->fetch_assoc()){
@@ -192,5 +205,86 @@ class APIThread extends Controller
             }
         }
         echo json_encode($data_return);
+    }
+
+    public function exportQuiz($id_thread){
+        $data_return = [];
+        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+            $data_return = $this->messages(0, 405, 'Not allowed this method');
+        }else{
+            $model_thread = $this->requireModel('Thread');
+            $thread_name = $model_thread->selectAllByID($id_thread)->fetch_assoc()['title'];
+//            $file_name =  $thread_name.'-'.$id_thread.'.xlsx';
+            try {
+//                $objExcel = new PHPExcel();
+//                $objExcel->setActiveSheetIndex(0);
+//                $sheet = $objExcel->getActiveSheet()->setTitle('Sheet '.$file_name);
+//                $row_count = 1;
+//                $style = array(
+//                    'alignment'=>array(
+//                        'horizontal'=> PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+//                    )
+//                );
+//                $objPHPExcel = new PHPExcel();
+//                $sheet = $objPHPExcel->getActiveSheet();
+//                $sheet->setCellValueByColumnAndRow(0, 1, "test");
+//                $sheet->mergeCells('A1:B1');
+//                $sheet->getStyle('A1')->getAlignment()->applyFromArray(
+//                    array('horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,)
+//                );
+//                $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+//                $objWriter->save('hello.xlsx');
+//                $objWriter->save($fileName);
+
+                $data = [
+                    ['Nguyễn Khánh Linh', 'Nữ', '500k'],
+                    ['Ngọc Trinh', 'Nữ', '700k'],
+                    ['Tùng Sơn', 'Không xác định', 'Miễn phí'],
+                    ['Kenny Sang', 'Không xác định', 'Miễn phí']
+                ];
+//Khởi tạo đối tượng
+                $excel = new PHPExcel();
+//Chọn trang cần ghi (là số từ 0->n)
+                $excel->setActiveSheetIndex(0);
+//Tạo tiêu đề cho trang. (có thể không cần)
+                $excel->getActiveSheet()->setTitle('demo ghi dữ liệu');
+
+//Xét chiều rộng cho từng, nếu muốn set height thì dùng setRowHeight()
+                $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
+                $excel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
+                $excel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+
+//Xét in đậm cho khoảng cột
+                $excel->getActiveSheet()->getStyle('A1:C1')->getFont()->setBold(true);
+//Tạo tiêu đề cho từng cột
+//Vị trí có dạng như sau:
+                /**
+                 * |A1|B1|C1|..|n1|
+                 * |A2|B2|C2|..|n1|
+                 * |..|..|..|..|..|
+                 * |An|Bn|Cn|..|nn|
+                 */
+                $excel->getActiveSheet()->setCellValue('A1', 'Tên');
+                $excel->getActiveSheet()->setCellValue('B1', 'Giới Tính');
+                $excel->getActiveSheet()->setCellValue('C1', 'Đơn giá(/shoot)');
+// thực hiện thêm dữ liệu vào từng ô bằng vòng lặp
+// dòng bắt đầu = 2
+                $numRow = 2;
+                foreach ($data as $row) {
+                    $excel->getActiveSheet()->setCellValue('A' . $numRow, $row[0]);
+                    $excel->getActiveSheet()->setCellValue('B' . $numRow, $row[1]);
+                    $excel->getActiveSheet()->setCellValue('C' . $numRow, $row[2]);
+                    $numRow++;
+                }
+// Khởi tạo đối tượng PHPExcel_IOFactory để thực hiện ghi file
+// ở đây mình lưu file dưới dạng excel2007
+                PHPExcel_IOFactory::createWriter($excel, 'Excel2007')->save('data.xlsx');
+                PHPExcel_IOFactory::createWriter($excel, 'Excel2007')->save('php://output');
+            } catch (PHPExcel_Reader_Exception $e) {
+                echo $e;
+            } catch (PHPExcel_Exception $e) {
+                echo $e;
+            }
+        }
     }
 }
