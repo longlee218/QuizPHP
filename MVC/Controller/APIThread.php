@@ -55,36 +55,43 @@ class APIThread extends Controller
     }
 
     public function createQuiz(){
+        $data_return= [];
       if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-          $data = $this->messages('0', '500', 'Method is not allowed');
+          $data_return = $this->messages('0', '500', 'Method is not allowed');
       }else{
-          $data_return = [];
-          $data = json_decode(file_get_contents("php://input"));
+//          print_r($_FILES);
+//          print_r($_POST);
+//          print_r($_FILES[0]);
+//          $data = json_decode(file_get_contents("php://input"));
+          print_r($_FILES);
+          $data = $_POST;
+          print_r($_POST);
           $thread_model = $this->requireModel('Thread');
-
-          $thread_obj =  $thread_model->insertThread($data->title, $data->subject, $data->grade, $data->room_id);
+          $thread_obj =  $thread_model->insertThread($data['title'], $data['subject'], $data['grade'], $data['room_id']);
           $thread_id = $thread_obj->fetch_assoc()['id'];
-          $question_array = $data->questions;
-          foreach($question_array as $question){
+          $question_array = json_decode($data['questions']);
+          foreach($question_array as $index=>$question){
               $question_obj = new APIQuestion();
-              $target_dir = __DIR__."/../../upload/";
-              $target_file = $target_dir.basename($question->image);
-              $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-              $extensions_arr = array("jpg","jpeg","png","gif");
-              if (in_array($imageFileType, $extensions_arr)){
-                  $image_base64 = base64_encode($question->image);
-                  $img = 'data::image/'.$imageFileType.';base64,'.$image_base64;
-                  $question_id =  $question_obj->createQuestion($question->explain, $img, $question->description, $thread_id)->fetch_assoc()['id'];
-                 if (move_uploaded_file($question->image, $target_dir.$question->image)){
-                     echo 'yes';
-                 }
-                  $choice_array = $question->choices;
-                  foreach ($choice_array as $choice){
-                      $choice_obj = new APIChoices();
-                      $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
+              if (array_key_exists($index, $_FILES)){
+                  $target_dir = __DIR__."/../../uploads/";
+                  echo $target_dir;
+                  $name = $_FILES[$index]['name'];
+                  $target_file = $target_dir.basename($_FILES[$index]['name']);
+                  $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+                  $extensions_arr = array("jpg","jpeg","png","gif");
+                  if (in_array($imageFileType, $extensions_arr)){
+                      $image_base64 = base64_encode(file_get_contents($_FILES[$index]['tmp_name']));
+                      $img = 'data::image/'.$imageFileType.';base64,'.$image_base64;
+                      $question_id =  $question_obj->createQuestion($question->explain, $img, $question->description, $thread_id)->fetch_assoc()['id'];
+                      move_uploaded_file($_FILES[$index]['tmp_name'], $target_dir.$name);
+                      $choice_array = $question->choices;
+                      foreach ($choice_array as $choice){
+                          $choice_obj = new APIChoices();
+                          $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
+                      }
                   }
-              }
 //              var_dump($question->image);
+              }
           }
           if ($thread_obj->num_rows > 0){
               while ($row = $thread_obj->fetch_assoc()){
@@ -206,7 +213,10 @@ class APIThread extends Controller
         }
         echo json_encode($data_return);
     }
-
+    public function test(){
+        print_r($_FILES);
+        print_r($_POST);
+    }
     public function exportQuiz($id_thread){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){

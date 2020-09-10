@@ -173,7 +173,7 @@
                             </div>
                         <div class="col col-2 picture">
                             <label for="upload-photo"><div class="square"></div></label>
-                            <input type="file" name="photo" id="upload-photo" />
+                            <input type="file" name="photo" />
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -278,29 +278,125 @@
         return String.fromCharCode(c.charCodeAt(0) + 1).toUpperCase();
     }
 
+    // $(document).ready(function () {
+    //   $('#save_and_exit').on("click", function (e) {
+    //       e.preventDefault();
+    //       var subject = $('#content_thread #subject').val();
+    //       var grade = $('#content_thread #grade').val();
+    //       var title = $('#title_quiz').val();
+    //       var form_question = $('#form_question');
+    //       var room_id = $('#room_list').val();
+    //       var question_data = [];
+    //       var quiz = {
+    //           subject: subject,
+    //           grade: grade,
+    //           title: title,
+    //           room_id: room_id,
+    //           questions: question_data,
+    //       }
+    //
+    //       form_question.each(function () {
+    //           $(this).find('.qtn-form').each(function () {
+    //                 var single_question = {};
+    //                 single_question['explain'] = $(this).find('.row .qs #exp').val();
+    //                 single_question['image'] = $(this).find('.row .picture input[name="photo"]').prop('files')[0];
+    //                 single_question['description'] = $(this).find('.row .qs #question_title').val();
+    //                 var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
+    //                 var choice_data = [];
+    //                 choice_group.find('.test').each(function () {
+    //                     var single_choice = {};
+    //                     single_choice['choice_name'] = $(this).attr('id');
+    //                     single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
+    //                     single_choice['correct'] = '0';
+    //                     if ($(this).find('.row input[name="correct"]').is(':checked')){
+    //                         single_choice['correct'] = '1';
+    //                     }
+    //                     choice_data.push(single_choice);
+    //                 })
+    //                 single_question['choices'] = choice_data;
+    //                 question_data.push(single_question);
+    //           })
+    //       })
+    //       console.log(quiz);
+    //       $.ajax({
+    //           type: 'POST',
+    //           url: '/../QuizSys/APIThread/checkValidateQuiz',
+    //           data: JSON.stringify(quiz),
+    //           headers: {
+    //               'Content-type': 'application/json'
+    //           },
+    //           success: function (data) {
+    //               if (data['success'] === 1){
+    //                   var validate_data = JSON.stringify(quiz);
+    //                   $.ajax({
+    //                       type : 'POST',
+    //                       url: '/../QuizSys/APIThread/createQuiz',
+    //                       data: validate_data,
+    //                       headers: {
+    //                           'Content-type': 'application/json'
+    //                       },
+    //                       success: function (data) {
+    //                           alert('Bộ đề đã được lưu');
+    //                           location.reload();
+    //                       },
+    //                       error: function (xhr, error) {
+    //                           console.log(xhr, error);
+    //                       }
+    //                   })
+    //               }else{
+    //                   switch (data['mess']) {
+    //                     case "Can't not submit because don't have any question":
+    //                         alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
+    //                         break;
+    //                     case "Require title or Room ID":
+    //                         alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
+    //                         break;
+    //                      case "Need more than 1 selection":
+    //                          alert("Cần nhiều hơn 1 đáp án");
+    //                          break;
+    //                       case "Question can't wrong all or correct all":
+    //                           alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
+    //                           break;
+    //                       case "Please fill the content of question":
+    //                           alert("Vui lòng điền nội dung câu hỏi");
+    //                           break;
+    //                       case "'Please fill the content of answer":
+    //                           alert("Vui lòng nhập nội dung câu trả lời");
+    //                           break;
+    //                   }
+    //               }
+    //           },
+    //           error: function (xhr, error) {
+    //               console.log(xhr, error);
+    //           }
+    //       })
+    //   })
+    // });
+    $(".square").on("click", function() {
+        alert('hello');
+    });
     $(document).ready(function () {
-      $('#save_and_exit').click(function (e) {
-          e.preventDefault();
-
-          var subject = $('#content_thread #subject').val();
-          var grade = $('#content_thread #grade').val();
-          var title = $('#title_quiz').val();
-          var form_question = $('#form_question');
-          var room_id = $('#room_list').val();
-          var question_data = [];
-          var quiz = {};
-          quiz = {
-              subject: subject,
-              grade: grade,
-              title: title,
-              room_id: room_id,
-              questions: question_data,
-          }
-          form_question.each(function () {
-              $(this).find('.qtn-form').each(function () {
+        $('#save_and_exit').click(function () {
+            var quiz = new FormData();
+            var subject = $('#content_thread #subject').val();
+            var grade = $('#content_thread #grade').val();
+            var title = $('#title_quiz').val();
+            var form_question = $('#form_question');
+            var room_id = $('#room_list').val();
+            var question_data = [];
+            // var quiz = {
+            //     subject: subject,
+            //     grade: grade,
+            //     title: title,
+            //     room_id: room_id,
+            //     questions: question_data,
+            // }
+            form_question.each(function () {
+                $(this).find('.qtn-form').each(function (index) {
                     var single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
-                    single_question['image'] = $(this).find('.row .picture input[name="photo"]').val();
+                    quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0])
+                    // single_question['image'] = $(this).find('.row .picture input[name="photo"]').prop('files')[0];
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
                     var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
                     var choice_data = [];
@@ -308,7 +404,6 @@
                         var single_choice = {};
                         single_choice['choice_name'] = $(this).attr('id');
                         single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
-                        console.log($(this).find('.row input[name="correct"]').is(':checked'));
                         single_choice['correct'] = '0';
                         if ($(this).find('.row input[name="correct"]').is(':checked')){
                             single_choice['correct'] = '1';
@@ -317,64 +412,30 @@
                     })
                     single_question['choices'] = choice_data;
                     question_data.push(single_question);
-              })
-          })
-          console.log(quiz);
-          $.ajax({
-              type: 'POST',
-              url: '/../QuizSys/APIThread/checkValidateQuiz',
-              data: JSON.stringify(quiz),
-              headers: {
-                  'Content-type': 'application/json'
-              },
-              success: function (data) {
-                  if (data['success'] === 1){
-                      var validate_data = JSON.stringify(quiz);
-                      $.ajax({
-                          type : 'POST',
-                          url: '/../QuizSys/APIThread/createQuiz',
-                          data: validate_data,
-                          headers: {
-                              'Content-type': 'application/json'
-                          },
-                          success: function (data) {
-                              alert('Bộ đề đã được lưu');
-                              location.reload();
-                          },
-                          error: function (xhr, error) {
-                              console.log(xhr, error);
-                          }
-                      })
-                  }else{
-                      switch (data['mess']) {
-                        case "Can't not submit because don't have any question":
-                            alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
-                            break;
-                        case "Require title or Room ID":
-                            alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
-                            break;
-                         case "Need more than 1 selection":
-                             alert("Cần nhiều hơn 1 đáp án");
-                             break;
-                          case "Question can't wrong all or correct all":
-                              alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
-                              break;
-                          case "Please fill the content of question":
-                              alert("Vui lòng điền nội dung câu hỏi");
-                              break;
-                          case "'Please fill the content of answer":
-                              alert("Vui lòng nhập nội dung câu trả lời");
-                              break;
-                      }
-                  }
-              },
-              error: function (xhr, error) {
-                  console.log(xhr, error);
-              }
-          })
-      })
-    });
-    $(".square").on("click", function() {
-        alert('hello');
-    });
+                })
+            })
+            quiz.append('subject', subject);
+            quiz.append('grade', grade);
+            quiz.append('title', title);
+            quiz.append('room_id', room_id);
+            quiz.append('questions', JSON.stringify(question_data));
+            $.ajax({
+                type : 'POST',
+                url: '/../QuizSys/APIThread/createQuiz',
+                data: quiz,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert('Bộ đề đã được lưu');
+                    location.reload();
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error);
+                }
+            })
+
+            return false;
+        })
+    })
+
 </script>
