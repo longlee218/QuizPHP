@@ -18,14 +18,14 @@ class APIThread extends Controller
         );
     }
     public function checkValidateQuiz(){
-        $data = json_decode(file_get_contents("php://input"));
+        $data = $_POST;
         $data_return = [];
-        if (empty(trim($data->title)) || empty(trim($data->room_id))){
+        if (empty(trim($data['title'])) || empty(trim($data['room_id']))){
             $data_return = $this->messages(0, 400, 'Require title or Room ID');
         }
         else{
-            if(count($data->questions) != 0){
-                $list_question = $data->questions;
+            if(count(json_decode($data['questions'])) != 0){
+                $list_question = json_decode($data['questions']);
                 foreach ($list_question as $question){
                     if (empty(trim($question->description))){
                         $data_return = $this->messages(0, 400, 'Please fill the content of question');
@@ -59,13 +59,7 @@ class APIThread extends Controller
       if ($_SERVER['REQUEST_METHOD'] != 'POST'){
           $data_return = $this->messages('0', '500', 'Method is not allowed');
       }else{
-//          print_r($_FILES);
-//          print_r($_POST);
-//          print_r($_FILES[0]);
-//          $data = json_decode(file_get_contents("php://input"));
-          print_r($_FILES);
           $data = $_POST;
-          print_r($_POST);
           $thread_model = $this->requireModel('Thread');
           $thread_obj =  $thread_model->insertThread($data['title'], $data['subject'], $data['grade'], $data['room_id']);
           $thread_id = $thread_obj->fetch_assoc()['id'];
@@ -74,7 +68,6 @@ class APIThread extends Controller
               $question_obj = new APIQuestion();
               if (array_key_exists($index, $_FILES)){
                   $target_dir = __DIR__."/../../uploads/";
-                  echo $target_dir;
                   $name = $_FILES[$index]['name'];
                   $target_file = $target_dir.basename($_FILES[$index]['name']);
                   $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
@@ -90,7 +83,6 @@ class APIThread extends Controller
                           $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
                       }
                   }
-//              var_dump($question->image);
               }
           }
           if ($thread_obj->num_rows > 0){

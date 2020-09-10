@@ -18,6 +18,22 @@
     label {
         cursor: pointer;
     }
+    .image-preview{
+        width: 150px;
+        min-height: 150px;
+        border: 2px solid #dddddd;
+        margin-top: 15px;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #cccccc;
+    }
+    .image-preview__image{
+        display: none;
+        width: 100%;
+
+    }
 
     #upload-photo {
         opacity: 0;
@@ -176,8 +192,11 @@
                                 </div>
                             </div>
                         <div class="col col-2 picture">
-                            <label for="upload-photo"><div class="square"></div></label>
-                            <input type="file" name="photo" id="upload-photo" />
+                             <div class="image-preview" name="inpFile">
+<!--                                    <div class="square"></div>-->
+                                <img src="" alt="Image preview" class="image-preview__image" >
+                            </div>
+                            <input type="file" name="photo" onclick="previewImg(this)"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -421,8 +440,11 @@
                                 </div>
                             </div>
                         <div class="col col-2 picture">
-                            <label for="upload-photo"><div class="square"></div></label>
-                            <input type="file" name="photo" id="upload-photo" />
+                            <div class="image-preview" name="inpFile">
+<!--                                    <div class="square"></div>-->
+                                <img src="" alt="Image preview" class="image-preview__image" >
+                            </div>
+                            <input type="file" name="photo" onclick="previewImg(this)"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -460,7 +482,6 @@
 
                     `;
                         ansForm.innerHTML = ansFormContent;
-                        // console.log(typeof (value_choice['correct']));
                         if (value_choice['correct'] === '1'){
                             ansForm.querySelector(".row input[name='correct']").checked = true;
                         }
@@ -471,5 +492,21 @@
             }
         })
     })
+    function previewImg(e) {
+        e.addEventListener("change", function () {
+            const file = e.files[0];
+            var previewImg = $(e.parentNode).find('.image-preview .image-preview__image');
+            console.log(previewImg);
+            if (file){
+                const reader = new FileReader();
+                previewImg.style = 'block';
+                reader.addEventListener('load', function () {
+                    previewImg.attr('src', this.result);
+                });
+                reader.readAsDataURL(file);
+            }
+        })
+
+    }
 </script>
 <?php include_once './MVC/Views/footer.php'?>

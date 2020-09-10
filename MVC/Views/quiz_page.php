@@ -11,6 +11,23 @@
         width: 150px;
         background-color: #555;
     }
+    .image-preview{
+        width: 150px;
+        min-height: 150px;
+        border: 2px solid #dddddd;
+        margin-top: 15px;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #cccccc;
+    }
+    .image-preview__image{
+        display: none;
+        width: 100%;
+
+    }
+
     .qs_correct{
         width: 25px;
         height: 30px;
@@ -172,8 +189,11 @@
                                 </div>
                             </div>
                         <div class="col col-2 picture">
-                            <label for="upload-photo"><div class="square"></div></label>
-                            <input type="file" name="photo" />
+                            <div class="image-preview" name="inpFile">
+<!--                                    <div class="square"></div>-->
+                                <img src="" alt="Image preview" class="image-preview__image" >
+                            </div>
+                            <input type="file" name="photo" onclick="previewImg(this)"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -376,7 +396,8 @@
         alert('hello');
     });
     $(document).ready(function () {
-        $('#save_and_exit').click(function () {
+        $('#save_and_exit').on("click", function (e) {
+            e.preventDefault()
             var quiz = new FormData();
             var subject = $('#content_thread #subject').val();
             var grade = $('#content_thread #grade').val();
@@ -384,19 +405,11 @@
             var form_question = $('#form_question');
             var room_id = $('#room_list').val();
             var question_data = [];
-            // var quiz = {
-            //     subject: subject,
-            //     grade: grade,
-            //     title: title,
-            //     room_id: room_id,
-            //     questions: question_data,
-            // }
             form_question.each(function () {
                 $(this).find('.qtn-form').each(function (index) {
                     var single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
                     quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0])
-                    // single_question['image'] = $(this).find('.row .picture input[name="photo"]').prop('files')[0];
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
                     var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
                     var choice_data = [];
@@ -419,23 +432,72 @@
             quiz.append('title', title);
             quiz.append('room_id', room_id);
             quiz.append('questions', JSON.stringify(question_data));
-            $.ajax({
-                type : 'POST',
-                url: '/../QuizSys/APIThread/createQuiz',
-                data: quiz,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    alert('Bộ đề đã được lưu');
-                    location.reload();
-                },
-                error: function (xhr, error) {
-                    console.log(xhr, error);
-                }
-            })
 
-            return false;
+                  $.ajax({
+                      type: 'POST',
+                      url: '/../QuizSys/APIThread/checkValidateQuiz',
+                      data: quiz,
+                      processData: false,
+                      contentType: false,
+                      success: function (data) {
+                          if (data['success'] === 1){
+                              $.ajax({
+                                  type : 'POST',
+                                  url: '/../QuizSys/APIThread/createQuiz',
+                                  data: quiz,
+                                  processData: false,
+                                  contentType: false,
+                                  success: function (data) {
+                                    alert('Bộ đề đã được lưu');
+                                    window.location.href = '/../QuizSys/QuizPage/listQuiz';
+                                  },
+                                  error: function (xhr, error) {
+                                      console.log(xhr, error);
+                                  }
+                              })
+                          }else{
+                              switch (data['mess']) {
+                                case "Can't not submit because don't have any question":
+                                    alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
+                                    break;
+                                case "Require title or Room ID":
+                                    alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
+                                    break;
+                                 case "Need more than 1 selection":
+                                     alert("Cần nhiều hơn 1 đáp án");
+                                     break;
+                                  case "Question can't wrong all or correct all":
+                                      alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
+                                      break;
+                                  case "Please fill the content of question":
+                                      alert("Vui lòng điền nội dung câu hỏi");
+                                      break;
+                                  case "'Please fill the content of answer":
+                                      alert("Vui lòng nhập nội dung câu trả lời");
+                                      break;
+                              }
+                          }
+                      },
+                      error: function (xhr, error) {
+                          console.log(xhr, error);
+                      }
+                  })
         })
     })
+    function previewImg(e) {
+        e.addEventListener("change", function () {
+            const file = e.files[0];
+            var previewImg = $(e.parentNode).find('.image-preview .image-preview__image');
+            console.log(previewImg);
+            if (file){
+                const reader = new FileReader();
+                previewImg.style = 'block';
+                reader.addEventListener('load', function () {
+                    previewImg.attr('src', this.result);
+                });
+                reader.readAsDataURL(file);
+            }
+        })
 
+    }
 </script>
