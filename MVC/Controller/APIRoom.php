@@ -65,15 +65,19 @@ class APIRoom extends Controller
     }
     public function queryRoom($user_id){
         $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'GET'){
-            $data_return = $this->messages('0', 'Method not allow', '405');
-        }else{
-            $result = $this->room_model->selectAllByID($user_id);
-            if ($result->num_rows > 0){
-                while ($row = $result->fetch_assoc()){
-                    array_push($data_return, $row);
+        if ($this->auth->isAuth() != null){
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages('0', 'Method not allow', '405');
+            }else{
+                $result = $this->room_model->selectAllByID($user_id);
+                if ($result->num_rows > 0){
+                    while ($row = $result->fetch_assoc()){
+                        array_push($data_return, $row);
+                    }
                 }
             }
+        }else{
+            $data_return = $this->messages(0, 'Invalid token', 400);
         }
         echo json_encode($data_return);
     }

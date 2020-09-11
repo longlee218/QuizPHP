@@ -400,3 +400,4 @@ include_once './MVC/Views/navbar.php' ?>
         });
     });
 </script>
+<?php require_once './MVC/Views/footer.php'?>

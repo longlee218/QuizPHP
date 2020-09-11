@@ -1,14 +1,15 @@
 <?php
 require "./MVC/Controller/JwtHandler.php";
 require_once "./MVC/core/controllers.php";
+require_once __DIR__.'/../Models/User.php';
+
     class Auth extends JwtHandler {
         protected $db;
         protected $headers;
         protected $token;
-        public function __construct($db,$headers) {
+        public function __construct($headers) {
             parent::__construct();
-            $database = new Controller();
-            $this->db = $database->requireModel("User");
+            $this->db = new User();
             $this->headers = $headers;
         }
         private function messages($success, $status, $user){

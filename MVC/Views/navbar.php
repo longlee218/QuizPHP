@@ -12,6 +12,9 @@
         color: white;
         text-align: center;
         padding: 15px;
+        /*position: absolute;*/
+        height: 100px;
+        overflow: hidden;
     }
     #username {
         text-align: center;
@@ -144,20 +147,16 @@
     function selectRadioButton(name, value){
         $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
     }
-    // window.setInterval(function () {
         $.ajax({
             type: 'GET',
             url: "/../QuizSys/Home/infoUserJWT",
+            headers: {
+                'Authorization': getCookie('Authorization'),
+            },
             success:function (data){
                 var data_parse = JSON.parse(data);
                 if (data_parse['success'] === 1){
                     $('#username').html(data_parse['user']['username']);
-                    // $('#username').html(data_parse['user']['username']+'<div class="wifi-symbol">\n' +
-                    // '<div class="wifi-circle first"></div>\n' +
-                    // '<div class="wifi-circle second"></div>\n' +
-                    // '<div class="wifi-circle third"></div>\n' +
-                    // '<div class="wifi-circle fourth"></div>\n' +
-                    // '</div>');
                     id = data_parse['user']['id'];
                     $("#email").val(data_parse['user']['email']);
                     $('#first_name').val(data_parse['user']['first_name']);
@@ -201,15 +200,20 @@
     var return_first = function () {
         var tmp = null;
         $.ajax({
-            'async': false,
-            'type': "GET",
-            'global': false,
-            'dataType': 'html',
-            'url': "/../QuizSys/Home/infoUserJWT",
-            'success': function (data) {
-                tmp = JSON.parse(data)['user']['id'];
+            async: false,
+            global: false,
+            dataType: 'html',
+            type: "GET",
+            url: "/../QuizSys/Home/infoUserJWT",
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization'),
+            },
+            success: function (data) {
+                tmp = JSON.parse(data)['user']['id']
             }
         });
         return tmp;
     }();
+    console.log(return_first);
 </script>

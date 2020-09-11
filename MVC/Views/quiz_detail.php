@@ -216,13 +216,12 @@
 
     const deleteQuestion = (target) => {
         const currentQtn = target.parentNode.parentNode.parentNode.parentNode.parentNode;
-        // console.log(currentQtn);
         let lastQtn = qtnList.lastChild;
 
         while (lastQtn !== currentQtn) {
             const prevQtn = lastQtn.previousSibling;
             lastQtn.setAttribute("id", `${prevQtn.id}`);
-            lastQtn.querySelector(".incr").textContent = `${parseInt(prevQtn.id) + 1}`;
+            lastQtn.querySelector(".font-weight-bold").textContent = "Câu "+String(parseInt(prevQtn.id)+1);
             lastQtn = prevQtn;
         }
         qtnList.removeChild(currentQtn);
@@ -346,7 +345,7 @@
                             },
                             success: function (data) {
                               alert('Cập nhật thành công');
-                              location.reload();
+                              window.location.href = "/../QuizSys/QuizPage/listQuiz";
                             },
                             error: function (xhr, error) {
                                 console.log(xhr, error);
@@ -460,7 +459,6 @@
 
                     `;
                         ansForm.innerHTML = ansFormContent;
-                        // console.log(typeof (value_choice['correct']));
                         if (value_choice['correct'] === '1'){
                             ansForm.querySelector(".row input[name='correct']").checked = true;
                         }

@@ -4,12 +4,13 @@ require_once "JwtHandler.php";
 require_once __DIR__."/../core/controllers.php";
 
 class APILogin extends Controller {
-    private function messages($success, $status, $mess, $token=null, $url=null){
+    private function messages($success, $status, $mess, $token=null, $url=null, $expire=null){
             return array(
                 "success"=>$success,
                 "status"=>$status,
                 "mess"=>$mess,
                 "token"=>$token,
+                "exp"=>$expire,
                 "url"=>$url
             );
     }
@@ -23,28 +24,27 @@ class APILogin extends Controller {
             "http:localhost:85/QuizSys/Home/InstructorHome",
             $row['id']
         );
-        $returnData = $this->messages(1, 200, 'Update success', $token_return);
-        setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);
-        return $returnData;
+        //        setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);
+        return $this->messages(1, 200, 'Update success', $token_return);
     }
     public function checkLoginAPI(){
         $user_model = $this->requireModel("User");
-        $data = $_REQUEST;
+        $data = json_decode(file_get_contents("php://input"));
         $returnData = [];
 
         if($_SERVER["REQUEST_METHOD"] != "POST"){
             $returnData = $this->messages(0, 404, "Method is not allow");
         }
-        if (!isset($data['email'])||!isset($data['password'])
-            ||empty(trim($data['email']))||empty(trim($data['password']))){
+        if (!isset($data->email)||!isset($data->password)
+            ||empty(trim($data->email))||empty(trim($data->password))){
             $returnData = $this->messages(0, 400, "Please fill in this fields");
         }
-        elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)){
+        elseif (!filter_var($data->email, FILTER_VALIDATE_EMAIL)){
             $returnData = $this->messages(0, 400, "Your email is not validate");
         }
         else{
-            $email = $data['email'];
-            $password = $data['password'];
+            $email = $data->email;
+            $password = $data->password;
             $user =  $user_model->selectUser($email);
             if ($user->num_rows){
                 $row = $user->fetch_assoc();
@@ -63,8 +63,7 @@ class APILogin extends Controller {
                         );
                         $url = "/../QuizSys/Home/StudentHome";
                     }
-                    $returnData = $this->messages(1, 200, 'You are login', $token_return, $url);
-                    setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);
+                    $returnData = $this->messages(1, 200, 'You are login', $token_return, $url, 3600);
                 }else{
                     $returnData = $this->messages(0, 500, 'Wrong password');
                 }

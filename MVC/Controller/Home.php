@@ -12,7 +12,7 @@ class Home extends Controller {
     }
 
     public function infoUserJWT(){
-        $auth = new Auth($this->requireModel("User"), $_COOKIE);
+        $auth = new Auth(getallheaders());
         $returnData = [
             "success"=>0,
             "status"=>404,

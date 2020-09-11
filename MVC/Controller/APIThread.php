@@ -8,6 +8,7 @@ require_once __DIR__."/../lib/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php";
 
 class APIThread extends Controller
 {
+
     private function messages($success, $status, $mess, $data=null ,$url=null){
         return array(
             "success"=>$success,
@@ -59,38 +60,19 @@ class APIThread extends Controller
       if ($_SERVER['REQUEST_METHOD'] != 'POST'){
           $data_return = $this->messages('0', '500', 'Method is not allowed');
       }else{
-//          print_r($_FILES);
-//          print_r($_POST);
-//          print_r($_FILES[0]);
-//          $data = json_decode(file_get_contents("php://input"));
-          print_r($_FILES);
           $data = $_POST;
-          print_r($_POST);
           $thread_model = $this->requireModel('Thread');
           $thread_obj =  $thread_model->insertThread($data['title'], $data['subject'], $data['grade'], $data['room_id']);
           $thread_id = $thread_obj->fetch_assoc()['id'];
           $question_array = json_decode($data['questions']);
           foreach($question_array as $index=>$question){
               $question_obj = new APIQuestion();
-              if (array_key_exists($index, $_FILES)){
-                  $target_dir = __DIR__."/../../uploads/";
-                  echo $target_dir;
-                  $name = $_FILES[$index]['name'];
-                  $target_file = $target_dir.basename($_FILES[$index]['name']);
-                  $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-                  $extensions_arr = array("jpg","jpeg","png","gif");
-                  if (in_array($imageFileType, $extensions_arr)){
-                      $image_base64 = base64_encode(file_get_contents($_FILES[$index]['tmp_name']));
-                      $img = 'data::image/'.$imageFileType.';base64,'.$image_base64;
-                      $question_id =  $question_obj->createQuestion($question->explain, $img, $question->description, $thread_id)->fetch_assoc()['id'];
-                      move_uploaded_file($_FILES[$index]['tmp_name'], $target_dir.$name);
-                      $choice_array = $question->choices;
-                      foreach ($choice_array as $choice){
-                          $choice_obj = new APIChoices();
-                          $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
-                      }
-                  }
-//              var_dump($question->image);
+              $img = $this->load_file($index);
+              $question_id =  $question_obj->createQuestion($question->explain, $img, $question->description, $thread_id)->fetch_assoc()['id'];
+              $choice_array = $question->choices;
+              foreach ($choice_array as $choice){
+                  $choice_obj = new APIChoices();
+                  $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
               }
           }
           if ($thread_obj->num_rows > 0){
@@ -103,19 +85,41 @@ class APIThread extends Controller
         echo json_encode($data_return);
     }
 
+    public function load_file($index){
+        $img = null;
+        if (array_key_exists($index, $_FILES)){
+            $target_dir = __DIR__."/../../uploads/";
+            $name = $_FILES[$index]['name'];
+            $target_file = $target_dir.basename($_FILES[$index]['name']);
+            $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+            $extensions_arr = array("jpg","jpeg","png","gif");
+            if (in_array($imageFileType, $extensions_arr)){
+                $image_base64 = base64_encode(file_get_contents($_FILES[$index]['tmp_name']));
+                $img = 'data::image/'.$imageFileType.';base64,'.$image_base64;
+                move_uploaded_file($_FILES[$index]['tmp_name'], $target_dir.$name);
+            }
+        }
+        return $img;
+    }
+
     public function queryQuiz($id_room){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'GET'){
             $data_return = $this->messages(0, 402, "Not allow this method");
         }else{
-            $list_thread = [];
-            $result = $this->requireModel('Thread')->queryThreadByRoomID($id_room);
-            if ($result->num_rows > 0){
-                while ($row = $result->fetch_assoc()){
-                    array_push($list_thread, $row);
-                }
-            }
-            $data_return = $this->messages(1, 200, "Success", $list_thread);
+           if ($this->auth->isAuth() != null){
+               $list_thread = [];
+               $result = $this->requireModel('Thread')->queryThreadByRoomID($id_room);
+               if ($result->num_rows > 0){
+                   while ($row = $result->fetch_assoc()){
+                       array_push($list_thread, $row);
+                   }
+               }
+               $data_return = $this->messages(1, 200, "Success", $list_thread);
+           }else{
+               $data_return = $this->messages(0, 500, 'Invalid token');
+           }
+
         }
         echo json_encode($data_return);
     }

@@ -40,6 +40,10 @@
         $.ajax({
             type: 'GET',
             url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization'),
+            },
             success: function (data) {
                 var list_room_tab = $("#list_room_tab");
                 $.each(data, function (i, room) {
@@ -73,7 +77,8 @@
             method: 'GET',
             url: '/../QuizSys/APIThread/queryQuiz/'+click_id,
             headers:{
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization'),
             },
             success: function (data) {
                 console.log(data);
@@ -137,7 +142,8 @@
                 method: 'GET',
                 url: '/../QuizSys/APIThread/queryQuiz/'+click_id,
                 headers:{
-                    'Content-type': 'application/json'
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization'),
                 },
                 success: function (data) {
                     if (data['success'] === 1){
@@ -207,18 +213,21 @@
             if (values.name === 'select-all'){
                 return ;
             }
-            console.log(values);
-            const id = $(values).parent().parent().attr('id');
-            array.push(id);
+            if (values.checked){
+                const id = $(values).parent().parent().attr('id');
+                array.push(id);
+            }
         });
         if (array.length === 0){
             console.log('can not delete');
-        }else {
+        }
+        else {
             $.ajax({
                 type: 'PUT',
                 url: '/../QuizSys/APIThread/deleteQuiz/',
                 headers: {
                     'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
                 },
                 data: JSON.stringify({list_delete: array}),
                 success: function (data) {

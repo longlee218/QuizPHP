@@ -30,7 +30,7 @@ class APIRegister extends Controller {
                 $last_name = trim($data->last_name);
                 $username = $first_name.$last_name.mt_rand(100000, 999999);
                 $email = trim($data->email);
-                $password = trim($data->password);
+                $password = md5(trim($data->password));
                 $gender = trim($data->gender);
                 $city = trim($data->city);
                 $country = trim($data->country);

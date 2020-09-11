@@ -16,3 +16,27 @@
 
 <!--toggle-->
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<script>
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name){
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== ''){
+            var cookies = document.cookie.split(';');
+            for (var i  = 0; i <  cookies.length; i++){
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length+1) === (name + '=')){
+                    cookieValue = decodeURIComponent(cookie.substring(name.length+1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+</script>

@@ -135,7 +135,6 @@
             })
         }
     })
-    // this function copy
     const qtnList = document.getElementById("form_question");
     const addQtnBtn = document.getElementById("add_question");
     const delQtnBtn = document.querySelector(".remove_question");
@@ -147,10 +146,10 @@
         if (qtnList.lastChild !== null) {
             qtnId = parseInt(qtnList.lastChild.id) + 1;
         }
-
+        console.log(qtnId);
         const qtnForm = document.createElement("div");
         qtnForm.setAttribute("class", "qtn-form");
-        qtnForm.setAttribute("id", `${qtnId}`)
+        qtnForm.setAttribute("id", String(qtnId));
         const qtnFormContent = `
                         <div class="row">
                             <div class="col-xl-1 qs_label">
@@ -193,9 +192,7 @@
     })
     qtnList.addEventListener("click", (event) => {
         const target = event.target;
-        // console.log(target);
         const targetClass = target.className;
-        // console.log(targetClass);
         if (targetClass === null) return;
 
         if (targetClass === "fa fa-trash fa-2x") {
@@ -212,13 +209,11 @@
 
     const deleteQuestion = (target) => {
         const currentQtn = target.parentNode.parentNode.parentNode.parentNode.parentNode;
-        // console.log(currentQtn);
         let lastQtn = qtnList.lastChild;
-
         while (lastQtn !== currentQtn) {
             const prevQtn = lastQtn.previousSibling;
-            lastQtn.setAttribute("id", `${prevQtn.id}`);
-            lastQtn.querySelector(".incr").textContent = `${parseInt(prevQtn.id) + 1}`;
+            lastQtn.setAttribute("id", String(prevQtn.id));
+            lastQtn.querySelector(".font-weight-bold").textContent = "Câu "+String(parseInt(prevQtn.id)+1);
             lastQtn = prevQtn;
         }
         qtnList.removeChild(currentQtn);
@@ -372,9 +367,6 @@
     //       })
     //   })
     // });
-    $(".square").on("click", function() {
-        alert('hello');
-    });
     $(document).ready(function () {
         $('#save_and_exit').click(function () {
             var quiz = new FormData();

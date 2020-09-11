@@ -1,9 +1,11 @@
-
 <?php
+require_once __DIR__.'/../Middlewares/Auth.php';
     class Controller{
         public $model_path = '';
         public $view_path = '';
+        protected $auth;
         function __construct(){
+            $this->auth = new Auth(getallheaders());
         }
 
         public function requireModel($model){

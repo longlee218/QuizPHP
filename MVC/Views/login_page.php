@@ -46,11 +46,12 @@
                 $.ajax({
                     url: '/../QuizSys/APILogin/checkLoginAPI',
                     type: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    data: data_post_json,
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify(data_post_json),
                 }).done(function (data) {
                     if (data['success'] === 1){
                         setTimeout(function () {
+                            setCookie('Authorization', data['token'], data['exp'])
                             window.location.href = data['url'];
                         },1000)
                     }
