@@ -246,37 +246,33 @@
                 error: function (xhr, error){console.log(xhr, error);}
         })
     })
-    function post_time_online(id_room, return_first){
+    function post_time_online(id_room){
         $("#btn_settime").click(function () {
             var time_start =  ($("#time_start").val()).split('T');
             var time_end = ($("#time_end").val()).split('T');
             time_start = time_start[0]+' '+time_start[1];
             time_end = time_end[0]+' '+time_end[1];
-            var time = setInterval(function () {
-                $.ajax({
-                    type: 'POST',
-                    data: {
-                        'time-start': time_start,
-                        'time-end': time_end
-                    },
-                    url: '/../QuizSys/APIRoom/setTimeOnline/' + id_room,
-                    success: function (data) {
-                        if (data['success'] === '1'){
-                            clearInterval(time);
-                            alert('Phòng '+id_room+' đã online');
-                            location.reload();
-                        }
-                        console.log(data);
-                    },
-                    error: function (xhr, error) {
-                        console.log(xhr, error);
+            $.ajax({
+                type: 'POST',
+                data: {
+                    'time-start': time_start,
+                    'time-end': time_end
+                },
+                url: '/../QuizSys/APIRoom/setTimeOnline/' + id_room,
+                success: function (data) {
+                    if (data['success'] === true){
+                        alert('Phòng '+id_room+' đang thiết lập online');
+                        location.reload();
                     }
-                })
-            }, 5000);
-
+                    console.log(data);
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error);
+                }
+            })
         });
     }
-    function post_time_offline(room_id, check_radio, return_first){
+    function post_time_offline(room_id, check_radio){
        var confirm_offline = confirm("Bạn muốn phòng này offline ngay lập tức ?");
        if (confirm_offline === true){
            console.log({
@@ -290,8 +286,10 @@
                        room_id: room_id
                    },
                    success: function (req) {
-                       console.log(req)
-                       alert('Phòng '+room_id+' đã offline');
+                       if (req['success'] === true){
+                           alert('Phòng '+room_id+' đã offline');
+                       }
+                       console.log(req);
                        // loadListRoom(return_first);
                    },
                    error: function (xhr, error) {
@@ -336,55 +334,125 @@
         });
     });
     function loadListRoom(return_first) {
-        $.ajax({
-            type: "GET",
-            url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
-            success: function (data){
-                for (let i=0; i<data.length; i++){
-                    var room = data[i];
-                    var status = '<label class="switch">\n' +
-                        '  <input name="setStatus" type="checkbox">\n' +
-                        '  <span class="slider round"></span>\n' +
-                        '</label>';
-                    if (room['status'] === '1'){
-                        status = '<label class="switch">\n' +
-                            '  <input name="setStatus" type="checkbox" checked>\n' +
-                            '  <span class="slider round"></span>\n' +
-                            '</label>';
-                    }
-                    $("#table_room > tbody:last-child").append("" +
-                    "<tr id='"+room['id']+"'>" +
-                    "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
-                    "    <td class='id_room align-middle'>"+room['id']+"</td>" +
-                    "    <td class='status align-middle'> "+status+"</td>" +
-                    "    <td class='room_name align-middle'>"+room['room_name']+"</td>" +
-                    "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
-                    "        <div class='btn-group ' role='group'>" +
-                    "            <button class=\"btn btn-xs button_edit\" name='button_edit' data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" data-id='"+room['id']+"'><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i></button>" +
-                    "            <button class=\"btn btn-xs\" name='button_delete' data-title=\"Delete\" data-toggle=\"modal\" data-target=\"#delete\" data-id='"+room['id']+"'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></button>" +
-                    "        </div>" +
-                    "    </p></td>" +
-                    "</tr>");
-                }
-                for (let i=0; i < data.length; i++){
-                    var check_time = $('input[name="setStatus"]')[i];
-                    check_time.addEventListener('change', function () {
-                        if ($(this).is(':checked')){
-                            $( "#setTime" ).modal();
-                            console.log(data[i]['id']);
-                            post_time_online(data[i]['id'], return_first);
-                        }else{
-                            post_time_offline(data[i]['id'],$('input[name="setStatus"]')[i], return_first);
+            $.ajax({
+                type: "GET",
+                url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                success: function (data){
+                    if (data['success'] === true){
+                        console.log(data['data']);
+                        for (let i=0; i<data['data'].length; i++){
+                            var room = data['data'][i];
+                            var status = '<label class="switch">\n' +
+                                '  <input name="setStatus" type="checkbox">\n' +
+                                '  <span class="slider round"></span>\n' +
+                                '</label>';
+                            if (room['status'] === '1'){
+                                status = '<label class="switch">\n' +
+                                    '  <input name="setStatus" type="checkbox" checked>\n' +
+                                    '  <span class="slider round"></span>\n' +
+                                    '</label>';
+                            }
+                            $("#table_room > tbody:last-child").append("" +
+                            "<tr id='"+room['id']+"'>" +
+                            "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
+                            "    <td class='id_room align-middle'>"+room['id']+"</td>" +
+                            "    <td class='status align-middle'> "+status+"</td>" +
+                            "    <td class='room_name align-middle'>"+room['room_name']+"</td>" +
+                            "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
+                            "        <div class='btn-group ' role='group'>" +
+                            "            <button class=\"btn btn-xs button_edit\" name='button_edit' data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" data-id='"+room['id']+"'><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i></button>" +
+                            "            <button class=\"btn btn-xs\" name='button_delete' data-title=\"Delete\" data-toggle=\"modal\" data-target=\"#delete\" data-id='"+room['id']+"'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></button>" +
+                            "        </div>" +
+                            "    </p></td>" +
+                            "</tr>");
                         }
-                        hiddenChecked($('input[name="setStatus"]')[i]);
+                        var data = data['data'];
+                        for (let i=0; i < data.length; i++){
+                            var check_time = $('input[name="setStatus"]')[i];
+                            check_time.addEventListener('change', function () {
+                                if ($(this).is(':checked')){
+                                    $( "#setTime" ).modal();
+                                    console.log(data[i]['id']);
+                                    post_time_online(data[i]['id']);
+                                }else{
+                                    post_time_offline(data[i]['id'],$('input[name="setStatus"]')[i]);
+                                }
+                                hiddenChecked($('input[name="setStatus"]')[i]);
 
-                    });
+                            });
+                        }
+                    }
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error);
                 }
-            },
-            error: function (xhr, error) {
-                console.log(xhr, error);
-            }
-        });
+            });
+    }
+    function loadListRoomInterval(return_first) {
+        setInterval(function () {
+            $('#table_room >tbody').empty().html('');
+            $.ajax({
+                type: "GET",
+                url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                success: function (data){
+                    if (data['success'] === true){
+                        console.log(data['data']);
+                        for (let i=0; i<data['data'].length; i++){
+                            var room = data['data'][i];
+                            var status = '<label class="switch">\n' +
+                                '  <input name="setStatus" type="checkbox">\n' +
+                                '  <span class="slider round"></span>\n' +
+                                '</label>';
+                            if (room['status'] === '1'){
+                                status = '<label class="switch">\n' +
+                                    '  <input name="setStatus" type="checkbox" checked>\n' +
+                                    '  <span class="slider round"></span>\n' +
+                                    '</label>';
+                            }
+                            $("#table_room > tbody:last-child").append("" +
+                            "<tr id='"+room['id']+"'>" +
+                            "    <td class='align-middle'><input type=\"checkbox\" class=\"checkthis\" /></td>" +
+                            "    <td class='id_room align-middle'>"+room['id']+"</td>" +
+                            "    <td class='status align-middle'> "+status+"</td>" +
+                            "    <td class='room_name align-middle'>"+room['room_name']+"</td>" +
+                            "    <td><p data-placement=\"top\" data-toggle=\"tooltip\" title=\"Edit\">" +
+                            "        <div class='btn-group ' role='group'>" +
+                            "            <button class=\"btn btn-xs button_edit\" name='button_edit' data-title=\"Edit\" data-toggle=\"modal\" data-target=\"#edit\" data-id='"+room['id']+"'><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i></button>" +
+                            "            <button class=\"btn btn-xs\" name='button_delete' data-title=\"Delete\" data-toggle=\"modal\" data-target=\"#delete\" data-id='"+room['id']+"'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></button>" +
+                            "        </div>" +
+                            "    </p></td>" +
+                            "</tr>");
+                        }
+                        var data = data['data'];
+                        for (let i=0; i < data.length; i++){
+                            var check_time = $('input[name="setStatus"]')[i];
+                            check_time.addEventListener('change', function () {
+                                if ($(this).is(':checked')){
+                                    $( "#setTime" ).modal();
+                                    console.log(data[i]['id']);
+                                    post_time_online(data[i]['id']);
+                                }else{
+                                    post_time_offline(data[i]['id'],$('input[name="setStatus"]')[i]);
+                                }
+                                hiddenChecked($('input[name="setStatus"]')[i]);
+
+                            });
+                        }
+                    }
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error);
+                }
+            });
+        }, 60000);
     }
     function hiddenChecked(check_radio){
         $('#setTime').on('hidden.bs.modal', function () {
@@ -393,6 +461,7 @@
         })
     }
     loadListRoom(return_first);
+    loadListRoomInterval(return_first);
     $(document).ready(function () {
         $("#create_room").click(function () {
             var room_name = $("#room_name").val();

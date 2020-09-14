@@ -105,7 +105,7 @@ class APIThread extends Controller
     public function queryQuiz($id_room){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'GET'){
-            $data_return = $this->messages(0, 402, "Not allow this method");
+            $data_return = $this->messages(false, 405, "Not allow this method");
         }else{
            if ($this->auth->isAuth() != null){
                $list_thread = [];
@@ -115,9 +115,9 @@ class APIThread extends Controller
                        array_push($list_thread, $row);
                    }
                }
-               $data_return = $this->messages(1, 200, "Success", $list_thread);
+               $data_return = $this->messages(true, 200, "Success", $list_thread);
            }else{
-               $data_return = $this->messages(0, 500, 'Invalid token');
+               $data_return = $this->messages(false, 401, 'Invalid token');
            }
 
         }

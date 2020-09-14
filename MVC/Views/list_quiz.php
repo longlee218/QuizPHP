@@ -46,7 +46,7 @@
             },
             success: function (data) {
                 var list_room_tab = $("#list_room_tab");
-                $.each(data, function (i, room) {
+                $.each(data['data'], function (i, room) {
                     var element = ``;
                     if (i === 0){
                         element = $(`
@@ -54,7 +54,6 @@
            `);
                         list_room_tab.append(element);
                         element.trigger('click');
-                        //element.one('click', getQuizListActive(room['id']));
                     }
 
                     else{
@@ -63,8 +62,6 @@
            `);
                         $(".table-list-quiz > tbody:last-child").empty().html('');
                         list_room_tab.append(element);
-
-                        // element.on('click', getQuizList(room['id']));
                     }
                 })
             }
@@ -82,7 +79,7 @@
             },
             success: function (data) {
                 console.log(data);
-                if (data['success'] === 1){
+                if (data['success'] === true){
                     var table = $(`
                             <div class="tab-pane fade show active " id="room-${click_id}" role="tabpanel" aria-labelledby="nav-home-tab">
                                <table class="table sortable table-striped table-bordered table-hover text-center table-list-quiz">
@@ -134,8 +131,6 @@
         })
     }
     function getQuizList(click_id) {
-        // $('.nab-content').empty().html('');
-        // alert(click_id);
         $(".table-list-quiz > tbody:last-child").empty().html('');
         var table = $('');
             $.ajax({
@@ -146,7 +141,7 @@
                     'Authorization': getCookie('Authorization'),
                 },
                 success: function (data) {
-                    if (data['success'] === 1){
+                    if (data['success'] === true){
                          table = $(`
                             <div class="tab-pane fade" id="room-${click_id}" role="tabpanel" aria-labelledby="nav-home-tab">
                                <table class="table sortable table-bordered table-striped  table-hover text-center table-list-quiz">
@@ -231,7 +226,7 @@
                 },
                 data: JSON.stringify({list_delete: array}),
                 success: function (data) {
-                    if (data['success'] == 1){
+                    if (data['success'] === true){
                         alert('Xóa thành công');
                         location.reload();
                     }

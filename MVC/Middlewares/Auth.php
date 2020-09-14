@@ -1,6 +1,6 @@
 <?php
-require "./MVC/Controller/JwtHandler.php";
-require_once "./MVC/core/controllers.php";
+require __DIR__."/../Controller/JwtHandler.php";
+require_once __DIR__."/../core/controllers.php";
 require_once __DIR__.'/../Models/User.php';
 
     class Auth extends JwtHandler {

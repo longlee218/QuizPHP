@@ -51,7 +51,7 @@
                 }).done(function (data) {
                     if (data['success'] === 1){
                         setTimeout(function () {
-                            setCookie('Authorization', data['token'], data['exp'])
+                            setCookie('Authorization', data['token'], data['exp']*10)
                             window.location.href = data['url'];
                         },1000)
                     }

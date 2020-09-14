@@ -99,13 +99,54 @@ class Room extends Database
         return true;
     }
 
-    public function setOnlineRoomInTime($room_id, $time_start, $time_end){
-        $query = "update room set status=?, time_start= ?, time_end=? where id=?";
-        $status = '1';
+    public function setTimeStartAndEnd($room_id, $time_start, $time_end){
+        $query = "update room set  time_start= ?, time_end=? where id=?";
         $this->con->init();
         $stmt = $this->con->prepare($query);
-        $stmt->bind_param("sssi", $status,$time_start, $time_end, $room_id);
+        $stmt->bind_param("ssi" ,$time_start, $time_end, $room_id);
         $stmt->execute();
         return true;
+    }
+
+    public function findRoomByTimeStart($time_start){
+        $query = "select * from room where time_start = ?";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("s", $time_start);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+    public function findRoomByTimeEnd($time_end){
+        $query = "select * from room where time_end = ?";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("s", $time_end);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+
+
+    public function setOnline($room_id){
+        $status = '1';
+        $query = "update room set status = ? where id = ?";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("si", $status, $room_id);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public function setOffline($room_id){
+        $status = '0';
+        $query = "update room set status = ? where id = ?";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("si", $status, $room_id);
+        $stmt->execute();
+        $stmt->close();
     }
 }

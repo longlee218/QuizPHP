@@ -151,7 +151,7 @@
             'Authorization': getCookie('Authorization')
         },
         success: function (data) {
-            $.each(data, function (i, room) {
+            $.each(data['data'], function (i, room) {
                 $('#room_list').append($('<option>', {
                     value: room['id'],
                     text: room['room_name']
@@ -439,9 +439,10 @@
                         <div class="col col-2 picture">
                             <div class="image-preview" name="inpFile">
 <!--                                    <div class="square"></div>-->
-                                <img src="${value['image']}" alt="Image preview" height="150" width="150">
+
+                                <img src="${value['image']}" alt="Image preview" height="150" width="150" id="${index}-img">
                             </div>
-                            <input type="file" name="photo" onclick="previewImg(this)"/>
+                            <input type="file" name="photo" id="${index}" onclick="preViewImg(this)"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -491,21 +492,23 @@
             }
         })
     })
-    function previewImg(e) {
-        e.addEventListener("change", function () {
-            const file = e.files[0];
-            var previewImg = $(e.parentNode).find('.image-preview .image-preview__image');
-            console.log(previewImg);
-            if (file){
-                const reader = new FileReader();
-                previewImg.style = 'block';
-                reader.addEventListener('load', function () {
-                    previewImg.attr('src', this.result);
-                });
-                reader.readAsDataURL(file);
-            }
-        })
 
-    }
+    // function readURL(input){
+    //     console.log(input.files);
+    //     if (input.files && input.files[0]){
+    //         console.log('aha');
+    //         var reader = new FileReader();
+    //         reader.onload = function (e) {
+    //         $(`#${input.attr('id')}-img`).attr('src', e.target.result);
+    //         }
+    //         reader.readAsDataURL(input.files[0]);
+    //     }
+    //
+    // }
+    //
+    // function preViewImg(e) {
+    //     console.log(e);
+    //     readURL(e);
+    // }
 </script>
 <?php include_once './MVC/Views/footer.php'?>

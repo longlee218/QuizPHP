@@ -226,8 +226,8 @@
             addAnswer(target);
         }
         if (targetClass === "fa fa-times fa-2x") {
-            // console.log('hi');
-            deleteAnswer(target);
+            deleteAnswer(target);            // console.log('hi');
+
         }
     })
 
