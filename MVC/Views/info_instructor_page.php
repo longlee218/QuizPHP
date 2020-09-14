@@ -54,7 +54,7 @@ include_once './MVC/Views/navbar.php' ?>
                         </div> <!-- form-group end.// -->
                         <div class="form-row">
                             <div class="form-group">
-                                <a class="float-right text-primary" id="reset_password" onclick="clickReset()">Thay đổi mật khẩu?</a>
+                                <a class="float-right text-primary" id="reset_password" href="/../QuizSys/change_password/">Thay đổi mật khẩu?</a>
                             </div>
                         </div>
                 </div>
@@ -378,10 +378,14 @@ include_once './MVC/Views/navbar.php' ?>
             $.ajax({
                 type:'POST',
                 url: "/../QuizSys/APIUpdateInfo/updateInfo",
-                data: data_post,
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                data: JSON.stringify(data_post),
                 success: function (data) {
                     console.log(data);
-                    if (data['success'] === 1){
+                    if (data['success'] === true){
                         $("#messages_update").html(' <div class="alert alert-success">\n' +
                             '    <strong>Thành công!</strong> Tài khoản đã được cập nhật.\n' +
                             '  </div>')

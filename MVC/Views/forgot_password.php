@@ -38,21 +38,25 @@
     $(document).ready(function (){
         $('#send_email').click(function (){
             var email = $('#email').val();
-            var data_post_json = {email:email};
+            var data_post_json = {
+                email:email
+            };
             $.ajax({
                 type: 'POST',
-                url: '../APISendEmail/sendEmailResetPassword',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                data: data_post_json,
+                url: '/../QuizSys/APISendEmail/sendEmailResetPassword',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: JSON.stringify(data_post_json),
             }).done(function (data){
                 console.log(data);
-                if (data['success'] === 0){
+                if (data['success'] === false){
                     if (data['messages'] === "Don't have this email"){
                         $('#messages').html('<small class="text-danger" >*Không tồn tại email này</small>');
                     }else if (data['messages'] === "You must fill your email"){
                         $('#messages').html('<small class="text-danger" >*Không được để trống</small>')
                     }
-                }else if (data['success'] === 1){
+                }else{
                     $('#messages').html('<small class="text-success">*Chúng tôi đã gửi email cho bạn, vui lòng kiểm tra</small>')
                 }
             }).fail(function (xhr, error){

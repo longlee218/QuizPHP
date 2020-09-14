@@ -140,6 +140,10 @@
     $.ajax({
         type: 'GET',
         url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+        headers:{
+            'Content-type': 'application/json',
+            'Authorization': getCookie('Authorization')
+        },
         success: function (data) {
             console.log(data);
             $.each(data, function (i, room) {
@@ -440,8 +444,12 @@
                                   processData: false,
                                   contentType: false,
                                   success: function (data) {
-                                    alert('Bộ đề đã được lưu');
-                                    window.location.href = '/../QuizSys/QuizPage/listQuiz';
+                                      if (data['success'] === true){
+                                          alert('Bộ đề đã được lưu');
+                                          window.location.href = '/../QuizSys/QuizPage/listQuiz';
+                                      }else{
+                                          console.log(data);
+                                      }
                                   },
                                   error: function (xhr, error) {
                                       console.log(xhr, error);

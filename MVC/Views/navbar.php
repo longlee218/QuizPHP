@@ -154,6 +154,7 @@
                 'Authorization': getCookie('Authorization'),
             },
             success:function (data){
+                console.log(data);
                 var data_parse = JSON.parse(data);
                 if (data_parse['success'] === 1){
                     $('#username').html(data_parse['user']['username']);
@@ -193,10 +194,10 @@
             })
         }
     });
-    function clickReset(){
-        var username = $("#username").text()
-        window.location.href = "/../QuizSys/reset_password?usr="+username;
-    }
+    // function clickReset(){
+    //     var username = $("#username").text()
+    //     window.location.href = "/../QuizSys/reset_password?usr="+username;
+    // }
     var return_first = function () {
         var tmp = null;
         $.ajax({

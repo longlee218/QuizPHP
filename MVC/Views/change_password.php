@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/inc/master.php';
+    require_once __DIR__.'/inc/master.php';
 ?>
 
 <div class="container">
@@ -38,19 +38,18 @@ require_once __DIR__.'/inc/master.php';
                 password:password,
                 password_confirm:password_confirm
             };
-            var searchParam = new URLSearchParams(window.location.search);
-            const user = searchParam.get('usr')
             $.ajax({
-                url: '/../QuizSys/APIResetPassword/resetPassword/'+user,
+                url: '/../QuizSys/APIResetPassword/changePassword/',
                 type: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': getCookie('Authorization')
                 },
                 data: JSON.stringify(data_post_json),
             }).done(function (data) {
                 console.log(data);
                 if (data['success'] === true){
-                    location.href = '/../QuizSys/Login/';
+                    location.href = '/../QuizSys/ProfileInstructor/';
                 }
                 else{
                     if (data['messages'] === "Please fill all these fields"){

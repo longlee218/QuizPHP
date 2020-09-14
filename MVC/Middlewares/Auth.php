@@ -27,7 +27,6 @@ require_once __DIR__.'/../Models/User.php';
                     $object = $data['data'];
                     if(isset($data['auth']) && isset($object->data) && $data['auth']):
                         return $this->fetchUser($object->data);
-
                     else:
                         return null;
 

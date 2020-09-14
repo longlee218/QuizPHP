@@ -15,30 +15,30 @@ class APISendEmail extends Controller {
     }
     public function sendEmailResetPassword(){
         $dataReturn = [];
-        $data = $_REQUEST;
         if ($_SERVER['REQUEST_METHOD'] != "POST"){
-            $dataReturn = $this->messages(0, 404, "Not allow this method");
+            $dataReturn = $this->messages(false, 405, "Not allow this method");
         }else{
-            if (!isset($data['email']) || empty(trim($data['email']))){
-                $dataReturn = $this->messages(0, 400, "You must fill your email");
+            $data = json_decode(file_get_contents("php://input"));
+            if (!isset($data->email) || empty(trim($data->email))){
+                $dataReturn = $this->messages(false, 400, "You must fill your email");
             }else{
                 $user =  $this->requireModel("User");
-                $email = $data['email'];
+                $email = $data->email;
                 $result = $user->selectUser($email);
                 $row =  $result->fetch_assoc();
                 $username = $row['username'];
                 if ($user->checkEmail($email)){
-                    if($this->sendEmail($email, "RESET YOUR PASSWORD", "Please click this link to reset your password: http://localhost:85/QuizSys/reset_password?usr=$username")){
-                        $dataReturn = $this->messages(1, 200, "Success");
+                    if($this->sendEmail($email, "RESET YOUR PASSWORD", "Please click this link to reset your password: http://localhost/QuizSys/reset_password?usr=$username")){
+                        $dataReturn = $this->messages(true, 200, "Success");
                     }else{
-                        $dataReturn = $this->messages(0, 500, "Something wrong, please check again!");
+                        $dataReturn = $this->messages(false, 500, "Something wrong, please check again!");
                     }
                 }else{
-                    $dataReturn = $this->messages(0, 400, "Don't have this email");
+                    $dataReturn = $this->messages(false, 400, "Don't have this email");
                 }
             }
-            echo json_encode($dataReturn);
         }
+        echo json_encode($dataReturn);
     }
     public function sendEmailActivateAccount(){
         return true;
@@ -59,7 +59,7 @@ class APISendEmail extends Controller {
 
         //Authentication
         $mail->Username = "longlehoang2013@gmail.com";
-        $mail->Password = "vanmieuNTT218";
+        $mail->Password = "ssbslpjphtjfxxfa";
 
         //Set Params
         $mail->SetFrom("longlehoang2013@gmail.com");

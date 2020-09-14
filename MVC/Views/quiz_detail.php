@@ -146,6 +146,10 @@
     $.ajax({
         type: 'GET',
         url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
+        headers:{
+            'Content-type': 'application/json',
+            'Authorization': getCookie('Authorization')
+        },
         success: function (data) {
             $.each(data, function (i, room) {
                 $('#room_list').append($('<option>', {
@@ -167,14 +171,14 @@
         if (qtnList.lastChild !== null) {
             qtnId = parseInt(qtnList.lastChild.id) + 1;
         }
-
+        console.log(qtnId);
         const qtnForm = document.createElement("div");
         qtnForm.setAttribute("class", "qtn-form");
         qtnForm.setAttribute("id", `${qtnId}`)
         const qtnFormContent = `
                         <div class="row">
                             <div class="col-xl-1 qs_label">
-                                    <label for="question_title" class="font-weight-bold" name="label-question">Câu ${qtnId + 1}</label>
+                                    <label for="question_title" class="font-weight-bold" name="label-question">Câu ${qtnId}</label>
                             </div>
                             <div class="col-8 qs">
                                <div class="form-row">
@@ -240,7 +244,7 @@
         while (lastQtn !== currentQtn) {
             const prevQtn = lastQtn.previousSibling;
             lastQtn.setAttribute("id", `${prevQtn.id}`);
-            lastQtn.querySelector(".font-weight-bold").textContent = "Câu "+String(parseInt(prevQtn.id)+1);
+            lastQtn.querySelector(".font-weight-bold").textContent = "Câu "+String(parseInt(prevQtn.id));
             lastQtn = prevQtn;
         }
         qtnList.removeChild(currentQtn);
@@ -283,11 +287,8 @@
 
     const deleteAnswer = (target) => {
         const currentAns = target.parentNode.parentNode.parentNode.parentNode;
-        // console.log(currentAns)
         const ansList = currentAns.parentNode;
-        // console.log(ansList);
         let lastAns = ansList.lastChild;
-        // console.log(lastAns);
         while (lastAns !== currentAns) {
             const prevAns = lastAns.previousSibling;
             lastAns.setAttribute("id", `${prevAns.id}`);
@@ -304,28 +305,19 @@
 
     $(document).ready(function () {
         $('#save_and_exit').click(function (e) {
-            e.preventDefault();
-
+            e.preventDefault()
+            var quiz = new FormData();
             var subject = $('#content_thread #subject').val();
             var grade = $('#content_thread #grade').val();
             var title = $('#title_quiz').val();
             var form_question = $('#form_question');
             var room_id = $('#room_list').val();
             var question_data = [];
-            var quiz = {};
-            quiz = {
-                id: id_quiz,
-                subject: subject,
-                grade: grade,
-                title: title,
-                room_id: room_id,
-                questions: question_data,
-            }
             form_question.each(function () {
-                $(this).find('.qtn-form').each(function () {
+                $(this).find('.qtn-form').each(function (index) {
                     var single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
-                    single_question['image'] = $(this).find('.row .picture input[name="photo"]').val();
+                    quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0])
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
                     var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
                     var choice_data = [];
@@ -333,7 +325,6 @@
                         var single_choice = {};
                         single_choice['choice_name'] = $(this).attr('id');
                         single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
-                        // console.log($(this).find('.row input[name="correct"]').is(':checked'));
                         single_choice['correct'] = '0';
                         if ($(this).find('.row input[name="correct"]').is(':checked')){
                             single_choice['correct'] = '1';
@@ -344,27 +335,34 @@
                     question_data.push(single_question);
                 })
             })
-            console.log(quiz);
+            quiz.append('id', id_quiz);
+            quiz.append('subject', subject);
+            quiz.append('grade', grade);
+            quiz.append('title', title);
+            quiz.append('room_id', room_id);
+            quiz.append('questions', JSON.stringify(question_data));
+
             $.ajax({
                 type: 'POST',
                 url: '/../QuizSys/APIThread/checkValidateQuiz',
-                data: JSON.stringify(quiz),
-                headers: {
-                    'Content-type': 'application/json'
-                },
+                data: quiz,
+                processData: false,
+                contentType: false,
                 success: function (data) {
-                    if (data['success'] === 1){
-                        var validate_data = JSON.stringify(quiz);
+                    if (data['success'] === true){
                         $.ajax({
-                            type : 'PUT',
+                            type : 'POST',
                             url: '/../QuizSys/APIThread/updateQuiz',
-                            data: validate_data,
-                            headers: {
-                                'Content-type': 'application/json'
-                            },
+                            data: quiz,
+                            processData: false,
+                            contentType: false,
                             success: function (data) {
-                              alert('Cập nhật thành công');
-                              window.location.href = "/../QuizSys/QuizPage/listQuiz";
+                                if (data['success'] === true){
+                                    alert('Cập nhật thành công');
+                                    window.location.href = "/../QuizSys/QuizPage/listQuiz";
+                                }else{
+                                    console.log(data);
+                                }
                             },
                             error: function (xhr, error) {
                                 console.log(xhr, error);
@@ -441,7 +439,7 @@
                         <div class="col col-2 picture">
                             <div class="image-preview" name="inpFile">
 <!--                                    <div class="square"></div>-->
-                                <img src="" alt="Image preview" class="image-preview__image" >
+                                <img src="${value['image']}" alt="Image preview" height="150" width="150">
                             </div>
                             <input type="file" name="photo" onclick="previewImg(this)"/>
                         </div>
@@ -453,7 +451,9 @@
                                 <a href="javascript:void(0);" class="#"><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>
                             </div>
                         </div>
-                        <div class="end-question"></div>
+                        <div class="end-question">
+
+                        </div>
                     </div>
 <hr>
         `;

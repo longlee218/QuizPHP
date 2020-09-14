@@ -147,6 +147,7 @@ class User extends Database {
             $stmt->close();
             return true;
         }catch (Exception $exception){
+            echo $exception;
             return false;
         }
     }
@@ -156,12 +157,12 @@ class User extends Database {
             $query = "update users set password = ? where email = ?";
             $this->con->init();
             $stmt =  $this->con->prepare($query);
-            $password_hash = md5($password);
-            $stmt->bind_param("ss", $password_hash, $email);
+            $stmt->bind_param("ss", $password, $email);
             $stmt->execute();
             $stmt->close();
             return true;
         }catch (Exception $exception){
+            echo $exception;
             return false;
         }
     }
