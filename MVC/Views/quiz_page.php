@@ -146,7 +146,7 @@
         },
         success: function (data) {
             console.log(data);
-            $.each(data, function (i, room) {
+            $.each(data['data'], function (i, room) {
                 console.log(i);
                 console.log(room['room_name']);
                 $('#room_list').append($('<option>', {
@@ -280,9 +280,9 @@
         const currentAns = target.parentNode.parentNode.parentNode.parentNode;
         // console.log(currentAns)
         const ansList = currentAns.parentNode;
-        // console.log(ansList);
         let lastAns = ansList.lastChild;
         // console.log(lastAns);
+        // console.log(ansList);
         while (lastAns !== currentAns) {
             const prevAns = lastAns.previousSibling;
             lastAns.setAttribute("id", `${prevAns.id}`);
@@ -436,7 +436,7 @@
                       processData: false,
                       contentType: false,
                       success: function (data) {
-                          if (data['success'] === 1){
+                          if (data['success'] === true){
                               $.ajax({
                                   type : 'POST',
                                   url: '/../QuizSys/APIThread/createQuiz',

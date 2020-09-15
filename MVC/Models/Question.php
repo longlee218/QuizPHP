@@ -3,12 +3,12 @@ require_once "./MVC/lib/database.php";
 
 class Question extends Database
 {
-    public function insertQuestion($explain, $image, $description, $thread_id){
-        $query = "insert into question (`explain`, image, description, thread_id) 
-                    values (?, ?, ?, ?)";
+    public function insertQuestion($explain, $image, $image_name ,$description, $thread_id){
+        $query = "insert into question (`explain`, image, image_name, description, thread_id) 
+                    values (?, ?, ?, ?, ?)";
         $this->con->init();
         $stmt = $this->con->prepare($query);
-        $stmt->bind_param("sssi", $explain, $image, $description, $thread_id);
+        $stmt->bind_param("ssssi", $explain, $image, $image_name, $description, $thread_id);
         $stmt->execute();
         $id =  $stmt->insert_id;
         $stmt->close();

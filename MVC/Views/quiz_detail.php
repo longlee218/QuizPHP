@@ -317,7 +317,8 @@
                 $(this).find('.qtn-form').each(function (index) {
                     var single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
-                    quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0])
+                    quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0]);
+                    single_question['image_name'] =
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
                     var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
                     var choice_data = [];
@@ -439,17 +440,16 @@
                         <div class="col col-2 picture">
                             <div class="image-preview" name="inpFile">
 <!--                                    <div class="square"></div>-->
-
-                                <img src="${value['image']}" alt="Image preview" height="150" width="150" id="${index}-img">
+                                <img src="${value['image']}" alt="Image preview" height="150" width="150">
                             </div>
-                            <input type="file" name="photo" id="${index}" onclick="preViewImg(this)"/>
+                            <input class="mt-2" type="file" name="photo" id="${index}" value="C:/xampp/htdocs/QuizSys/uploads/370162.jpg">
                         </div>
                         <div class="col-1">
                             <div class="row">
                                 <a href="javascript:void(0)" class="remove_question"><i class="fa fa-trash fa-2x" aria-hidden="true"></i></a>
                             </div>
                             <div class="row mt-3">
-                                <a href="javascript:void(0);" class="#"><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>
+                                <a href="javascript:void(0);" class="#" onclick=""><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>
                             </div>
                         </div>
                         <div class="end-question">

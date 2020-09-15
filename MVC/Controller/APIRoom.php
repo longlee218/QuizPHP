@@ -64,13 +64,17 @@ class APIRoom extends Controller
         }
         echo json_encode($data_return);
     }
+
     public function queryRoom($user_id){
         $data_return = [];
-        $data = [];
-        if ($this->auth->isAuth() != null){
+        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
+            $data_return = $this->messages(false, 'Invalid token', 401);
+        }
+        else{
             if ($_SERVER['REQUEST_METHOD'] != 'GET'){
                 $data_return = $this->messages(false, 'Method not allow', 405);
             }else{
+                $data = [];
                 $result = $this->room_model->selectAllByID($user_id);
                 if ($result->num_rows > 0){
                     while ($row = $result->fetch_assoc()){
@@ -79,8 +83,6 @@ class APIRoom extends Controller
                     $data_return = $this->messages(true, 'Success', 200, $data);
                 }
             }
-        }else{
-            $data_return = $this->messages(false, 'Invalid token', 401);
         }
         echo json_encode($data_return);
     }
@@ -182,5 +184,69 @@ class APIRoom extends Controller
             echo $exception;
         }
         return 0;
+    }
+
+    // function for student
+
+    public  function viewRoom(){
+        $data_return = [];
+        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 2){
+            $data_return = $this->messages(false, 'Invalid token', 401);
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 'Not allowed this method', 405);
+            }else{
+                $data = [];
+                try {
+                    $room_model = $this->requireModel('Room');
+                    $room_object = $room_model->selectName();
+                    if ($room_object->num_rows > 0){
+                        while ($row = $room_object->fetch_assoc()){
+                            array_push($data, $row);
+                        }
+                    }
+                    $data_return = $this->messages(true, 'Success', 200, $data);
+                }catch (Exception $exception){
+                    $data_return = $this->messages(false, $exception, 500);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    public function searchRoom($room_name=null){
+        $data_return = [];
+        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 2){
+            $data_return = $this->messages(false, 'Invalid token', 401);
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 'Not allowed this method', 405);
+            }else{
+                $array_value_return = [];
+                try {
+                    $room_model = $this->requireModel('Room');
+                    $room_object = $room_model->findByName($room_name);
+                    if ($room_object->num_rows > 0){
+                        while ($row = $room_object->fetch_assoc()){
+                            array_push($array_value_return, $row);
+                        }
+                    }
+                    $data_return = $this->messages(true, 'Success', 200, $array_value_return);
+                }catch (Exception $exception){
+                    $data_return = $this->messages(false, $exception, 500);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    public function loginIntoRoom(){
+        $data_return = [];
+        if ($this->auth->isAuth() == null && $this->auth->isAuth()['user']['id'] != 2){
+            $data_return = $this->messages(false, 'Invalid token', 401);
+        }else{
+           echo 'haha';
+        }
+        echo json_encode($data_return);
     }
 }

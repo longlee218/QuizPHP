@@ -194,10 +194,7 @@
             })
         }
     });
-    // function clickReset(){
-    //     var username = $("#username").text()
-    //     window.location.href = "/../QuizSys/reset_password?usr="+username;
-    // }
+
     var return_first = function () {
         var tmp = null;
         $.ajax({

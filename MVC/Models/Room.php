@@ -149,4 +149,27 @@ class Room extends Database
         $stmt->execute();
         $stmt->close();
     }
+
+    public function selectName(){
+        $query = 'select * from room limit 10';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+
+    public function findByName($room_name){
+        $query = 'select * from room where room_name like ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $room_name = "%".$room_name."%";
+        $stmt->bind_param('s', $room_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+
 }

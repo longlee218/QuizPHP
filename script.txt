@@ -116,3 +116,6 @@ add constraint fk_result_id foreign key(result_id) references  result(id);
 
 alter table question
 modify column image longtext;
+
+alter table question
+add image_name longtext;

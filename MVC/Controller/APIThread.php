@@ -67,8 +67,10 @@ class APIThread extends Controller
           $question_array = json_decode($data['questions']);
           foreach($question_array as $index=>$question){
               $question_obj = new APIQuestion();
-              $img = $this->load_file($index);
-              $question_id =  $question_obj->createQuestion($question->explain, $img, $question->description, $thread_id)->fetch_assoc()['id'];
+              $value_file = $this->load_file($index);
+              $img = $value_file['image'];
+              $img_name = $value_file['image_name'];
+              $question_id =  $question_obj->createQuestion($question->explain, $img, $img_name,$question->description, $thread_id)->fetch_assoc()['id'];
               $choice_array = $question->choices;
               foreach ($choice_array as $choice){
                   $choice_obj = new APIChoices();
@@ -86,7 +88,7 @@ class APIThread extends Controller
     }
 
     public function load_file($index){
-        $img = null;
+        $value_file = [];
         if (array_key_exists($index, $_FILES)){
             $target_dir = __DIR__."/../../uploads/";
             $name = $_FILES[$index]['name'];
@@ -97,9 +99,12 @@ class APIThread extends Controller
                 $image_base64 = base64_encode(file_get_contents($_FILES[$index]['tmp_name']));
                 $img = 'data:image/'.$imageFileType.';base64,'.$image_base64;
                 move_uploaded_file($_FILES[$index]['tmp_name'], $target_dir.$name);
+                $value_file['image'] = $img;
+                $value_file['image_name'] = $name;
+
             }
         }
-        return $img;
+        return $value_file;
     }
 
     public function queryQuiz($id_room){
@@ -134,7 +139,7 @@ class APIThread extends Controller
         $data_return = [];
         $data = [];
         if ($_SERVER['REQUEST_METHOD'] != 'GET'){
-            $data_return = $this->messages(0, 402, "Not allow this method");
+            $data_return = $this->messages(0, 405, "Not allow this method");
         }else{
             $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread), $id_thread);
             $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread), $id_thread);
@@ -185,8 +190,10 @@ class APIThread extends Controller
                            $question_array = json_decode($data['questions']);
                            foreach ($question_array as $index=>$single_question){
                                $question_obj = new APIQuestion();
-                               $img = $this->load_file($index);
-                               $id_question = $question_obj->createQuestion($single_question->explain, $img, $single_question->description, $id_thread)->fetch_assoc()['id'];
+                               $value_file = $this->load_file($index);
+                               $img = $value_file['image'];
+                               $img_name = $value_file['image_name'];
+                               $id_question = $question_obj->createQuestion($single_question->explain, $img, $img_name ,$single_question->description, $id_thread)->fetch_assoc()['id'];
                                foreach ($single_question->choices as $index2=>$single_choice){
                                    $choice_obj = new APIChoices();
                                    $choice_obj->createChoices($single_choice->choice_name, $single_choice->choice_content, $single_choice->correct, $id_question);
