@@ -88,7 +88,10 @@ class APIThread extends Controller
     }
 
     public function load_file($index){
-        $value_file = [];
+        $value_file = [
+            'image' => null,
+            'image_name' => null,
+        ];
         if (array_key_exists($index, $_FILES)){
             $target_dir = __DIR__."/../../uploads/";
             $name = $_FILES[$index]['name'];
@@ -310,4 +313,31 @@ class APIThread extends Controller
             }
         }
     }
+
+    public function searchQuizTitle($id_room, $title=null){
+        $data_return = [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $thread_model = $this->requireModel('Thread');
+                try {
+                    $array_data = [];
+                    $result = $thread_model->findByTitleLike($id_room, $title);
+                    if ($result->num_rows > 0){
+                        while ($row = $result->fetch_assoc()){
+                            array_push($array_data, $row);
+                            $data_return = $this->messages(true, 200, 'Find its', $array_data);
+                        }
+                    }
+                }catch (Exception $e){
+                    $data_return = $this->messages(false, 500, $e);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
 }

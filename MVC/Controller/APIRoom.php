@@ -171,7 +171,6 @@ class APIRoom extends Controller
         date_default_timezone_set('Asia/Bangkok');
         $time_now =  date('Y-m-d H:i');
         try {
-            echo $time_now;
             $result = $room_model->findRoomByTimeEnd($time_now);
             if ($result->num_rows != 0){
                 $id_room =  $result->fetch_assoc()['id'];
@@ -242,10 +241,33 @@ class APIRoom extends Controller
 
     public function loginIntoRoom(){
         $data_return = [];
-        if ($this->auth->isAuth() == null && $this->auth->isAuth()['user']['id'] != 2){
+        if ($this->auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 2){
             $data_return = $this->messages(false, 'Invalid token', 401);
         }else{
-           echo 'haha';
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 'Not allowed this method', 405);
+            }else{
+                $data = json_decode(file_get_contents("php://input"));
+                $room_model = $this->requireModel('Room');
+                try {
+                    $room_name = $data->room_name;
+                    $password = $data->password;
+                    $room_obj = $room_model->findByRoomName($room_name);
+                    $row = $room_obj->fetch_assoc();
+                    $id = $row['id'];
+                    if ($room_obj->num_rows > 0){
+                        if (md5($password) == $row['password']){
+                            setcookie('AuthorizationRoom', md5($password), time()+3600, '/');
+                            $url = '/../QuizSys/RoomAction/roomContent/'.$id;
+                            $data_return = $this->messages(true, 'Success', 200, $url);
+                        }else{
+                            $data_return = $this->messages(false, 'Wrong password', 400);
+                        }
+                    }
+                }catch (Exception $exception){
+                    $data_return = $this->messages(false, $exception, 500);
+                }
+            }
         }
         echo json_encode($data_return);
     }

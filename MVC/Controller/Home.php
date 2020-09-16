@@ -4,22 +4,32 @@ require_once "./MVC/Middlewares/Auth.php";
 
 class Home extends Controller {
     public function InstructorHome(){
-        $this->requireView('home', []);
+        $auth = new Auth($_COOKIE);
+        if ($auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 1){
+            $this->requireView('inc/404_page', []);
+        }else{
+            $this->requireView('home', []);
+
+        }
     }
 
     public function StudentHome(){
-        $this->requireView('home_student', []);
+        $auth = new Auth($_COOKIE);
+        if ($auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != '2'){
+            $this->requireView('inc/404_page', []);
+        }else{
+            $this->requireView('home_student', []);
+        }
     }
 
     public function infoUserJWT(){
-        $auth = new Auth(getallheaders());
         $returnData = [
             "success"=>0,
             "status"=>404,
             "mess"=>"Not author"
         ];
-        if ($auth->isAuth()){
-            $returnData = $auth->isAuth();
+        if ($this->auth->isAuth()){
+            $returnData = $this->auth->isAuth();
         }
         echo json_encode($returnData);
     }

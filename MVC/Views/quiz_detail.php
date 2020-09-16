@@ -116,8 +116,8 @@
 </div>
 <script>
     function getDetail() {
-        var segment_str = window.location.pathname;
-        var segment_array = segment_str.split( '/' );
+        const segment_str = window.location.pathname;
+        const segment_array = segment_str.split( '/' );
         segment_array.splice(0,4);
         return segment_array;
     }

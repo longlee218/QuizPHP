@@ -49,13 +49,13 @@
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify(data_post_json),
                 }).done(function (data) {
-                    if (data['success'] === 1){
+                    if (data['success'] === true){
                         setTimeout(function () {
-                            setCookie('Authorization', data['token'], data['exp']*10)
+                            // setCookie('Authorization', data['token'], data['exp']*10)
                             window.location.href = data['url'];
                         },1000)
                     }
-                    if (data['success'] === 0){
+                    else{
                         if (data['mess'] === "Your email is not validate"){
                             $('#messages_email').html("<small class='text-danger'>*Vui lòng kiểm tra lại email!</small>")
                         }else if(data['mess'] === "Please fill in this fields"){

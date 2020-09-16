@@ -119,7 +119,7 @@ class Room extends Database
         return $result;
     }
     public function findRoomByTimeEnd($time_end){
-        $query = "select * from room where time_end = ?";
+        $query = "select * from room where time_end <= ?";
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $stmt->bind_param("s", $time_end);
@@ -165,6 +165,17 @@ class Room extends Database
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $room_name = "%".$room_name."%";
+        $stmt->bind_param('s', $room_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+
+    public function findByRoomName($room_name){
+        $query = 'select * from room where room_name = ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
         $stmt->bind_param('s', $room_name);
         $stmt->execute();
         $result = $stmt->get_result();

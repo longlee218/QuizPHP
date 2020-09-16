@@ -10,12 +10,12 @@
                         <form name="login_room">
                             <div class="form-group">
                                 <label>Mật khẩu</label>
-                                <input type="password" placeholder="**********" name="password_room" class="form-control">
+                                <input id="password-room" type="password" placeholder="**********" name="password_room" class="form-control">
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-outline-success btn-block m-auto" type="button">Đăng nhập</button>
+                        <button id="btn-login-room" class="btn btn-outline-success btn-block m-auto" type="button">Đăng nhập</button>
                     </div>
                 </div>
             </div>
@@ -83,7 +83,8 @@
               $.each(data['data'], function(index, room){
                   if (room['password'] === null){
                       $('#listRoom:last-child').append(`
-                    <button type="button"  class="text-uppercase list-group-item list-group-item-action">${room['room_name']}</but>
+                    <button type="button"  class="text-uppercase list-group-item list-group-item-action"
+                        id="${room['id']}" onclick="goToRoom(this)">${room['room_name']}</but>
                     `);
                   }else{
                       $('#listRoom:last-child').append(`
@@ -100,6 +101,10 @@
       })
   })
 
+    function goToRoom(e) {
+        window.location.href = "/../QuizSys/RoomAction/RoomContent/"+e.id;
+    }
+
     function searchRoom(room_name) {
         console.log(room_name);
         $.ajax({
@@ -115,7 +120,8 @@
                     $.each(data['data'], function(index, room){
                         if (room['password'] === null){
                             $('#listRoom:last-child').append(`
-                    <button type="button"  class="text-uppercase list-group-item list-group-item-action">${room['room_name']}</but>
+                    <button type="button"  class="text-uppercase list-group-item list-group-item-action"
+                        id="${room['id']}" onclick="goToRoom(this)">${room['room_name']}</but>
                     `);
                         }else{
                             $('#listRoom:last-child').append(`
@@ -137,4 +143,32 @@
         $("#modalRoom").modal()
         $("#modalRoom .modal-header").html(`<h4>${room_name}</h4>`)
     }
+
+    $(document).ready(function (e) {
+        $('#btn-login-room').on('click', function () {
+            const password = $('#password-room').val();
+            const room_name = $('#modalRoom .modal-header').text();
+            console.log(room_name);
+            const data = {
+                room_name: room_name,
+                password: password
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/../QuizSys/APIRoom/loginIntoRoom',
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization'),
+                },
+                data: JSON.stringify(data),
+                success: function (data) {
+                    console.log(data);
+                    window.location.href = data['data'];
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error);
+                }
+            })
+        })
+    })
 </script>

@@ -33,14 +33,14 @@ class APILogin extends Controller {
         $returnData = [];
 
         if($_SERVER["REQUEST_METHOD"] != "POST"){
-            $returnData = $this->messages(0, 404, "Method is not allow");
+            $returnData = $this->messages(false, 405, "Method is not allow");
         }
         if (!isset($data->email)||!isset($data->password)
             ||empty(trim($data->email))||empty(trim($data->password))){
-            $returnData = $this->messages(0, 400, "Please fill in this fields");
+            $returnData = $this->messages(false, 400, "Please fill in this fields");
         }
         elseif (!filter_var($data->email, FILTER_VALIDATE_EMAIL)){
-            $returnData = $this->messages(0, 400, "Your email is not validate");
+            $returnData = $this->messages(false, 400, "Your email is not validate");
         }
         else{
             $email = $data->email;
@@ -63,12 +63,13 @@ class APILogin extends Controller {
                         );
                         $url = "/../QuizSys/Home/StudentHome";
                     }
-                    $returnData = $this->messages(1, 200, 'You are login', $token_return, $url, 3600);
+                    setcookie('Authorization', $token_return, time()+3600, '/');
+                    $returnData = $this->messages(true, 200, 'You are login', $token_return, $url, 3600);
                 }else{
-                    $returnData = $this->messages(0, 500, 'Wrong password');
+                    $returnData = $this->messages(false, 400, 'Wrong password');
                 }
             }else{
-                    $returnData = $this->messages(0, 500, 'Wrong email or username');
+                    $returnData = $this->messages(false, 400, 'Wrong email or username');
             }
         }
         echo json_encode($returnData);
