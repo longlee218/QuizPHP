@@ -218,7 +218,7 @@
         }
         else {
             $.ajax({
-                type: 'PUT',
+                type: 'POST',
                 url: '/../QuizSys/APIThread/deleteQuiz/',
                 headers: {
                     'Content-type': 'application/json',

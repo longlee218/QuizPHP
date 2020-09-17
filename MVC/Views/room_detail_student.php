@@ -56,7 +56,7 @@
                                         <h4 class="card-title">Đề: ${value['title']}</h4>
                                         <p class="card-text">Môn: ${value['subject']}</p>
                                         <p> <small class="text-muted">Trình độ: ${grade_data[value['grade']]}</small></p>
-                                        <a href="#" class="btn btn-outline-primary">Kiểm tra</a>
+                                        <a href="/../QuizSys/QuizPage/Test/${value['id']}" class="btn btn-outline-primary">Kiểm tra</a>
                                     </div>
                                 <div class="card-footer">
                                      <small class="text-muted">Lần cập nhật cuối ${value['update_at']} </small>
@@ -112,7 +112,7 @@
                                         <h4 class="card-title">Đề: ${value['title']}</h4>
                                         <p class="card-text">Môn: ${value['subject']}</p>
                                         <p> <small class="text-muted">Trình độ: ${grade_data[value['grade']]}</small></p>
-                                        <a href="#" class="btn btn-outline-primary">Kiểm tra</a>
+                                        <a href="/../QuizSys/QuizPage/Test/${value['id']}"  class="btn btn-outline-primary" id="${value['id']}">Kiểm tra</a>
                                     </div>
                                 <div class="card-footer">
                                      <small class="text-muted">Lần cập nhật cuối ${value['update_at']} </small>

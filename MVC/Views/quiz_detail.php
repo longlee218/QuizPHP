@@ -317,6 +317,7 @@
                 $(this).find('.qtn-form').each(function (index) {
                     var single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
+                    single_question['src'] = $(this).find('.row .picture img').attr('src');
                     quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0]);
                     single_question['image_name'] =
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
@@ -413,9 +414,10 @@
                 $('#list_room select').val(data['room_id']).change();
                 $.each(data['questions'], function (index, value) {
                     // console.log(value);
+                    console.log(index)
                     const qtnForm = document.createElement("div");
                     qtnForm.setAttribute("class", "qtn-form");
-                    qtnForm.setAttribute("id", `${value['id']}`);
+                    qtnForm.setAttribute("id", `${index+1}`);
                     var qtnFormContent = `
                         <div class="row">
                             <div class="col-xl-1 qs_label">
@@ -440,9 +442,9 @@
                         <div class="col col-2 picture">
                             <div class="image-preview" name="inpFile">
 <!--                                    <div class="square"></div>-->
-                                <img src="${value['image']}" alt="Image preview" height="150" width="150">
+                                <img src="${value['image']}" alt="Image preview" height="150" width="150" onclick="removeImg(this)" ">
                             </div>
-                            <input class="mt-2" type="file" name="photo" id="${index}" value="C:/xampp/htdocs/QuizSys/uploads/370162.jpg">
+                            <input class="mt-2" type="file" name="photo" id="${index}" >
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -492,23 +494,13 @@
             }
         })
     })
-
-    // function readURL(input){
-    //     console.log(input.files);
-    //     if (input.files && input.files[0]){
-    //         console.log('aha');
-    //         var reader = new FileReader();
-    //         reader.onload = function (e) {
-    //         $(`#${input.attr('id')}-img`).attr('src', e.target.result);
-    //         }
-    //         reader.readAsDataURL(input.files[0]);
-    //     }
-    //
-    // }
-    //
-    // function preViewImg(e) {
-    //     console.log(e);
-    //     readURL(e);
-    // }
+    function removeImg(e) {
+        if ($(e).attr('src') !== 'null'){
+            const confirm_remove = confirm('Bạn muốn xóa ảnh này ?');
+            if ( confirm_remove === true){
+                $(e).attr('src', 'null');
+            }
+        }
+    }
 </script>
 <?php include_once './MVC/Views/footer.php'?>

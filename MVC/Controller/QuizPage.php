@@ -27,4 +27,13 @@ class QuizPage extends Controller
     public function hi(){
         $this->requireView("hi");
     }
+
+    public function Test($id_quiz = null){
+        $auth = new Auth($_COOKIE);
+        if ($auth->isAuth() != null && $auth->isAuth()['user']['user_type'] == 2){
+            $this->requireView("exam_page");
+        }else{
+            $this->requireView('inc/404_page');
+        }
+    }
 }

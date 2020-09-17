@@ -6,6 +6,8 @@ require_once  __DIR__."/APIQuestion.php";
 require_once __DIR__."/APIChoices.php";
 require_once __DIR__."/../lib/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php";
 
+define('ROW_PER_PAGE', 1);
+
 class APIThread extends Controller
 {
 
@@ -77,11 +79,6 @@ class APIThread extends Controller
                   $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
               }
           }
-//          if ($thread_obj->num_rows > 0){
-//              while ($row = $thread_obj->fetch_assoc()){
-//                  array_push($row, $data_return);
-//              }
-//          }
           $data_return = $this->messages(true, 200, 'Success', 'null');
       }
         echo json_encode($data_return);
@@ -152,6 +149,10 @@ class APIThread extends Controller
                 foreach ($result_thread as $index=>$single_thread){
                     $single_thread['questions'] =  $result_question;
                     foreach ($single_thread['questions'] as $index2=>&$single_question){
+//                        $single_question['file'] =  null;
+//                        if (file_exists(__DIR__.'/../../uploads/'.$single_question['image_name'])){
+//                            $single_question['file'] = readfile(__DIR__.'/../../uploads/'.$single_question['image_name']);
+//                        }
                        $single_question['choices'] = [];
                        foreach ($result_choices as  $index3 => $single_choice){
                            if ($single_choice['question_id'] == $single_question['id']){
@@ -159,8 +160,8 @@ class APIThread extends Controller
                            }
                        }
                     }
+                    $data = $single_thread;
                 }
-                $data = $single_thread;
             }catch (Exception $exception){
                 echo $exception;
             }
@@ -193,9 +194,14 @@ class APIThread extends Controller
                            $question_array = json_decode($data['questions']);
                            foreach ($question_array as $index=>$single_question){
                                $question_obj = new APIQuestion();
-                               $value_file = $this->load_file($index);
-                               $img = $value_file['image'];
-                               $img_name = $value_file['image_name'];
+                               if ($single_question->src == 'null'){
+                                   $value_file = $this->load_file($index);
+                                   $img = $value_file['image'];
+                                   $img_name = $value_file['image_name'];
+                               }else{
+                                   $img_name = "";
+                                   $img = $single_question->src;
+                               }
                                $id_question = $question_obj->createQuestion($single_question->explain, $img, $img_name ,$single_question->description, $id_thread)->fetch_assoc()['id'];
                                foreach ($single_question->choices as $index2=>$single_choice){
                                    $choice_obj = new APIChoices();
@@ -214,25 +220,73 @@ class APIThread extends Controller
     }
     public function deleteQuiz(){
         $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'PUT'){
-            $data_return = $this->messages(0, 405, 'Not allow this method');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+            $data_return = $this->messages(false, 405, 'Not allow this method');
         }else{
             $data = json_decode(file_get_contents('php://input'));
             $model_thread = $this->requireModel('Thread');
             foreach ($data->list_delete as $index=>$single){
               if ($model_thread->setFlagDeleteTo0($single)){
-                  $data_return = $this->messages(1, 200, 'Delete success');
+                  $data_return = $this->messages(true, 200, 'Delete success');
               }else{
-                  $data_return =$this->messages(0, 400, 'Error');
+                  $data_return =$this->messages(false, 400, 'Error');
               }
             }
         }
         echo json_encode($data_return);
     }
+
+
     public function test(){
         print_r($_FILES);
         print_r($_POST);
     }
+
+    public function queryQuizPaginator($id_thread, $page=1){
+        $data_return = [];
+        if ($this->auth->isAuth() == null && $this->auth->isAuth() != 2){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+
+                $data = [];
+                $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread), $id_thread);
+                $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread), $id_thread);
+                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoinNoCorrect($id_thread), $id_thread);
+
+                try {
+                    foreach ($result_thread as $index=>$single_thread){
+                        $single_thread['questions'] =  $result_question;
+                        foreach ($single_thread['questions'] as $index2=>&$single_question){
+                            $single_question['choices'] = [];
+                            foreach ($result_choices as  $index3 => $single_choice){
+                                if ($single_choice['question_id'] == $single_question['id']){
+                                    array_push($single_question['choices'], $single_choice);
+                                }
+                            }
+                        }
+                    }
+                    $data = $single_thread;
+                    if ((int)$page-1 > sizeof($data['questions'])){
+                        $data_return = $this->messages(false, 400, 'Not found');
+                    }else{
+                        $paginator['content'] =  $data['questions'][(int)$page-1];
+                        $paginator['active'] = (int)$page;
+                        $paginator['all'] =  sizeof($data['questions']);
+                        $data_return = $this->messages(true, 200, 'Success', $paginator);
+                    }
+                }catch (Exception $exception){
+                    $data_return = $this->messages(false, 500, 'Success',$exception);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+
+
     public function exportQuiz($id_thread){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){
