@@ -180,6 +180,7 @@ class APIThread extends Controller
                $data_return = $this->messages(false, 500, "Can't not update!");
            }
            else{
+               print_r($_FILES);
                $id_thread = $data['id'];
                $modelThread = $this->requireModel('Thread');
                $model_question = $this->requireModel('Question');
@@ -198,6 +199,8 @@ class APIThread extends Controller
                                    $value_file = $this->load_file($index);
                                    $img = $value_file['image'];
                                    $img_name = $value_file['image_name'];
+                                   echo $img;
+                                   echo $img_name;
                                }else{
                                    $img_name = "";
                                    $img = $single_question->src;

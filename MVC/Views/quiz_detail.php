@@ -413,7 +413,6 @@
                 $('#content_thread #grade').val(data['grade']);
                 $('#list_room select').val(data['room_id']).change();
                 $.each(data['questions'], function (index, value) {
-                    // console.log(value);
                     console.log(index)
                     const qtnForm = document.createElement("div");
                     qtnForm.setAttribute("class", "qtn-form");

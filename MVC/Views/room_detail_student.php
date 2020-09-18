@@ -1,5 +1,4 @@
-<?php include_once './MVC/Views/inc/master.php'?>
-
+<?php include_once './MVC/Views/navbar_student.php'?>
 <body>
     <div class="container mt-5">
         <div class="row">
