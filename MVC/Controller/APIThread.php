@@ -289,6 +289,55 @@ class APIThread extends Controller
     }
 
 
+    /*
+           {
+            "user_id": 13,
+            "thread_id": 24
+        }
+    */
+
+//    public function startQuiz(){
+//        $data_return = [];
+//        if ($this->auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 2){
+//            return false;
+//        }else{
+//            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+//                return false;
+//            }else{
+//                $data = json_decode(file_get_contents('php://input'));
+//                $result_model = $this->requireModel('Result');
+//                try {
+//                    date_default_timezone_set('Asia/Bangkok');
+//                    $time_start = date("Y-m-d H:i:s");
+//                    $score = 0;
+//                    return  $result_model->insertResult($score, $time_start);
+//                }catch (Exception $exception){
+//                    echo $exception;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+
+    /*
+     API= = {
+        id_result: function StartQuiz(),
+        user_id =
+    }
+      */
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function exportQuiz($id_thread){
         $data_return = [];

@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/MVC/Models/Choices.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/MVC/Models/Instructor.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/MVC/Models/Question.php" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/MVC/Models/ResultDetail.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/MVC/Models/Room.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/MVC/Models/Student.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/MVC/Models/Thread.php" dialect="GenericSQL" />

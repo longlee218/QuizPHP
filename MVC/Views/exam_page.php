@@ -1,32 +1,74 @@
 <?php include_once './MVC/Views/navbar_student.php'?>
+
 <style>
-    #form-exam{
-        margin: 20px;
-        padding: 10px;
-        border: black;
-        background: #cccccc;
-        border-radius: 5%;
+    .quiz-box{
+        background-color: #ffffff;
+        margin: 40px auto;
+        padding: 20px;
+        border-radius: 15px;
+        border-style: solid;
 
     }
 
+    .quiz-box .quiz-number{
+        font-size: 30px;
+        font-weight: 500;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
 
+    .quiz-box .question-text{
+        font-size: 22px;
+        color: black;
+        line-height: 25px;
+        margin: 20px 0 0 0;
+
+    }
+    .quiz-box .option-container .option{
+        margin: 10px 0;
+        border-radius: 16px;
+        border-style: solid;
+        background-color: #ffffff;
+        font-size: 16px;
+        display: block;
+
+
+    }
+    .quiz-box img{
+        border-radius: 20px;
+        margin: 15px 0;
+        border: 5px black;
+        max-width: 200px;
+        max-height: 300px;
+
+        /*border-color: black;*/
+
+    }
+    .quiz-box .option-container .option .form-row{
+        padding: 5px;
+    }
+    .quiz-box .option-container .option .choice-name{
+        font-size: 18px;
+        font-weight: 500;
+        margin-right: 20px;
+        margin-left: 5px;
+
+    }
 </style>
 
 <body>
     <div class="container">
-
-        <div class="container "></div>
-
-        <div id="form-exam">
-
-        </div>
-
-       <nav aria-label="Page exam">
-           <div class="container ">
-               <ul class="pagination" id="pagination-wrapper"></ul>
-           </div>
-       </nav>
+        <div></div>
+        <div id="form-exam" ></div>
+        <hr>
+        <nav aria-label="Page exam">
+            <div class="container ">
+                <ul class="pagination" id="pagination-wrapper"></ul>
+            </div>
+        </nav>
     </div>
+
+
+
 </body>
 <script>
 
@@ -137,45 +179,61 @@
             console.log(myData[i])
             var form_exam = document.getElementById('form-exam')
             form_exam.innerHTML = `
-                  <div class="row">
-                        <div class="col-xl-1 qs_label">
-                                <label for="question_title" class="font-weight-bold" name="label-question">
-                                <h3>Câu ${state.page}</h3>
-                        </label>
-                        </div>
-                        <div class="col-8 qs">
-                           <div class="form-row">
-                                <p>${myData[i]['description']}</p>
-                            </div>
-                               <div class="form-group">
-                                     <div class="question_wrapper" id="all_answer"></div>
-                                </div>
+            <div class="quiz-box custom-box" id=${myData[i]['id']}">
+                <div class="quiz-number">
+                    <p>${state.page}/${data.pages}</p>
+                </div>
+                <hr>
+            <div class="question-text">
+                <p>${myData[i]['description']}</p>
+                <div class="img">
+                    <img src="${myData[i]['image']}" alt="Image-preview">
+                </div>
+            </div>
+            <div class="option-container" id="all_option"></div>
+            <div class="option-container">
+                <div class="row"></div>
+            </div>
+        </div>
 
-                            </div>
-                        <div class="col col-2 picture">
-                            <div class="image-preview" name="inpFile">
-                                <img src="${myData[i]['image']}" alt="Image preview" height="150" width="150">
-                            </div>
-                        </div>
-                        <div class="end-question"></div>
-                    </div>
+
             `
-            var choice = form_exam.querySelector("#all_answer")
+            var choice = form_exam.querySelector("#all_option")
             choice.innerHTML = ``
             myData[i]['choices'].forEach(value => {
                 choice.innerHTML += `
-                    <div class="form-choices">
+                    <div class="option" id=${value['id']}">
                         <div class="form-row">
-                            <label>${value['choice_name']}</label>
-                            <input type="checkbox" class="form-group" value="">
-                             <label>${value['choice_content']}</label>
+                            <span class="choice-name">${value['choice_name']}.</span>
+                            <p>${value['choice_content']}</p>
                         </div>
                     </div>
                 `
             })
+
         }
         pageButtons(data.pages)
     }
-
     buildForm()
+
+    const form_exam = $('#form-exam')
+    console.log($(form_exam).find('.quiz-box #all_option .option'));
+    $(form_exam).find('.quiz-box #all_option .option').on('click', (e) =>{
+        console.log(e)
+        if (e.target.className === 'form-row'){
+            e.target.className += " selected"
+            e.target.style.background = "green";
+            e.target.style.borderRadius = "15px";
+            // e.target.style.padding = "5px 0";
+            e.target.style.color = 'white';
+        }else{
+            e.target.className = 'form-row'
+            e.target.style = 'none'
+        }
+    })
+
+    function selectAnswer(e) {
+        $(e).addClass('selected')
+    }
+
 </script>
