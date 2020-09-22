@@ -30,6 +30,7 @@
         background-color: #ffffff;
         font-size: 16px;
         display: block;
+        padding-top: 5px;
 
 
     }
@@ -44,7 +45,8 @@
 
     }
     .quiz-box .option-container .option .form-row{
-        padding: 5px;
+        margin-top: 5px;
+        margin-left: 10px;
     }
     .quiz-box .option-container .option .choice-name{
         font-size: 18px;
@@ -53,18 +55,43 @@
         margin-left: 5px;
 
     }
+    .quiz-box .option-container .selected{
+        background-color:  rgb(119, 170, 209);
+        color: white;
+        border-style: solid;
+        border-color: white;
+    }
+    .button-submit{
+        margin-top: 20px;
+
+    }
+    .btn{
+        width: 150px;
+        height: 50px;
+        padding: 5px;
+        font-size: 20px;
+    }
+    .paginator{
+        margin-bottom: 20px;
+    }
+    .pagination{
+        margin: auto;
+        width: 10%;
+    }
 </style>
 
 <body>
     <div class="container">
-        <div></div>
+        <div class="button-submit">
+            <button class="btn btn-outline-primary" onclick="submitQuestion()">Nộp bài</button>
+        </div>
         <div id="form-exam" ></div>
         <hr>
-        <nav aria-label="Page exam">
-            <div class="container ">
+<!--        <nav aria-label="Page exam">-->
+            <div class="paginator">
                 <ul class="pagination" id="pagination-wrapper"></ul>
             </div>
-        </nav>
+<!--        </nav>-->
     </div>
 
 
@@ -73,6 +100,8 @@
 <script>
 
 //=========================================================================
+
+
     const state  = {
         page: 1,
         rows: 1,
@@ -107,8 +136,8 @@
     const pagination = (querySet, page, rows) =>{
         var trimStart = (page - 1)*rows
         var trimEnd = trimStart + rows
-        console.log(trimStart)
-        console.log(trimEnd)
+        // console.log(trimStart)
+        // console.log(trimEnd)
         var trimData = querySet.slice(trimStart, trimEnd);
         var pages = Math.round(querySet.length/rows);
         return {
@@ -163,7 +192,55 @@
             `
         }
 
-        $('.page').click(function () {
+        $('.page').click(function (e) {
+                var previous_form = document.getElementById('form-exam')
+                var question_id =  previous_form.querySelector('div .quiz-box').id
+                console.log(question_id)
+                console.log(previous_form.querySelector('div .quiz-box').getElementsByClassName('selected'))
+
+                var list_choice = previous_form.querySelector('div .quiz-box').getElementsByClassName('selected')
+
+                var single_question = {
+                    question_id: question_id,
+                    choices: []
+                }
+
+                for (let i=0; i < list_choice.length; i++){
+                    single_question['choices'].push({choice_id: list_choice[i].id})
+                }
+
+                var data = JSON.parse(localStorage.getItem('data'))
+                var data_question = data['questions']
+                // var marks = -1
+                // for (let i=0; i < data_question.length; i++ ){
+                //     marks = i
+                //     if (data_question[i].question_id === single_question.question_id){
+                //         data_question[i].choices = single_question.choices
+                //         break
+                //     }
+                // }
+                // if (marks === data_question.length-1){
+                //     data_question.push(single_question)
+                // }
+
+                var list_id_question = []
+                data_question.forEach(question =>{
+                    list_id_question.push(question.question_id)
+                })
+                if (!list_id_question.includes(single_question.question_id)){
+                    data_question.push(single_question)
+                }else{
+                    console.log(data_question)
+                    data_question.forEach(question =>{
+                        if (question.question_id === single_question.question_id){
+                            question.choices = single_question.choices
+                        }
+                    })
+                }
+                data['questions'] = data_question
+                localStorage.setItem('data', JSON.stringify(data))
+                console.log('Local storage: '+localStorage.getItem('data'))
+
                 $('#form-exam').empty()
                 state.page = Number($(this).val())
                 buildForm()
@@ -171,15 +248,15 @@
 
     }
     const buildForm = () =>{
-        var examForm = $('#form-exam')
         var data = pagination(state.querySet, state.page, state.rows)
-        console.log(data)
+        var page_active = document.getElementById('pagination-wrapper')
+        // page_active.className = 'page-item active'
+        console.log(page_active)
         var myData = data.querySet
         for (var i in myData){
-            console.log(myData[i])
             var form_exam = document.getElementById('form-exam')
             form_exam.innerHTML = `
-            <div class="quiz-box custom-box" id=${myData[i]['id']}">
+            <div class="quiz-box custom-box" id=${myData[i]['id']} name="quiz-box">
                 <div class="quiz-number">
                     <p>${state.page}/${data.pages}</p>
                 </div>
@@ -202,7 +279,7 @@
             choice.innerHTML = ``
             myData[i]['choices'].forEach(value => {
                 choice.innerHTML += `
-                    <div class="option" id=${value['id']}">
+                    <div class="option" id=${value['id']} onclick="selectAnswer(this)" name="option">
                         <div class="form-row">
                             <span class="choice-name">${value['choice_name']}.</span>
                             <p>${value['choice_content']}</p>
@@ -212,28 +289,51 @@
             })
 
         }
+        var question_id = form_exam.querySelector('.quiz-box').id
+        var all_option =  form_exam.querySelector('.quiz-box #all_option').getElementsByClassName('option')
+        var local_data = JSON.parse(localStorage.getItem('data'))
+        var local_question = local_data.questions
+        local_question.forEach(question => {
+            if (question.question_id === question_id){
+                for (let i = 0; i < all_option.length; i++){
+                    question.choices.forEach(choice =>{
+                        if (choice.choice_id === all_option[i].id){
+                            all_option[i].className += ' selected'
+                        }
+                    })
+                }
+            }
+        })
         pageButtons(data.pages)
     }
     buildForm()
 
-    const form_exam = $('#form-exam')
-    console.log($(form_exam).find('.quiz-box #all_option .option'));
-    $(form_exam).find('.quiz-box #all_option .option').on('click', (e) =>{
-        console.log(e)
-        if (e.target.className === 'form-row'){
-            e.target.className += " selected"
-            e.target.style.background = "green";
-            e.target.style.borderRadius = "15px";
-            // e.target.style.padding = "5px 0";
-            e.target.style.color = 'white';
-        }else{
-            e.target.className = 'form-row'
-            e.target.style = 'none'
-        }
-    })
-
-    function selectAnswer(e) {
-        $(e).addClass('selected')
+function selectAnswer(e) {
+    if (e.className === 'option'){
+        e.className += ' selected'
+    }else{
+        e.className = 'option'
     }
+}
+
+function submitQuestion(){
+    var data = JSON.parse(localStorage.getItem('data'))
+    var local_question = data['questions']
+    var array_question_empty = []
+    for (let i=0; i < local_question.length; i++){
+        console.log(local_question[i].choices.length)
+        if (local_question[i].choices.length === 0){
+            array_question_empty.push(local_question[i].question_id)
+        }
+    }
+    if (array_question_empty.length !== 0){
+        confirm('Nhán ok để nộp bài')
+    }else{
+        alert('Bạn còn các câu: '+array_question_empty+' chưa trả lời')
+
+    }
+
+
+}
 
 </script>

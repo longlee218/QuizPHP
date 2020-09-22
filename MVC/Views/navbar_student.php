@@ -41,6 +41,7 @@
 </body>
 
 <script>
+    let user_info = {}
     $.ajax({
         type: 'GET',
         url: "/../QuizSys/Home/infoUserJWT",
@@ -48,10 +49,12 @@
             'Content-type': 'application/json',
             'Authorization': getCookie('Authorization')
         },
+        async: false,
         success:function (data){
             const data_parse = JSON.parse(data)
             if (data_parse['success'] === 1){
                 $('#username').html(data_parse['user']['username']);
+                user_info = data_parse['user'];
             }
         },
         error: function (xhr, error) {

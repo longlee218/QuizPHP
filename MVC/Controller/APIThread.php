@@ -326,7 +326,9 @@ class APIThread extends Controller
         user_id =
     }
       */
+    public function submitAnswer(){
 
+    }
 
 
 
