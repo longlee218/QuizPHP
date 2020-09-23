@@ -149,10 +149,6 @@ class APIThread extends Controller
                 foreach ($result_thread as $index=>$single_thread){
                     $single_thread['questions'] =  $result_question;
                     foreach ($single_thread['questions'] as $index2=>&$single_question){
-//                        $single_question['file'] =  null;
-//                        if (file_exists(__DIR__.'/../../uploads/'.$single_question['image_name'])){
-//                            $single_question['file'] = readfile(__DIR__.'/../../uploads/'.$single_question['image_name']);
-//                        }
                        $single_question['choices'] = [];
                        foreach ($result_choices as  $index3 => $single_choice){
                            if ($single_choice['question_id'] == $single_question['id']){
@@ -180,7 +176,6 @@ class APIThread extends Controller
                $data_return = $this->messages(false, 500, "Can't not update!");
            }
            else{
-               print_r($_FILES);
                $id_thread = $data['id'];
                $modelThread = $this->requireModel('Thread');
                $model_question = $this->requireModel('Question');
@@ -289,54 +284,61 @@ class APIThread extends Controller
     }
 
 
-    /*
-           {
-            "user_id": 13,
-            "thread_id": 24
-        }
-    */
-
-//    public function startQuiz(){
-//        $data_return = [];
-//        if ($this->auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 2){
-//            return false;
-//        }else{
-//            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-//                return false;
-//            }else{
-//                $data = json_decode(file_get_contents('php://input'));
-//                $result_model = $this->requireModel('Result');
-//                try {
-//                    date_default_timezone_set('Asia/Bangkok');
-//                    $time_start = date("Y-m-d H:i:s");
-//                    $score = 0;
-//                    return  $result_model->insertResult($score, $time_start);
-//                }catch (Exception $exception){
-//                    echo $exception;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
-
-    /*
-     API= = {
-        id_result: function StartQuiz(),
-        user_id =
-    }
-      */
     public function submitAnswer(){
-
+        $data_return = [];
+        if ($this->auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 2){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                $data_question = $data->questions;
+                $temp = array();
+                foreach ($data_question as $key=>$row){
+                    $temp[$key] = $row->question_id;
+                }
+                array_multisort($temp, SORT_ASC, $data_question);
+                $result_model = $this->requireModel('Result');
+                $time_start =  date( "Y-m-d H:i:s", strtotime($data->timeStart) );
+                $result_obj = $result_model->insertResult(0, $time_start);
+                $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectIDByThreadID($data->thread_id), $data->thread_id);
+                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectMainByThreadIDJoin($data->thread_id), $data->thread_id);
+                foreach ($result_question as $i=>&$single_question){
+                    $single_question['choices'] = [];
+                    foreach ($result_choices as  $j => $single_choice){
+                        if ($single_choice['question_id'] == $single_question['id']){
+                            array_push($single_question['choices'], $single_choice);
+                        }
+                    }
+                }
+                for ($i=0; $i < count($data_question); $i++){
+                    $array_choice = $result_question[$i]['choices'];
+                    $array_choice_submit = $data_question[$i]->choices;
+                    for ($j=0; $j < count($array_choice_submit); $j++){
+                        $array_choice_submit[$j]->correct = 0;
+                        if ($array_choice[$j]['id'] == $array_choice_submit[$j]->choice_id && $array_choice[$j]['correct'] == 1){
+                            $array_choice_submit[$j]->correct = 1;
+                        }
+                    }
+                }
+               print_r($data_question);
+               $result_detail_model = $this->requireModel('ResultDetail');
+               foreach ($data_question as $key=>$value){
+                  $array_choice = $value->choices;
+                   foreach ($array_choice as $key2=>$item){
+                       $result_detail_model->insertResultDetail($data->user_id, $value->question_id, $item->choice_name ,$item->correct, $result_obj);
+                   }
+               }
+               $score = $this->calculateScore($result_obj, $result_detail_model);
+            }
+        }
+        echo json_encode($data_return);
     }
 
+    private function calculateScore($result_id, $result_detail_model){
 
-
-
-
-
-
-
+    }
 
 
 

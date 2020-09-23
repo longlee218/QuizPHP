@@ -1,4 +1,7 @@
 <?php include_once './MVC/Views/navbar_student.php'?>
+<style>
+
+</style>
 <body>
     <div class="container mt-5">
         <div class="row">
@@ -42,6 +45,7 @@
                 'Authorization': getCookie('Authorization')
             },
             success: function (data) {
+                console.log(data)
                 if (data['success'] === true){
                     if(data['data'].length === 0){
                         $('#list-quiz').html('<h2>Không có đề</h2>');
@@ -55,7 +59,7 @@
                                         <h4 class="card-title">Đề: ${value['title']}</h4>
                                         <p class="card-text">Môn: ${value['subject']}</p>
                                         <p> <small class="text-muted">Trình độ: ${grade_data[value['grade']]}</small></p>
-                                        <a onclick="startQuiz(this)"  id=${value['id']} class="btn btn-outline-primary">Kiểm tra</a>
+                                        <button onclick="startQuiz(this)"  id=${value['id']} class="btn btn-outline-primary">Kiểm tra</button>
                                     </div>
                                 <div class="card-footer">
                                      <small class="text-muted">Lần cập nhật cuối ${value['update_at']} </small>
@@ -136,6 +140,8 @@
             thread_id: e.id,
             questions: []
         }
+        const bangkok = new Date().toLocaleString("en-US", {timeZone: "Asia/Bangkok"});
+        window.localStorage.setItem('timeStart', (new Date(bangkok)).toISOString())
         window.localStorage.setItem('data', JSON.stringify(local))
         window.location.href = "/../QuizSys/QuizPage/Test/"+e.id
 

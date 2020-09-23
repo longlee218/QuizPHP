@@ -46,6 +46,17 @@ class Choices extends Database
         return $result;
     }
 
+    public function selectMainByThreadIDJoin($thread_id){
+        $query = 'select choices.id, choices.choice_name, choices.correct, choices.question_id from choices inner join question on question.id = choices.question_id  
+                    where question.thread_id = ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('i', $thread_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
 
     public function deleteAllByThreadIDJoin($thread_id){
         try {

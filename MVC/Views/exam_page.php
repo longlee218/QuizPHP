@@ -206,23 +206,14 @@
                 }
 
                 for (let i=0; i < list_choice.length; i++){
-                    single_question['choices'].push({choice_id: list_choice[i].id})
+                    single_question['choices'].push({
+                        choice_id: list_choice[i].id,
+                        choice_name: list_choice[i].getElementsByClassName('choice-name')[0].textContent
+                    })
                 }
 
                 var data = JSON.parse(localStorage.getItem('data'))
                 var data_question = data['questions']
-                // var marks = -1
-                // for (let i=0; i < data_question.length; i++ ){
-                //     marks = i
-                //     if (data_question[i].question_id === single_question.question_id){
-                //         data_question[i].choices = single_question.choices
-                //         break
-                //     }
-                // }
-                // if (marks === data_question.length-1){
-                //     data_question.push(single_question)
-                // }
-
                 var list_id_question = []
                 data_question.forEach(question =>{
                     list_id_question.push(question.question_id)
@@ -250,7 +241,6 @@
     const buildForm = () =>{
         var data = pagination(state.querySet, state.page, state.rows)
         var page_active = document.getElementById('pagination-wrapper')
-        // page_active.className = 'page-item active'
         console.log(page_active)
         var myData = data.querySet
         for (var i in myData){
@@ -281,7 +271,7 @@
                 choice.innerHTML += `
                     <div class="option" id=${value['id']} onclick="selectAnswer(this)" name="option">
                         <div class="form-row">
-                            <span class="choice-name">${value['choice_name']}.</span>
+                            <span class="choice-name">${value['choice_name']}</span>
                             <p>${value['choice_content']}</p>
                         </div>
                     </div>
@@ -317,23 +307,66 @@ function selectAnswer(e) {
 }
 
 function submitQuestion(){
-    var data = JSON.parse(localStorage.getItem('data'))
-    var local_question = data['questions']
-    var array_question_empty = []
-    for (let i=0; i < local_question.length; i++){
-        console.log(local_question[i].choices.length)
-        if (local_question[i].choices.length === 0){
-            array_question_empty.push(local_question[i].question_id)
+    const data = JSON.parse(localStorage.getItem('data'));
+    const local_question = data['questions'];
+    const array_question_empty = [];
+
+    const form_exam = document.getElementById('form-exam');
+    const question_id = form_exam.querySelector('div .quiz-box').id;
+    const list_choice = form_exam.querySelector('div .quiz-box').getElementsByClassName('selected');
+    console.log(list_choice)
+    const single_question = {
+        question_id: question_id,
+        choices: []
+    };
+    for (let i=0; i < list_choice.length; i++){
+        single_question['choices'].push({
+            choice_id: list_choice[i].id,
+            choice_name: list_choice[i].getElementsByClassName('choice-name')[0].textContent
+        })
+    }
+    local_question.forEach(question => {
+        if (question.question_id === single_question.question_id){
+            question.choices = single_question.choices
         }
-    }
-    if (array_question_empty.length !== 0){
-        confirm('Nhán ok để nộp bài')
+    })
+    data['questions'] = local_question
+    localStorage.setItem('data', JSON.stringify(data))
+    local_question.forEach(value =>{
+        if (value.choices.length === 0){
+            array_question_empty.push(value.question_id)
+        }
+    })
+    if (array_question_empty.length > 0){
+        var confirm_submit = confirm('Bạn còn các câu '+array_question_empty+' chưa trả lời. Vẫn muốn tiếp tục nộp bài chứ ?')
+        if (confirm_submit === true){
+            submitQuiz()
+        }
     }else{
-        alert('Bạn còn các câu: '+array_question_empty+' chưa trả lời')
-
+        submitQuiz()
     }
+}
 
-
+function submitQuiz(){
+    var data_post = localStorage.getItem('data')
+    data_post = JSON.parse(data_post)
+    data_post['timeStart'] = localStorage.getItem('timeStart')
+    console.log(data_post)
+    $.ajax({
+        method: 'POST',
+        url: '/../QuizSys/APIThread/submitAnswer/',
+        headers: {
+            'Content-type': 'application/json',
+            'Authorization': getCookie('Authorization')
+        },
+        data: JSON.stringify(data_post),
+        success: (data) =>{
+            console.log(data)
+        },
+        error: (xhr, error) =>{
+            console.log(xhr, error)
+        }
+    })
 }
 
 </script>

@@ -34,4 +34,21 @@ class ResultDetail extends Database
         $stmt->close();
         return $result;
     }
+
+    public function checkResult($result_id){
+        $query = "select Table1.*
+                    from (
+                     select question_id, sum(correct) as 'check'
+                     from resultdetail
+                     where result_id = ?
+                     group by question_id
+                 ) as Table1";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('i', $result_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
 }

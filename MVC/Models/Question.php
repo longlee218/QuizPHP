@@ -31,6 +31,7 @@ class Question extends Database
         $stmt->close();
         return $result;
     }
+
     public function deleteAllByThreadID($thread_id){
         try {
             $query = 'delete from question where thread_id = ?';
@@ -44,5 +45,16 @@ class Question extends Database
             echo $exception;
             return 0;
         }
+    }
+
+    public function selectIDByThreadID($thread_id){
+        $query = 'select id from question where thread_id = ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('i', $thread_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
     }
 }
