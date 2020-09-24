@@ -36,13 +36,10 @@ class ResultDetail extends Database
     }
 
     public function checkResult($result_id){
-        $query = "select Table1.*
-                    from (
-                     select question_id, sum(correct) as 'check'
-                     from resultdetail
-                     where result_id = ?
-                     group by question_id
-                 ) as Table1";
+        $query = "  select question_id, IF(sum(correct) < count(question_id), 0, 1) as 'check'
+                    from  resultdetail
+                    where result_id = ?
+                    group by question_id";
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $stmt->bind_param('i', $result_id);

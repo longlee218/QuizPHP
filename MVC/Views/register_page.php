@@ -313,12 +313,22 @@ require_once 'inc/master.php';
                                 <input type="text" class="form-control" id="class_name">
                             </div> <!-- form-group end.// -->
                         </div><!-- form-row.// -->
+<!--                        <div class="form-group">-->
+<!--                            <label>Nhập mật khẩu</label>-->
+<!--                            <input class="form-control" type="password" id="password">-->
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Nhập mật khẩu</label>
+                                <input class="form-control" type="password" id="password">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Nhập lại mật khẩu</label>
+                                <input class="form-control" type="password" id="password_confirm">
+                            </div>
+                        </div>
+<!--                        </div> -->
                         <div class="form-group">
-                            <label>Nhập mật khẩu</label>
-                            <input class="form-control" type="password" id="password">
-                        </div> <!-- form-group end.// -->
-                        <div class="form-group">
-                            <div class="text-danger" id="messages"></div>
+                            <div id="messages"></div>
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-outline-primary btn-block" id="btn_register"> Đăng ký  </button>
@@ -334,6 +344,16 @@ require_once 'inc/master.php';
 </div>
 
 <script>
+
+    $('#password, #password_confirm').on('keyup', function () {
+        if ($('#password').val() === $('#password_confirm').val()) {
+            $('#messages').html('Mật khẩu khớp').css('color', 'green');
+            return true
+        } else
+            $('#messages').html('Mật khẩu không khớp').css('color', 'red');
+        return false
+    });
+
     $(document).ready(function () {
        $('#btn_register').click(function (){
            var first_name = $('#first_name').val();
@@ -373,9 +393,9 @@ require_once 'inc/master.php';
                        if (data['mess'] === "This email have been exists"){
                            $("#messages_email").html('*Email đã được đăng ký. Vui lòng thử email khác.');
                        }else if (data['mess'] === 'Please fill these fields'){
-                           $("#messages").html('*Vui lòng nhập đầy đủ các thông tin');
+                           $("#messages").html('*Vui lòng nhập đầy đủ các thông tin').css('color', 'red');
                        }else if (data['mess'] === 'Your password is too short'){
-                           $('#messages').html('*Mật khẩu của bạn phải nhiều hơn 8 ký tự');
+                           $('#messages').html('*Mật khẩu của bạn phải nhiều hơn 8 ký tự').css('color', 'red');
                        }
                    }
                },

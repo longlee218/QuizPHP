@@ -262,24 +262,29 @@
             })
         }
     })
-    // $(document).on("click", '.button_download', function (e) {
-    //     e.preventDefault();
-    //     var quiz_id = $(this).data('id');
-    //     // console.log($(this).parent().parent().parent().parent());
-    //     $.ajax({
-    //         type: 'POST',
-    //         url: '/../QuizSys/APIThread/exportQuiz/'+quiz_id,
-    //         headers:{
-    //             'Content-type': 'application/vnd.ms-excel',
-    //             'Content-Disposition': 'attachment; filename=data.xls',
-    //         },
-    //         success: function (data) {
-    //             console.log(data);
-    //         },
-    //         error: function (xhr, error) {
-    //             console.log(xhr, error);
-    //         }
-    //     })
-    // })
+    $(document).on("click", '.button_download', function (e) {
+        e.preventDefault();
+        var quiz_id = $(this).data('id');
+        $.ajax({
+            type: 'POST',
+            url: '/../QuizSys/APIThread/exportToExcel/'+quiz_id,
+            headers:{
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization')
+            },
+            success: function (data) {
+                var json = JSON.parse(data)
+                console.log(json);
+                var a = document.createElement('a');
+                a.href = json['url'] ;
+                a.download = json['data'];
+                a.click();
+                a.remove();
+            },
+            error: function (xhr, error) {
+                console.log(xhr, error);
+            }
+        })
+    })
 </script>
 <?php include_once './MVC/Views/footer.php'?>

@@ -101,6 +101,7 @@ class APIThread extends Controller
                 move_uploaded_file($_FILES[$index]['tmp_name'], $target_dir.$name);
                 $value_file['image'] = $img;
                 $value_file['image_name'] = $name;
+            }else{
 
             }
         }
@@ -194,8 +195,8 @@ class APIThread extends Controller
                                    $value_file = $this->load_file($index);
                                    $img = $value_file['image'];
                                    $img_name = $value_file['image_name'];
-                                   echo $img;
-                                   echo $img_name;
+//                                   echo $img;
+//                                   echo $img_name;
                                }else{
                                    $img_name = "";
                                    $img = $single_question->src;
@@ -312,17 +313,20 @@ class APIThread extends Controller
                         }
                     }
                 }
+                //Dataquestion : danh sách câu hỏi submit lên server
+                //Result question: danh sách câu hỏi được load từ local
                 for ($i=0; $i < count($data_question); $i++){
                     $array_choice = $result_question[$i]['choices'];
                     $array_choice_submit = $data_question[$i]->choices;
-                    for ($j=0; $j < count($array_choice_submit); $j++){
+                    for ($j = 0; $j <count($array_choice_submit); $j++){
                         $array_choice_submit[$j]->correct = 0;
-                        if ($array_choice[$j]['id'] == $array_choice_submit[$j]->choice_id && $array_choice[$j]['correct'] == 1){
-                            $array_choice_submit[$j]->correct = 1;
+                        for ($z = 0; $z <count($array_choice); $z++){
+                            if ($array_choice[$z]['id'] == $array_choice_submit[$j]->choice_id && $array_choice[$z]['correct'] == 1){
+                                $array_choice_submit[$j]->correct = 1;
+                            }
                         }
                     }
                 }
-               print_r($data_question);
                $result_detail_model = $this->requireModel('ResultDetail');
                foreach ($data_question as $key=>$value){
                   $array_choice = $value->choices;
@@ -330,18 +334,27 @@ class APIThread extends Controller
                        $result_detail_model->insertResultDetail($data->user_id, $value->question_id, $item->choice_name ,$item->correct, $result_obj);
                    }
                }
-               $score = $this->calculateScore($result_obj, $result_detail_model);
+                date_default_timezone_set('Asia/Bangkok');
+                $score = $this->calculateScore($result_obj, $result_detail_model, count($result_question));
+                $result_model->updateResult($result_obj, $score, date('Y-m-d H:i:s'));
+                $data_return = $this->messages(true, 200, $score);
             }
         }
         echo json_encode($data_return);
     }
 
-    private function calculateScore($result_id, $result_detail_model){
-
+    private function calculateScore($result_id, $result_detail_model, $total){
+        $result = $result_detail_model->checkResult($result_id);
+        $correct_answer = 0;
+        if ($result->num_rows > 0){
+            while ($row = $result->fetch_assoc()){
+                if ($row['check'] == 1){
+                    $correct_answer += $row['check'];
+                }
+            }
+        }
+        return round($correct_answer/$total, 2);
     }
-
-
-
 
     public function exportQuiz($id_thread){
         $data_return = [];
@@ -422,6 +435,42 @@ class APIThread extends Controller
                 echo $e;
             }
         }
+    }
+
+    public function exportToExcel($id_thread){
+        $data_return = [];
+        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+            $data_return = $this->messages(0, 405, 'Not allowed this method');
+        }else {
+            $model_thread = $this->requireModel('Thread');
+            $thread_name = $model_thread->selectAllByID($id_thread)->fetch_assoc()['title'];
+            $file_name =  $thread_name.'-'.$id_thread.'.xlsx';
+            try {
+                $objExcel = new PHPExcel();
+                $objExcel->setActiveSheetIndex(0);
+                $sheet = $objExcel->getActiveSheet()->setTitle($thread_name);
+                $rowCount = 1;
+                $sheet->setCellValue('A'.$rowCount, 'Ho ten');
+                $sheet->setCellValue('B'.$rowCount, 'Ngay sinh');
+                $sheet->setCellValue('C'.$rowCount, 'Nam sinh');
+                $sheet->setCellValue('D'.$rowCount, 'Que quan');
+                $objWrite = new PHPExcel_Writer_Excel2007($objExcel);
+                $objWrite->save($file_name);
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename='.basename($file_name));
+                header('Content-Transfer-Encoding: binary');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($file_name));
+                $location = '/../QuizSys/'.$file_name;
+                $data_return = $this->messages(true, 200, 'success download', $file_name, $location);
+            } catch (Exception $exception) {
+                echo 'error';
+            }
+        }
+        echo json_encode($data_return);
     }
 
     public function searchQuizTitle($id_room, $title=null){

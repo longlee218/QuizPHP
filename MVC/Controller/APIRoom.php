@@ -21,7 +21,7 @@ class APIRoom extends Controller
     }
     public function createRoom(){
         $data_return = [];
-        if ($_REQUEST['REQUEST_METHOD'] != 'POST'){
+        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
             $data_return = $this->messages('0', 'Not allow this method', '405');
         }else{
             $data = $_POST;

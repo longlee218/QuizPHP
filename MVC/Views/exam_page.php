@@ -20,7 +20,8 @@
         font-size: 22px;
         color: black;
         line-height: 25px;
-        margin: 20px 0 0 0;
+        margin: 20px 0 30px 0;
+        /*margin-bottom: 100px;*/
 
     }
     .quiz-box .option-container .option{
@@ -77,6 +78,10 @@
     .pagination{
         margin: auto;
         width: 10%;
+    }
+
+    .disabled{
+        display: none;
     }
 </style>
 
@@ -262,9 +267,13 @@
                 <div class="row"></div>
             </div>
         </div>
-
-
             `
+
+            var img = document.getElementsByClassName('img')[0]
+            console.log(img)
+            if (myData[i]['image'] === null){
+                img.className = 'img disabled'
+            }
             var choice = form_exam.querySelector("#all_option")
             choice.innerHTML = ``
             myData[i]['choices'].forEach(value => {
@@ -362,6 +371,14 @@ function submitQuiz(){
         data: JSON.stringify(data_post),
         success: (data) =>{
             console.log(data)
+            if (data['success'] === true){
+                var score = data['mess']
+                score *= 100
+                alert('Kết quả: Số câu trả lời chính xác '+score+'%')
+                localStorage.removeItem('data')
+                localStorage.removeItem('timeStart')
+                window.location.href = '/../QuizSys/Home/StudentHome/'
+            }
         },
         error: (xhr, error) =>{
             console.log(xhr, error)

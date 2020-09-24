@@ -11,6 +11,7 @@
                                 <label>Mật khẩu</label>
                                 <input id="password-room" type="password" placeholder="**********" name="password_room" class="form-control">
                             </div>
+                            <div id="message_room"></div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -140,7 +141,11 @@
                 data: JSON.stringify(data),
                 success: function (data) {
                     console.log(data);
-                    window.location.href = data['data'];
+                    if(data['success'] === false){
+                        document.getElementById('message_room').innerHTML = '<small class="text-danger">*Không đúng mật khẩu</small>'
+                    }else{
+                        window.location.href = data['data'];
+                    }
                 },
                 error: function (xhr, error) {
                     console.log(xhr, error);

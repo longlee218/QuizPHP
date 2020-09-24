@@ -151,9 +151,11 @@ class Room extends Database
     }
 
     public function selectName(){
-        $query = 'select * from room limit 10';
+        $query = 'select * from room where status = ? limit 10';
         $this->con->init();
         $stmt = $this->con->prepare($query);
+        $status = '1';
+        $stmt->bind_param('s', $status);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
@@ -161,11 +163,12 @@ class Room extends Database
     }
 
     public function findByName($room_name){
-        $query = 'select * from room where room_name like ?';
+        $query = 'select * from room where room_name like ? and status = ?';
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $room_name = "%".$room_name."%";
-        $stmt->bind_param('s', $room_name);
+        $status = '1';
+        $stmt->bind_param('ss', $room_name, $status);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();

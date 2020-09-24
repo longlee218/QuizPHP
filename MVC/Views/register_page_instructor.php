@@ -349,36 +349,6 @@
 </div>
 <br>
 <script>
-    // function checkValidateDate(){
-    //     var first_name = $('#first_name').val();
-    //     var last_name = $('#last_name').val();
-    //     var email = $('#email').val();
-    //     var gender = $('input[name="gender"]').val();
-    //     var city = $('#city').val();
-    //     var country = $('#country').val();
-    //     var org_type = $('#organization_type').val();
-    //     var org_name = $('#organization_name').val();
-    //     var position = $('#position').val();
-    //     var password = $('#password').val();
-    //     var password_confirm = $('#password_confirm').val();
-    //     // if (!first_name || !last_name || !email || !gender || !city || !country || !org_type || !org_name || !position ||
-    //     // !password || !password_confirm){
-    //     //     alert('Vui lòng điền đầy đủ vào trường còn thiếu !!');
-    //     //     return false;
-    //     // }
-    //     if (!first_name){ first_name.focus();}
-    //     if (!last_name){ last_name.focus(); }
-    //     if (!email){ email.focus(); }
-    //     if (!gender){ alert('Khong duoc de trong gender'); gender.focus(); }
-    //     if (!city){ city.focus(); }
-    //     if (!country){ country.focus(); }
-    //     if (!org_type){ org_type.focus(); }
-    //     if (!org_name){ org_name.focus(); }
-    //     if (!position){ position.focus(); }
-    //     if (!password_confirm){ password_confirm.focus(); }
-    //     if (!password){ password.focus(); }
-    // }
-    // checkValidateDate();
 
         $('#password, #password_confirm').on('keyup', function () {
             if ($('#password').val() === $('#password_confirm').val()) {

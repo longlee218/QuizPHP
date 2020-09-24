@@ -200,7 +200,7 @@
 <!--                                    <div class="square"></div>-->
                                 <img src="" alt="Image preview" class="image-preview__image" >
                             </div>
-                            <input type="file" name="photo" onclick="previewImg(this)"/>
+                            <input type="file" name="photo" onclick="previewImg(this)" accept=".gif, .png, .jpg, .jpeg"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -443,7 +443,7 @@
 <!--                                    <div class="square"></div>-->
                                 <img src="${value['image']}" alt="Image preview" height="150" width="150" onclick="removeImg(this)" ">
                             </div>
-                            <input class="mt-2" type="file" name="photo" id="${index}" >
+                            <input class="mt-2" type="file" name="photo" id="${index}" accept=".gif, .png, .jpg, .jpeg" >
                         </div>
                         <div class="col-1">
                             <div class="row">
