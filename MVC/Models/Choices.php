@@ -72,4 +72,41 @@ class Choices extends Database
             return 0;
         }
     }
+
+    public function selectMaxChoice($id_thread){
+        try {
+            $query = '    select count(choices.id) as `SL`
+                      from choices inner join question q on choices.question_id = q.id
+                      where q.thread_id = ?
+                      group by question_id
+                      order by SL desc
+                      limit 1';
+            $this->con->init();
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param('i',$id_thread);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result;
+        }catch (Exception $exception){
+            echo $exception->getMessage();
+            return 0;
+        }
+    }
+
+    public function selectAllByQuestionID($question_id){
+        try {
+            $query = 'select * from choices where question_id = ?';
+            $this->con->init();
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param('i',$question_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result;
+        }catch (Exception $exception){
+            echo $exception->getMessage();
+            return 0;
+        }
+    }
 }

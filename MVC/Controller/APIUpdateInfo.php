@@ -5,14 +5,14 @@ require_once __DIR__."/../core/controllers.php";
 
 class APIUpdateInfo extends Controller
 {
-    private function messages($success, $status, $mess, $url=null){
-        return array(
-            "success"=>$success,
-            "status"=>$status,
-            "mess"=>$mess,
-            "url"=>$url
-        );
-    }
+//    private function messages($success, $status, $mess, $url=null){
+//        return array(
+//            "success"=>$success,
+//            "status"=>$status,
+//            "mess"=>$mess,
+//            "url"=>$url
+//        );
+//    }
     public function updateInfo(){
         $data_return = [];
         if ($this->auth->isAuth() == null){

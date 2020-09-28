@@ -248,10 +248,11 @@
                 url: '/../QuizSys/APIThread/deleteQuiz/',
                 headers: {
                     'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
                 },
                 data: JSON.stringify({list_delete: array}),
                 success: function (data) {
-                    if (data['success'] == 1){
+                    if (data['success'] === true){
                         alert('Xóa thành công');
                         location.reload();
                     }
@@ -262,6 +263,7 @@
             })
         }
     })
+
     $(document).on("click", '.button_download', function (e) {
         e.preventDefault();
         var quiz_id = $(this).data('id');
@@ -273,13 +275,15 @@
                 'Authorization': getCookie('Authorization')
             },
             success: function (data) {
-                var json = JSON.parse(data)
+                const json = JSON.parse(data);
                 console.log(json);
-                var a = document.createElement('a');
-                a.href = json['url'] ;
-                a.download = json['data'];
-                a.click();
-                a.remove();
+                if (json['success'] === true){
+                    const a = document.createElement('a');
+                    a.href = json['url'] ;
+                    a.download = json['data'];
+                    a.click();
+                    a.remove();
+                }
             },
             error: function (xhr, error) {
                 console.log(xhr, error);

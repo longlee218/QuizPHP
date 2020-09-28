@@ -11,15 +11,6 @@ define('ROW_PER_PAGE', 1);
 class APIThread extends Controller
 {
 
-    private function messages($success, $status, $mess, $data=null ,$url=null){
-        return array(
-            "success"=>$success,
-            "status"=>$status,
-            "mess"=>$mess,
-            "data"=>$data,
-            "url"=>$url
-        );
-    }
     public function checkValidateQuiz(){
         $data = $_POST;
         $data_return = [];
@@ -101,8 +92,6 @@ class APIThread extends Controller
                 move_uploaded_file($_FILES[$index]['tmp_name'], $target_dir.$name);
                 $value_file['image'] = $img;
                 $value_file['image_name'] = $name;
-            }else{
-
             }
         }
         return $value_file;
@@ -130,7 +119,7 @@ class APIThread extends Controller
         echo json_encode($data_return);
     }
 
-    public function arrayGroupBy($array, $id){
+    private function arrayGroupBy($array, $id){
         $groups = [];
         foreach( $array as $row ) array_push($groups, $row);
         return $groups;
@@ -187,16 +176,14 @@ class APIThread extends Controller
                }else{
                    try {
                        $modelThread->updateThread($data['id'], $data['grade'], $data['room_id'], $data['subject'], $data['title']);
-                       if ($model_choices->deleteAllByThreadIDJoin($data['id']) == 1 && $model_question->deleteAllByThreadID($data['id']) == 1){
+                       if ($model_choices->deleteAllByThreadIDJoin($data['id']) == 1 && $model_question->deleteAllByThreadID($data['id']) == 1) {
                            $question_array = json_decode($data['questions']);
-                           foreach ($question_array as $index=>$single_question){
+                           foreach ($question_array as $index => $single_question) {
                                $question_obj = new APIQuestion();
                                if ($single_question->src == 'null'){
                                    $value_file = $this->load_file($index);
                                    $img = $value_file['image'];
                                    $img_name = $value_file['image_name'];
-//                                   echo $img;
-//                                   echo $img_name;
                                }else{
                                    $img_name = "";
                                    $img = $single_question->src;
@@ -219,17 +206,21 @@ class APIThread extends Controller
     }
     public function deleteQuiz(){
         $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $data_return = $this->messages(false, 405, 'Not allow this method');
+        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
+            $data_return = $this->messages(false, 401, 'Invalid token');
         }else{
-            $data = json_decode(file_get_contents('php://input'));
-            $model_thread = $this->requireModel('Thread');
-            foreach ($data->list_delete as $index=>$single){
-              if ($model_thread->setFlagDeleteTo0($single)){
-                  $data_return = $this->messages(true, 200, 'Delete success');
-              }else{
-                  $data_return =$this->messages(false, 400, 'Error');
-              }
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 405, 'Not allow this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                $model_thread = $this->requireModel('Thread');
+                foreach ($data->list_delete as $index=>$single){
+                    if ($model_thread->setFlagDeleteTo0($single)){
+                        $data_return = $this->messages(true, 200, 'Delete success');
+                    }else{
+                        $data_return =$this->messages(false, 400, 'Error');
+                    }
+                }
             }
         }
         echo json_encode($data_return);
@@ -283,7 +274,19 @@ class APIThread extends Controller
         }
         echo json_encode($data_return);
     }
-
+    private function arrayQuestionChoice($id_thread){
+        $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectIDByThreadID($id_thread), $id_thread);
+        $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectMainByThreadIDJoin($id_thread), $id_thread);
+        foreach ($result_question as $i=>&$single_question){
+            $single_question['choices'] = [];
+            foreach ($result_choices as  $j => $single_choice){
+                if ($single_choice['question_id'] == $single_question['id']){
+                    array_push($single_question['choices'], $single_choice);
+                }
+            }
+            return $result_question;
+        }
+    }
 
     public function submitAnswer(){
         $data_return = [];
@@ -437,37 +440,96 @@ class APIThread extends Controller
         }
     }
 
+    public function exportToPDF($id_thread){
+        return 0;
+    }
     public function exportToExcel($id_thread){
         $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $data_return = $this->messages(0, 405, 'Not allowed this method');
-        }else {
-            $model_thread = $this->requireModel('Thread');
-            $thread_name = $model_thread->selectAllByID($id_thread)->fetch_assoc()['title'];
-            $file_name =  $thread_name.'-'.$id_thread.'.xlsx';
-            try {
-                $objExcel = new PHPExcel();
-                $objExcel->setActiveSheetIndex(0);
-                $sheet = $objExcel->getActiveSheet()->setTitle($thread_name);
-                $rowCount = 1;
-                $sheet->setCellValue('A'.$rowCount, 'Ho ten');
-                $sheet->setCellValue('B'.$rowCount, 'Ngay sinh');
-                $sheet->setCellValue('C'.$rowCount, 'Nam sinh');
-                $sheet->setCellValue('D'.$rowCount, 'Que quan');
-                $objWrite = new PHPExcel_Writer_Excel2007($objExcel);
-                $objWrite->save($file_name);
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename='.basename($file_name));
-                header('Content-Transfer-Encoding: binary');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($file_name));
-                $location = '/../QuizSys/'.$file_name;
-                $data_return = $this->messages(true, 200, 'success download', $file_name, $location);
-            } catch (Exception $exception) {
-                echo 'error';
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(0, 405, 'Not allowed this method');
+            }else {
+                $model_thread = $this->requireModel('Thread');
+                $thread_name = $model_thread->selectAllByID($id_thread)->fetch_assoc()['title'];
+                $file_name =  $thread_name.'-'.$id_thread.'.xlsx';
+                try {
+                    $objExcel = new PHPExcel();
+                    $objExcel->setActiveSheetIndex(0);
+                    $sheet = $objExcel->getActiveSheet()->setTitle($thread_name);
+                    $sheet->getRowDimension('1')->setRowHeight(30);
+                    $rowCount = 1;
+                    $stt = 0;
+                    $sheet->setCellValue('A'.$rowCount, 'STT');
+                    $sheet->setCellValue('B'.$rowCount, 'Nội dung câu hỏi');
+                    $lastCol = 67;
+                    $choice_model = $this->requireModel('Choices');
+                    $max_choice = $choice_model->selectMaxChoice($id_thread);
+                    $number = $max_choice->fetch_assoc()['SL'];
+                    for ($i = 0; $i < $number; $i++){
+                        $sheet->setCellValue((string)chr($lastCol).$rowCount, 'Đáp án '.chr(65+$i));
+                        $sheet->getColumnDimension(chr($lastCol))->setAutoSize(true);
+                        $lastCol += 1;
+                    }
+                    $sheet->setCellValue(chr($lastCol).$rowCount, 'Đáp án đúng');
+                    $sheet->setCellValue(chr($lastCol+1).$rowCount, 'Giải thích');
+
+                    $question_model = $this->requireModel('Question');
+                    $question_obj = $question_model->selectAllByThreadID($id_thread);
+                    while ($row_question = $question_obj->fetch_assoc()){
+                        $stt += 1;
+                        $rowCount += 1;
+                        $sheet->setCellValue('A'.$rowCount, $stt);
+                        $sheet->setCellValue('B'.$rowCount, $row_question['description']);
+                        $choice_obj = $choice_model->selectAllByQuestionID($row_question['id']);
+                        $option_correct = [];
+                        $first_choice = 67;
+                        while ($row_choice = $choice_obj->fetch_assoc()){
+                            $sheet->setCellValue(chr($first_choice).$rowCount, $row_choice['choice_content']);
+                            $first_choice += 1;
+                            if ($row_choice['correct'] == 1){
+                                array_push($option_correct, $row_choice['choice_name']);
+                            }
+                        }
+                        $sheet->setCellValue(chr($lastCol).$rowCount, implode(',',$option_correct));
+                        $sheet->setCellValue(chr($lastCol+1).$rowCount, $row_question['explain']);
+
+                    }
+                    $sheet->getColumnDimension('A')->setAutoSize(true);
+                    $sheet->getColumnDimension('B')->setAutoSize(true);
+                    $sheet->getColumnDimension(chr($lastCol))->setAutoSize(true);
+                    $sheet->getColumnDimension(chr($lastCol+1))->setAutoSize(true);
+
+                    $sheet->getStyle('A1:'.chr($lastCol+1).'1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('A1:'.chr($lastCol+1).'1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+                    $sheet->getStyle('A1:'.chr($lastCol+1).'1')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('77aad1');
+                    $sheet->getStyle('A1:'.chr($lastCol+1).'1')->getFont()->setBold(true)->setSize(13)->getColor()->setRGB('ffffff');
+                    $sheet->getStyle('A2:'.chr($lastCol+1).($stt+1))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+
+                    $styleArray = array(
+                        'borders'=> array(
+                            'allborders'=>array(
+                                'style'=>PHPExcel_Style_Border::BORDER_THIN
+                            )
+                        )
+                    );
+                    $sheet->getStyle('A1:'.chr($lastCol+1).($stt+1))->applyFromArray($styleArray);
+                    $objWrite = new PHPExcel_Writer_Excel2007($objExcel);
+                    $objWrite->save($file_name);
+                    header('Content-Description: File Transfer');
+                    header('Content-Type: application/octet-stream');
+                    header('Content-Disposition: attachment; filename='.basename($file_name));
+                    header('Content-Transfer-Encoding: binary');
+                    header('Expires: 0');
+                    header('Cache-Control: must-revalidate');
+                    header('Pragma: public');
+                    header('Content-Length: ' . filesize($file_name));
+                    $location = '/../QuizSys/'.$file_name;
+                    $data_return = $this->messages(true, 200, 'success download', $file_name, $location);
+                } catch (Exception $exception) {
+                    echo 'error';
+                }
             }
         }
         echo json_encode($data_return);

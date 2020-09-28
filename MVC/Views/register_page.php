@@ -383,7 +383,7 @@ require_once 'inc/master.php';
                data: data_post_json,
                success: function (data){
                    console.log(data);
-                   if (data['success'] === 1){
+                   if (data['success'] === true){
                        var comeback_login = confirm("Bạn đã đăng ký thành công, ấn OK để quay lại trang đăng nhập");
                        if (comeback_login ===  true){
                            window.location.href = data['url'];

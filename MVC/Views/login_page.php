@@ -49,11 +49,12 @@
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify(data_post_json),
                 }).done(function (data) {
+                    console.log(data)
                     if (data['success'] === true){
                         setTimeout(function () {
-                            // setCookie('Authorization', data['token'], data['exp']*10)
                             window.location.href = data['url'];
                         },1000)
+                        console.log(data['url'])
                     }
                     else{
                         if (data['mess'] === "Your email is not validate"){

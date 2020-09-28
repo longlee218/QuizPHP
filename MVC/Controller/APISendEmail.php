@@ -6,13 +6,13 @@ require_once __DIR__."/../config/api.php";
 require_once __DIR__."/../core/controllers.php";
 
 class APISendEmail extends Controller {
-    private function messages($success, $status, $messages){
-        return [
-            "success"=>$success,
-            "status"=>$status,
-            "messages"=>$messages
-        ];
-    }
+//    private function messages($success, $status, $messages){
+//        return [
+//            "success"=>$success,
+//            "status"=>$status,
+//            "messages"=>$messages
+//        ];
+//    }
     public function sendEmailResetPassword(){
         $dataReturn = [];
         if ($_SERVER['REQUEST_METHOD'] != "POST"){

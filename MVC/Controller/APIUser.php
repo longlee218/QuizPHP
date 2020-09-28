@@ -3,14 +3,14 @@ require_once __DIR__."/../config/api.php";
 require_once __DIR__."/../core/controllers.php";
 
 class APIUser extends  Controller{
-    private function messages($success, $messages, $status, $data=null){
-        return array(
-            "success"=>$success,
-            "messages"=>$messages,
-            "status"=>$status,
-            "data"=>$data
-        );
-    }
+//    private function messages($success, $messages, $status, $data=null){
+//        return array(
+//            "success"=>$success,
+//            "messages"=>$messages,
+//            "status"=>$status,
+//            "data"=>$data
+//        );
+//    }
 
     public function findInfoUser($id){
         $data_return = [];

@@ -48,7 +48,7 @@ require_once __DIR__.'/../Models/User.php';
                 $result = $this->db->selectAllByID($user_id);
                 if($result->num_rows):
                     $row = $result->fetch_assoc();
-                    return $this->messages(1, 200, $row);
+                    return $this->messages(true, 200, $row);
                 else:
                     return null;
                 endif;

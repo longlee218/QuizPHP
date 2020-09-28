@@ -141,8 +141,6 @@
     const pagination = (querySet, page, rows) =>{
         var trimStart = (page - 1)*rows
         var trimEnd = trimStart + rows
-        // console.log(trimStart)
-        // console.log(trimEnd)
         var trimData = querySet.slice(trimStart, trimEnd);
         var pages = Math.round(querySet.length/rows);
         return {
@@ -334,11 +332,19 @@ function submitQuestion(){
             choice_name: list_choice[i].getElementsByClassName('choice-name')[0].textContent
         })
     }
-    local_question.forEach(question => {
-        if (question.question_id === single_question.question_id){
-            question.choices = single_question.choices
-        }
+    var array_id = [];
+    local_question.forEach(question =>{
+        array_id.push(question.question_id)
     })
+    if (!array_id.includes(single_question.question_id)){
+        local_question.push(single_question)
+    }else{
+        local_question.forEach(question => {
+            if (question.question_id === single_question.question_id){
+                question.choices = single_question.choices
+            }
+        })
+    }
     data['questions'] = local_question
     localStorage.setItem('data', JSON.stringify(data))
     local_question.forEach(value =>{

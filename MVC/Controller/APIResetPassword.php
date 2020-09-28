@@ -5,13 +5,13 @@ require_once __DIR__."/JwtHandler.php";
 
 class APIResetPassword extends Controller
 {
-    private function messages($success, $status, $messages){
-        return [
-            "success"=>$success,
-            "status"=>$status,
-            "messages"=>$messages
-        ];
-    }
+//    private function messages($success, $status, $messages){
+//        return [
+//            "success"=>$success,
+//            "status"=>$status,
+//            "messages"=>$messages
+//        ];
+//    }
     public function changePassword(){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){

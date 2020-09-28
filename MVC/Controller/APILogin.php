@@ -4,7 +4,7 @@ require_once "JwtHandler.php";
 require_once __DIR__."/../core/controllers.php";
 
 class APILogin extends Controller {
-    private function messages($success, $status, $mess, $token=null, $url=null, $expire=null){
+    private function messages_token($success, $status, $mess, $token=null, $url=null, $expire=null){
             return array(
                 "success"=>$success,
                 "status"=>$status,
@@ -24,8 +24,7 @@ class APILogin extends Controller {
             "http:localhost:85/QuizSys/Home/InstructorHome",
             $row['id']
         );
-        //        setcookie("Authorization", $token_return, 0, "/", $_SERVER['SERVER_NAME']);
-        return $this->messages(1, 200, 'Update success', $token_return);
+        return $this->messages_token(true, 200, 'Update success', $token_return);
     }
     public function checkLoginAPI(){
         $user_model = $this->requireModel("User");
@@ -33,14 +32,14 @@ class APILogin extends Controller {
         $returnData = [];
 
         if($_SERVER["REQUEST_METHOD"] != "POST"){
-            $returnData = $this->messages(false, 405, "Method is not allow");
+            $returnData = $this->messages_token(false, 405, "Method is not allow");
         }
         if (!isset($data->email)||!isset($data->password)
             ||empty(trim($data->email))||empty(trim($data->password))){
-            $returnData = $this->messages(false, 400, "Please fill in this fields");
+            $returnData = $this->messages_token(false, 400, "Please fill in this fields");
         }
         elseif (!filter_var($data->email, FILTER_VALIDATE_EMAIL)){
-            $returnData = $this->messages(false, 400, "Your email is not validate");
+            $returnData = $this->messages_token(false, 400, "Your email is not validate");
         }
         else{
             $email = $data->email;
@@ -64,12 +63,12 @@ class APILogin extends Controller {
                         $url = "/../QuizSys/Home/StudentHome";
                     }
                     setcookie('Authorization', $token_return, time()+3600, '/');
-                    $returnData = $this->messages(true, 200, 'You are login', $token_return, $url, 3600);
+                    $returnData = $this->messages_token(true, 200, 'You are login', $token_return, $url, 3600);
                 }else{
-                    $returnData = $this->messages(false, 400, 'Wrong password');
+                    $returnData = $this->messages_token(false, 400, 'Wrong password');
                 }
             }else{
-                    $returnData = $this->messages(false, 400, 'Wrong email or username');
+                    $returnData = $this->messages_token(false, 400, 'Wrong email or username');
             }
         }
         echo json_encode($returnData);

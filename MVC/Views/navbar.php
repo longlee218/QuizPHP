@@ -162,7 +162,7 @@
             success:function (data){
                 console.log(data);
                 var data_parse = JSON.parse(data);
-                if (data_parse['success'] === 1){
+                if (data_parse['success'] === true){
                     $('#username').html(data_parse['user']['username']);
                     id = data_parse['user']['id'];
                     $("#email").val(data_parse['user']['email']);

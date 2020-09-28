@@ -15,6 +15,10 @@
         background-color: rgb(119, 170, 209);
         border: none;
     }
+   .dropdown-item:active{
+       background-color: white;
+       color: black;
+   }
 </style>
 
 <body style="position: relative; width: 100%">
@@ -24,13 +28,28 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav navbar-nav mr-lg-5 navbar-left">
-                <li class="nav-item dropdown">
+        <div class="collapse navbar-collapse menu" id="navbarSupportedContent">
+            <ul class="nav navbar-nav">
+                <li class="nav-item dropdown dropdown-menu-left">
                     <a class="dropdown-toggle"  id="navbarDropdown" role="button" data-toggle="dropdown" ><i class="fa fa-user" aria-hidden="true"></i></a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/../QuizSys/ProfileStudent"><i class="fa fa-info" aria-hidden="true"></i> Thông tin</a>
-                        <a class="dropdown-item" id="btn_logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Đăng xuất </a>
+                        <table class="ml-2">
+                            <tr>
+                                <td><i class="fa fa-info" aria-hidden="true"></i></td>
+                                <td><a class="dropdown-item" href="/../QuizSys/ProfileStudent">Thông tin</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-graduation-cap" aria-hidden="true"></i></td>
+                                <td><a class="dropdown-item" href="/../QuizSys/ProfileStudent">Điểm cá nhân</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-sign-out" aria-hidden="true"></i></td>
+                                <td><a class="dropdown-item" id="btn_logout">Đăng xuất </a></td>
+                            </tr>
+                        </table>
+<!--                        <a class="dropdown-item" href="/../QuizSys/ProfileStudent"><i class="fa fa-info" aria-hidden="true"></i>Thông tin</a>-->
+<!--                        <a class="dropdown-item" href="/../QuizSys/ProfileStudent"><i class="fa fa-graduation-cap" aria-hidden="true"></i>Điểm cá nhân</a>-->
+<!--                        <a class="dropdown-item" id="btn_logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Đăng xuất </a>-->
                         <div class="dropdown-divider"></div>
                     </div>
                 </li>
@@ -52,7 +71,8 @@
         async: false,
         success:function (data){
             const data_parse = JSON.parse(data)
-            if (data_parse['success'] === 1){
+            console.log(data_parse)
+            if (data_parse['success'] === true){
                 $('#username').html(data_parse['user']['username']);
                 user_info = data_parse['user'];
             }

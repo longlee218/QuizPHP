@@ -229,7 +229,7 @@
             type: 'GET',
             url: '/../QuizSys/APIRoom/checkTime/'+time_start+'/'+time_end,
             success: function (data) {
-                if (data['success'] === '0'){
+                if (data['success'] === false){
                     if (data['messages'] === 'Please fill all these fill'){
                         $('#time_start').focus();
                         $('.modal-content #messages-time').html('<small>*Vui phòng nhập đủ các trường</small>')
@@ -318,7 +318,7 @@
             url: "/../QuizSys/APIRoom/createRoom",
             data: data_post_json,
             success: function (data) {
-                if (data['success'] === 1){
+                if (data['success'] === true){
                     alert("Phòng đã được cập nhật.");
                     loadListRoom(return_first);
                 }else{
@@ -474,11 +474,11 @@
                 success: function (data) {
                     console.log(data);
                     var success = data['success'];
-                    if (success === 0){
+                    if (success === false){
                         $('#room_name').val('');
                         $('room_name').focus();
                         $("#message_room").html("*Tên này đã được chọn, vui lòng thử tên khác");
-                    }else if (success === 1){
+                    }else{
                        var confirm_submit = confirm("Phòng đã được tạo, vui lòng click OK để tải lại trang");
                        if (confirm_submit === true){
                            window.location.reload();

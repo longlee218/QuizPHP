@@ -4,26 +4,26 @@ require_once "JwtHandler.php";
 require_once __DIR__."/../core/controllers.php";
 
 class APIRegister extends Controller {
-    private function messages($success, $status, $mess, $url=null){
-        return array(
-            "success"=>$success,
-            "status"=>$status,
-            "mess"=>$mess,
-            "url"=>$url
-        );
-    }
+//    private function messages($success, $status, $mess, $url=null){
+//        return array(
+//            "success"=>$success,
+//            "status"=>$status,
+//            "mess"=>$mess,
+//            "url"=>$url
+//        );
+//    }
     public function registerUserInstructor(){
         $user_model = $this->requireModel("User");
         $data = json_decode(file_get_contents("php://input"));
         $returnData = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $returnData = $this->messages(0, 404, "Not allow this method");
+            $returnData = $this->messages(false, 405, "Not allow this method");
         }
         else{
             if (!isset($data->first_name) || !isset($data->last_name) || !isset($data->email)
             ||!isset($data->password) || empty(trim($data->first_name)) ||
             empty(trim($data->last_name)) || empty(trim($data->email)) || empty($data->password)){
-                $returnData = $this->messages(0, 400, "Please fill these fields");
+                $returnData = $this->messages(false, 400, "Please fill these fields");
             }
             else{
                 $first_name = trim($data->first_name);
@@ -38,15 +38,15 @@ class APIRegister extends Controller {
                 $organization_type = trim($data->organization_type);
                 $position = trim($data->position);
                 if ($user_model->checkEmail($email)){
-                    $returnData = $this->messages(0, 200, "This email have been exists");
+                    $returnData = $this->messages(false, 400, "This email have been exists");
                 }
                 else if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
-                    $returnData = $this->messages(0, 400, "This email have been exists");
+                    $returnData = $this->messages(false, 400, "This email have been exists");
                 }
                 else{
                     $user =  $user_model->insertInstructor($first_name, $last_name, $username, $email, $password, $gender,
                                                             $organization_type, $organization_name, $position, $country, $city);
-                    $returnData = $this->messages(1, 200, 'You are register success', '/../QuizSys/RegisterAccount/registerPageInstructor/');
+                    $returnData = $this->messages(true, 200, 'You are register success', '/../QuizSys/RegisterAccount/registerPageInstructor/');
                 }
             }
         }
@@ -61,7 +61,7 @@ class APIRegister extends Controller {
         $data = $_REQUEST;
         $returnData = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $returnData = $this->messages(0, 404, "Not allow this method");
+            $returnData = $this->messages(true, 405, "Not allow this method");
         }
         else{
             if (!isset($data['first_name']) || !isset($data['last_name']) || !isset($data['email'])
@@ -83,14 +83,14 @@ class APIRegister extends Controller {
                 $city = trim($data['city']);
                 $country = trim($data['country']);
                 if ($user_model->checkEmail($email)){
-                    $returnData = $this->messages(0, 400, "This email have been exists");
+                    $returnData = $this->messages(false, 400, "This email have been exists");
                 }elseif (strlen($password) < 8){
-                    $returnData = $this->messages(0, 400, "Your password is too short");
+                    $returnData = $this->messages(false, 400, "Your password is too short");
                 }
                 else{
                     $user =  $user_model->insertStudent($first_name, $last_name, $username, $email, md5($password), $gender,
                                                     $school_name, $class_name, $country, $city);
-                    $returnData = $this->messages(1, 200, 'You are register success', '/../QuizSys/Login');
+                    $returnData = $this->messages(true, 200, 'You are register success', '/../QuizSys/Login');
                 }
             }
         }

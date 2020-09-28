@@ -18,6 +18,15 @@ require_once __DIR__.'/../Middlewares/Auth.php';
             }
             $this->auth = new Auth(getallheaders());
         }
+        protected function messages($success, $status, $mess, $data=null ,$url=null){
+            return array(
+                "success"=>$success,
+                "status"=>$status,
+                "mess"=>$mess,
+                "data"=>$data,
+                "url"=>$url
+            );
+        }
 
         public function requireModel($model){
             $this->model_path =  __DIR__.'/../Models/'.$model.'.php';
