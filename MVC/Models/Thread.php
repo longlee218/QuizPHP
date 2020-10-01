@@ -87,4 +87,13 @@ class Thread extends Database
         $stmt->close();
         return $result;
     }
+    public function setStatusThread($id_thread){
+        $query = 'update thread set is_test = ? where id = ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $is_test = '1';
+        $stmt->bind_param('si',$is_test, $id_thread);
+        $stmt->execute();
+        $stmt->close();
+    }
 }

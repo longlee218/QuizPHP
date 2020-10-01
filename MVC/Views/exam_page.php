@@ -83,20 +83,25 @@
     .disabled{
         display: none;
     }
+    .count-down{
+        float: right;
+        position: relative;
+        font-size: large;
+    }
 </style>
 
 <body>
     <div class="container">
-        <div class="button-submit">
-            <button class="btn btn-outline-primary" onclick="submitQuestion()">Nộp bài</button>
+        <div class="button-submit row">
+            <button class="btn btn-outline-primary col-2" onclick="submitQuestion()">Nộp bài</button>
+            <div class="col col-md-7 col-sm-5"></div>
+            <div id="count-down" class="col col-md-3 col-sm-4">Thời gian còn lại:</div>
         </div>
         <div id="form-exam" ></div>
         <hr>
-<!--        <nav aria-label="Page exam">-->
             <div class="paginator">
                 <ul class="pagination" id="pagination-wrapper"></ul>
             </div>
-<!--        </nav>-->
     </div>
 
 
@@ -105,6 +110,47 @@
 <script>
 
 //=========================================================================
+    //countdown time
+    var string_time = ''
+    $.ajax({
+        method: 'GET',
+        headers:{
+            'Authorization': getCookie('Authorization'),
+            'Content-type': 'application/json'
+        },
+        async: false,
+        url: '/../QuizSys/APIRoom/getInfoRoom/'+localStorage.getItem('id_room'),
+        success: function (data) {
+            console.log(data)
+            if (data['success'] === true){
+                string_time = data['data']['time_end']
+            }
+        }
+    })
+    var countDownDate = new Date(string_time).getTime();
+
+    var x = setInterval(() => {
+
+        var now = new Date().getTime();
+
+        var distance = countDownDate - now;
+
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("count-down").innerHTML = 'Thời gian còn lại: '
+                                                            + hours + " Giờ "
+                                                            + minutes + " phút "
+                                                            + seconds + " giây ";
+        if (distance <= 0) {
+            clearInterval(x);
+            submitQuiz();
+        }
+    }, 1000);
+
+
 
 
     const state  = {
@@ -383,6 +429,7 @@ function submitQuiz(){
                 alert('Kết quả: Số câu trả lời chính xác '+score+'%')
                 localStorage.removeItem('data')
                 localStorage.removeItem('timeStart')
+                localStorage.removeItem('id_room')
                 window.location.href = '/../QuizSys/Home/StudentHome/'
             }
         },

@@ -5,19 +5,14 @@ require_once "./MVC/Middlewares/Auth.php";
 class Home extends Controller {
     public function InstructorHome(){
         $auth = new Auth($_COOKIE);
-        if ($auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 1){
-            print_r($auth->isAuth());
-        }else{
+        if ($auth->isAuth() != null && $auth->isAuth()['user']['user_type'] == 1){
             $this->requireView('home', []);
-
         }
     }
 
     public function StudentHome(){
         $auth = new Auth($_COOKIE);
-        if ($auth->isAuth() == null && $this->auth->isAuth()['user']['user_type'] != 2){
-            $this->requireView('inc/404_page', []);
-        }else{
+        if ($auth->isAuth() != null && $auth->isAuth()['user']['user_type'] == 2){
             $this->requireView('home_student', []);
         }
     }

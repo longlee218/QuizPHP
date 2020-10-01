@@ -388,8 +388,7 @@ require_once 'inc/master.php';
                        if (comeback_login ===  true){
                            window.location.href = data['url'];
                        }
-                   }
-                   if (data['success'] === 0){
+                   }else{
                        if (data['mess'] === "This email have been exists"){
                            $("#messages_email").html('*Email đã được đăng ký. Vui lòng thử email khác.');
                        }else if (data['mess'] === 'Please fill these fields'){

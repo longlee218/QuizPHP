@@ -63,6 +63,26 @@ class APIRoom extends Controller
         echo json_encode($data_return);
     }
 
+    public function getInfoRoom($id_room){
+        $data_return = [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $room_model = $this->requireModel('Room');
+                $room_obj = $room_model->selectAllByIDRoom($id_room);
+                if ($room_obj->num_rows <= 0){
+                    $data_return = $this->messages(false, 400, "Don't have this room");
+                }else{
+                    $data_return = $this->messages(true, 200, 'success', $room_obj->fetch_assoc());
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
     public function queryRoom($user_id){
         $data_return = [];
         if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){

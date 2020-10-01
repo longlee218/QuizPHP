@@ -391,7 +391,7 @@
                 success: function (data) {
                     console.log(data);
                     var mess = data['mess'];
-                    if (data['success'] === 0 ){
+                    if (data['success'] === false ){
                         if (mess === 'Email not valid'){
                             $('#email').addClass('error-actions');
                             $('#email').focus();
@@ -403,7 +403,7 @@
                         }else if (mess === 'Please fill these fields'){
                             alert('Vui lòng điền đầy đủ vào các trường');
                         }
-                    }if (data['success'] === 1){
+                    }else{
                         alert('Người dùng đã được thêm vào.');
                         $("#form-register-instructor")[0].reset();
                         $('#messages_email').empty();

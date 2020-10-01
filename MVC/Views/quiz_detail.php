@@ -166,8 +166,7 @@
 
     addQtnBtn.addEventListener("click", () => {
 
-        let qtnId = 0;
-
+        let qtnId = 1;
         if (qtnList.lastChild !== null) {
             qtnId = parseInt(qtnList.lastChild.id) + 1;
         }
@@ -343,7 +342,6 @@
             quiz.append('title', title);
             quiz.append('room_id', room_id);
             quiz.append('questions', JSON.stringify(question_data));
-
             $.ajax({
                 type: 'POST',
                 url: '/../QuizSys/APIThread/checkValidateQuiz',
@@ -364,6 +362,7 @@
                                     window.location.href = "/../QuizSys/QuizPage/listQuiz";
                                 }else{
                                     console.log(data);
+                                    alert(data['mess'])
                                 }
                             },
                             error: function (xhr, error) {
@@ -413,10 +412,10 @@
                 $('#content_thread #grade').val(data['grade']);
                 $('#list_room select').val(data['room_id']).change();
                 $.each(data['questions'], function (index, value) {
-                    console.log(index)
                     const qtnForm = document.createElement("div");
                     qtnForm.setAttribute("class", "qtn-form");
                     qtnForm.setAttribute("id", `${index+1}`);
+                    qtnForm.setAttribute('name', `${value['id']}`)
                     var qtnFormContent = `
                         <div class="row">
                             <div class="col-xl-1 qs_label">
@@ -440,7 +439,6 @@
                             </div>
                         <div class="col col-2 picture">
                             <div class="image-preview" name="inpFile">
-<!--                                    <div class="square"></div>-->
                                 <img src="${value['image']}" alt="Image preview" height="150" width="150" onclick="removeImg(this)" ">
                             </div>
                             <input class="mt-2" type="file" name="photo" id="${index}" accept=".gif, .png, .jpg, .jpeg" >

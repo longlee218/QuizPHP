@@ -1,4 +1,5 @@
 <?php include_once './MVC/Views/navbar.php'?>
+<?php include_once './MVC/Views/info.php' ?>
 <style>
     #content1{
         width: 500px;
@@ -33,19 +34,19 @@
 
     }
 </style>
-<div class="container-fluid">
-    <h1>This is Instructor Home</h1>
-    <div class="row">
-        <div id="content1">
-            <h2>dashboard</h2>
-        </div>
-        <div id="content2">
-            <h2>Info</h2>
-        </div>
-        <div id="content3">
-        </div>
-    </div>
-</div>
+<!--<div class="container-fluid">-->
+<!--    <h1>This is Instructor Home</h1>-->
+<!--    <div class="row">-->
+<!--        <div id="content1">-->
+<!--            <h2>dashboard</h2>-->
+<!--        </div>-->
+<!--        <div id="content2">-->
+<!--            <h2>Info</h2>-->
+<!--        </div>-->
+<!--        <div id="content3">-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 <?php include_once './MVC/Views/footer.php'?>
 <script>
 </script>

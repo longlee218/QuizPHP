@@ -301,8 +301,9 @@
            check_radio.checked = true;
        }
     }
+    var room_id = 0;
     $(document).on("click", ".button_edit", function () {
-        var room_id = $(this).data('id');
+        room_id = $(this).data('id');
         $("#edit .modal-content #Heading").html('Phòng số '+room_id);
         var room_name = $("#table_room tbody tr#"+room_id+" td.room_name").text();
         $("input[name='room_name']").val(room_name);
@@ -320,7 +321,7 @@
             success: function (data) {
                 if (data['success'] === true){
                     alert("Phòng đã được cập nhật.");
-                    loadListRoom(return_first);
+                   location.reload();
                 }else{
                     $('.modal-body .form-group #room_name_update').val('');
                     $('.modal-body .form-group #room_password').val('');
@@ -452,7 +453,7 @@
                     console.log(xhr, error);
                 }
             });
-        }, 60000);
+        }, 30000);
     }
     function hiddenChecked(check_radio){
         $('#setTime').on('hidden.bs.modal', function () {

@@ -36,6 +36,7 @@
     }
 
     const id_room =  getDetail()[0];
+    localStorage.setItem('id_room', id_room);
     $(document).ready(function () {
         $.ajax({
             type: 'GET',

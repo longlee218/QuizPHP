@@ -5,14 +5,7 @@ require_once __DIR__."/../core/controllers.php";
 
 class APIUpdateInfo extends Controller
 {
-//    private function messages($success, $status, $mess, $url=null){
-//        return array(
-//            "success"=>$success,
-//            "status"=>$status,
-//            "mess"=>$mess,
-//            "url"=>$url
-//        );
-//    }
+
     public function updateInfo(){
         $data_return = [];
         if ($this->auth->isAuth() == null){
@@ -27,8 +20,8 @@ class APIUpdateInfo extends Controller
                     $data_return = $this->messages(false, 400, "Error");
                 }else{
                     try {
-                        $user_model->updateInfoInstructor($data->id, $data->first_name, $data->last_name, $data->email, $data->gender,
-                            $data->country, $data->organization_name, $data->position);
+                        $user_model->updateInfo($data->id, $data->first_name, $data->last_name, $data->email, $data->gender,
+                            $data->country, $data->organization_name, $data->position, $data->school_name, $data->class_name);
                         $data_return =$this->messages(true, 200, "Update success");
                     }catch (Exception $exception){
                         $data_return = $this->messages(false, 500, $exception);

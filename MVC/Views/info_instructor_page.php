@@ -338,7 +338,7 @@ include_once './MVC/Views/navbar.php' ?>
                     <div class="form-group">
                         <div class="col-xs-12">
                             <br>
-                            <button class="btn  btn-" id="save" > Lưu</button>
+                            <button class="btn  btn-outline-success" id="save" > Lưu</button>
                             <button class="btn " type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
                         </div>
                     </div>
@@ -372,6 +372,8 @@ include_once './MVC/Views/navbar.php' ?>
                 country: country,
                 organization_name: org_name,
                 position: position,
+                school_name: '',
+                class_name: '',
                 id: id
             }
             console.log(data_post);

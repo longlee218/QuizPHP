@@ -28,9 +28,9 @@ class User extends Database {
     }
     public function selectAllByID($id){
         $fetch_user_by_id = "SELECT id, username, first_name, last_name,
-                               email, gender, user_type, country, school_name
+                               email, gender, user_type, country, school_name,
                                class_name, organization_name, organization_type, 
-                               `position`, city FROM users WHERE id=?";
+                               `position`, city, date_join FROM users WHERE id=?";
         $this->con->init();
         $stmt = $this->con->prepare($fetch_user_by_id);
         $stmt->bind_param("d", $id);
@@ -65,7 +65,7 @@ class User extends Database {
                         $gender, $organization_type, $organization_name, $position, $country, $city);
             $stmt->execute();
             $stmt->close();
-            return $this->selectUser($email);
+            return $this->con->insert_id;
     }
 
 
@@ -91,7 +91,7 @@ class User extends Database {
             $city);
         $stmt->execute();
         $stmt->close();
-        return $this->selectUser($email);
+        return $this->con->insert_id;
     }
 
 
@@ -153,13 +153,13 @@ class User extends Database {
             }
         }
     }
-    public function updateInfoInstructor($id, $first_name, $last_name, $email, $gender, $country, $organization_name, $position){
+    public function updateInfo($id, $first_name, $last_name, $email, $gender, $country, $organization_name, $position, $school_name, $class_name){
         try {
-            $query = "update users set first_name=?, last_name=?, email=?, gender=?, country=?, organization_name=?, position=? 
+            $query = "update users set first_name=?, last_name=?, email=?, gender=?, country=?, organization_name=?, `position`=?, school_name = ?, class_name = ? 
                         where id=?";
             $this->con->init();
             $stmt =  $this->con->prepare($query);
-            $stmt->bind_param("sssssssi", $first_name, $last_name, $email, $gender, $country, $organization_name, $position, $id);
+            $stmt->bind_param("sssssssssi", $first_name, $last_name, $email, $gender, $country, $organization_name, $position, $school_name, $class_name, $id);
             $stmt->execute();
             $stmt->close();
             return true;

@@ -196,7 +196,7 @@
 <!--                                    <div class="square"></div>-->
                                 <img src="" alt="Image preview" class="image-preview__image" >
                             </div>
-                            <input type="file" name="photo" onclick="previewImg(this)"/>
+                            <input class="mt-2" type="file" name="photo" accept="image/gif, imgage/png, image/jpg, image/jpeg"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
@@ -472,7 +472,7 @@
                                   case "Please fill the content of question":
                                       alert("Vui lòng điền nội dung câu hỏi");
                                       break;
-                                  case "'Please fill the content of answer":
+                                  case "Please fill the content of answer":
                                       alert("Vui lòng nhập nội dung câu trả lời");
                                       break;
                               }

@@ -14,7 +14,7 @@ class APIThread extends Controller
     public function checkValidateQuiz(){
         $data = $_POST;
         $data_return = [];
-        if (empty(trim($data['title'])) || empty(trim($data['room_id']))){
+        if (empty(trim($data['title'])) || trim($data['room_id']) == 'null'){
             $data_return = $this->messages(false, 400, 'Require title or Room ID');
         }
         else{
@@ -30,15 +30,20 @@ class APIThread extends Controller
                     else{
                         $list_choice = $question->choices;
                         $array_check = [];
+                        foreach ($list_choice as $index=>$choice){
+                            array_push($array_check, $choice->correct);
+                        }
+                        if (min($array_check) == max($array_check)){
+                            $data_return = $this->messages(0, 400, "Question can't wrong all or correct all");
+                        }else{
+                            $data_return = $this->messages(true, 200, "Validate data");
+                        }
                         foreach ($list_choice as $index => $choice){
                             if (empty(trim($choice->choice_content))){
                                 $data_return = $this->messages(false, 400, 'Please fill the content of answer');
-                            }else{
-                                array_push($array_check, $choice->correct);
+                                break;
                             }
                         }
-                        if (min($array_check) == 0 && max($array_check) == 0){$data_return = $this->messages(0, 400, "Question can't wrong all or correct all");}
-                        else{ $data_return = $this->messages(true, 200, "Validate data");}
                     }
                 }
             }else{
@@ -70,12 +75,12 @@ class APIThread extends Controller
                   $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
               }
           }
-          $data_return = $this->messages(true, 200, 'Success', 'null');
+          $data_return = $this->messages(true, 200, 'Success', null);
       }
         echo json_encode($data_return);
     }
 
-    public function load_file($index){
+    private function load_file($index){
         $value_file = [
             'image' => null,
             'image_name' => null,
@@ -119,7 +124,7 @@ class APIThread extends Controller
         echo json_encode($data_return);
     }
 
-    private function arrayGroupBy($array, $id){
+    private function arrayGroupBy($array){
         $groups = [];
         foreach( $array as $row ) array_push($groups, $row);
         return $groups;
@@ -131,9 +136,9 @@ class APIThread extends Controller
         if ($_SERVER['REQUEST_METHOD'] != 'GET'){
             $data_return = $this->messages(0, 405, "Not allow this method");
         }else{
-            $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread), $id_thread);
-            $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread), $id_thread);
-            $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoin($id_thread), $id_thread);
+            $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread));
+            $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread));
+            $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoin($id_thread));
 
             try {
                 foreach ($result_thread as $index=>$single_thread){
@@ -164,15 +169,14 @@ class APIThread extends Controller
            $data = $_POST;
            if (!array_key_exists('id', $data)){
                $data_return = $this->messages(false, 500, "Can't not update!");
-           }
-           else{
+           }else{
                $id_thread = $data['id'];
                $modelThread = $this->requireModel('Thread');
                $model_question = $this->requireModel('Question');
                $model_choices = $this->requireModel('Choices');
                $this_is_test = $modelThread->selectAllByID($id_thread)->fetch_assoc()['is_test'];
                if ($this_is_test != 0){
-                   $data_return = $this->messages(0, 500, "Can't not update!");
+                   $data_return = $this->messages(false, 500, "Can't not update!");
                }else{
                    try {
                        $modelThread->updateThread($data['id'], $data['grade'], $data['room_id'], $data['subject'], $data['title']);
@@ -185,7 +189,7 @@ class APIThread extends Controller
                                    $img = $value_file['image'];
                                    $img_name = $value_file['image_name'];
                                }else{
-                                   $img_name = "";
+                                   $img_name = null;
                                    $img = $single_question->src;
                                }
                                $id_question = $question_obj->createQuestion($single_question->explain, $img, $img_name ,$single_question->description, $id_thread)->fetch_assoc()['id'];
@@ -204,6 +208,8 @@ class APIThread extends Controller
         }
         echo json_encode($data_return);
     }
+
+
     public function deleteQuiz(){
         $data_return = [];
         if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
@@ -242,9 +248,9 @@ class APIThread extends Controller
             }else{
 
                 $data = [];
-                $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread), $id_thread);
-                $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread), $id_thread);
-                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoinNoCorrect($id_thread), $id_thread);
+                $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread));
+                $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread));
+                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoinNoCorrect($id_thread));
 
                 try {
                     foreach ($result_thread as $index=>$single_thread){
@@ -274,9 +280,10 @@ class APIThread extends Controller
         }
         echo json_encode($data_return);
     }
+
     private function arrayQuestionChoice($id_thread){
-        $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectIDByThreadID($id_thread), $id_thread);
-        $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectMainByThreadIDJoin($id_thread), $id_thread);
+        $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectIDByThreadID($id_thread));
+        $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectMainByThreadIDJoin($id_thread));
         foreach ($result_question as $i=>&$single_question){
             $single_question['choices'] = [];
             foreach ($result_choices as  $j => $single_choice){
@@ -286,6 +293,7 @@ class APIThread extends Controller
             }
             return $result_question;
         }
+        return  0;
     }
 
     public function submitAnswer(){
@@ -306,8 +314,9 @@ class APIThread extends Controller
                 $result_model = $this->requireModel('Result');
                 $time_start =  date( "Y-m-d H:i:s", strtotime($data->timeStart) );
                 $result_obj = $result_model->insertResult(0, $time_start);
-                $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectIDByThreadID($data->thread_id), $data->thread_id);
-                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectMainByThreadIDJoin($data->thread_id), $data->thread_id);
+                $this->requireModel('Thread')->setStatusThread($data->thread_id);
+                $result_question = $this->arrayGroupBy( $this->requireModel('Question')->selectIDByThreadID($data->thread_id));
+                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectMainByThreadIDJoin($data->thread_id));
                 foreach ($result_question as $i=>&$single_question){
                     $single_question['choices'] = [];
                     foreach ($result_choices as  $j => $single_choice){
@@ -357,87 +366,6 @@ class APIThread extends Controller
             }
         }
         return round($correct_answer/$total, 2);
-    }
-
-    public function exportQuiz($id_thread){
-        $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $data_return = $this->messages(0, 405, 'Not allowed this method');
-        }else{
-            $model_thread = $this->requireModel('Thread');
-            $thread_name = $model_thread->selectAllByID($id_thread)->fetch_assoc()['title'];
-//            $file_name =  $thread_name.'-'.$id_thread.'.xlsx';
-            try {
-//                $objExcel = new PHPExcel();
-//                $objExcel->setActiveSheetIndex(0);
-//                $sheet = $objExcel->getActiveSheet()->setTitle('Sheet '.$file_name);
-//                $row_count = 1;
-//                $style = array(
-//                    'alignment'=>array(
-//                        'horizontal'=> PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-//                    )
-//                );
-//                $objPHPExcel = new PHPExcel();
-//                $sheet = $objPHPExcel->getActiveSheet();
-//                $sheet->setCellValueByColumnAndRow(0, 1, "test");
-//                $sheet->mergeCells('A1:B1');
-//                $sheet->getStyle('A1')->getAlignment()->applyFromArray(
-//                    array('horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,)
-//                );
-//                $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-//                $objWriter->save('hello.xlsx');
-//                $objWriter->save($fileName);
-
-                $data = [
-                    ['Nguyễn Khánh Linh', 'Nữ', '500k'],
-                    ['Ngọc Trinh', 'Nữ', '700k'],
-                    ['Tùng Sơn', 'Không xác định', 'Miễn phí'],
-                    ['Kenny Sang', 'Không xác định', 'Miễn phí']
-                ];
-//Khởi tạo đối tượng
-                $excel = new PHPExcel();
-//Chọn trang cần ghi (là số từ 0->n)
-                $excel->setActiveSheetIndex(0);
-//Tạo tiêu đề cho trang. (có thể không cần)
-                $excel->getActiveSheet()->setTitle('demo ghi dữ liệu');
-
-//Xét chiều rộng cho từng, nếu muốn set height thì dùng setRowHeight()
-                $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
-                $excel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
-                $excel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
-
-//Xét in đậm cho khoảng cột
-                $excel->getActiveSheet()->getStyle('A1:C1')->getFont()->setBold(true);
-//Tạo tiêu đề cho từng cột
-//Vị trí có dạng như sau:
-                /**
-                 * |A1|B1|C1|..|n1|
-                 * |A2|B2|C2|..|n1|
-                 * |..|..|..|..|..|
-                 * |An|Bn|Cn|..|nn|
-                 */
-                $excel->getActiveSheet()->setCellValue('A1', 'Tên');
-                $excel->getActiveSheet()->setCellValue('B1', 'Giới Tính');
-                $excel->getActiveSheet()->setCellValue('C1', 'Đơn giá(/shoot)');
-// thực hiện thêm dữ liệu vào từng ô bằng vòng lặp
-// dòng bắt đầu = 2
-                $numRow = 2;
-                foreach ($data as $row) {
-                    $excel->getActiveSheet()->setCellValue('A' . $numRow, $row[0]);
-                    $excel->getActiveSheet()->setCellValue('B' . $numRow, $row[1]);
-                    $excel->getActiveSheet()->setCellValue('C' . $numRow, $row[2]);
-                    $numRow++;
-                }
-// Khởi tạo đối tượng PHPExcel_IOFactory để thực hiện ghi file
-// ở đây mình lưu file dưới dạng excel2007
-                PHPExcel_IOFactory::createWriter($excel, 'Excel2007')->save('data.xlsx');
-                PHPExcel_IOFactory::createWriter($excel, 'Excel2007')->save('php://output');
-            } catch (PHPExcel_Reader_Exception $e) {
-                echo $e;
-            } catch (PHPExcel_Exception $e) {
-                echo $e;
-            }
-        }
     }
 
     public function exportToPDF($id_thread){

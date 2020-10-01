@@ -5,7 +5,7 @@ require_once __DIR__."/../Middlewares/Auth.php";
 class RoomAction extends Controller
 {
     public function defaultFunction(){
-        $this->requireView("room_page");
+        $this->requireView("list_room");
     }
 
     public function roomContent($id){

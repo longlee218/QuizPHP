@@ -46,6 +46,9 @@ class APIRegister extends Controller {
                 else{
                     $user =  $user_model->insertInstructor($first_name, $last_name, $username, $email, $password, $gender,
                                                             $organization_type, $organization_name, $position, $country, $city);
+                    $room_model = $this->requireModel('Room');
+                    $room_name = 'Room'.$user;
+                    $room_model->createRoom($room_name, $user, null);
                     $returnData = $this->messages(true, 200, 'You are register success', '/../QuizSys/RegisterAccount/registerPageInstructor/');
                 }
             }

@@ -30,13 +30,13 @@
         </button>
         <div class="collapse navbar-collapse menu" id="navbarSupportedContent">
             <ul class="nav navbar-nav">
-                <li class="nav-item dropdown dropdown-menu-left">
+                <li class="nav-item dropdown dropdown-menu-left mt-2">
                     <a class="dropdown-toggle"  id="navbarDropdown" role="button" data-toggle="dropdown" ><i class="fa fa-user" aria-hidden="true"></i></a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <table class="ml-2">
                             <tr>
                                 <td><i class="fa fa-info" aria-hidden="true"></i></td>
-                                <td><a class="dropdown-item" href="/../QuizSys/ProfileStudent">Thông tin</a></td>
+                                <td><a class="dropdown-item" href="/../QuizSys/Profile/profileStudent">Thông tin</a></td>
                             </tr>
                             <tr>
                                 <td><i class="fa fa-graduation-cap" aria-hidden="true"></i></td>
@@ -47,9 +47,6 @@
                                 <td><a class="dropdown-item" id="btn_logout">Đăng xuất </a></td>
                             </tr>
                         </table>
-<!--                        <a class="dropdown-item" href="/../QuizSys/ProfileStudent"><i class="fa fa-info" aria-hidden="true"></i>Thông tin</a>-->
-<!--                        <a class="dropdown-item" href="/../QuizSys/ProfileStudent"><i class="fa fa-graduation-cap" aria-hidden="true"></i>Điểm cá nhân</a>-->
-<!--                        <a class="dropdown-item" id="btn_logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Đăng xuất </a>-->
                         <div class="dropdown-divider"></div>
                     </div>
                 </li>
