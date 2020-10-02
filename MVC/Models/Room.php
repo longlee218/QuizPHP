@@ -38,6 +38,20 @@ class Room extends Database
         $stmt->execute();
         return $stmt->get_result();
     }
+
+    public function selectClosestByID($user_id){
+        $query = "  select * from room
+                    where users_id = ?
+                    order by update_at desc
+                    limit 6";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        return $stmt->get_result();
+    }
+
+
     public function selectAllByIDRoom($id){
         $query = "select * from room where id = ?";
         $this->con->init();

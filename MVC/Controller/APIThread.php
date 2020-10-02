@@ -102,14 +102,15 @@ class APIThread extends Controller
         return $value_file;
     }
 
-    public function queryQuiz($id_room){
+    public function queryQuiz(){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'GET'){
             $data_return = $this->messages(false, 405, "Not allow this method");
         }else{
            if ($this->auth->isAuth() != null){
                $list_thread = [];
-               $result = $this->requireModel('Thread')->queryThreadByRoomID($id_room);
+               $id_user = $this->auth->isAuth()['user']['id'];
+               $result = $this->requireModel('Thread')->queryThreadByIDUser($id_user);
                if ($result->num_rows > 0){
                    while ($row = $result->fetch_assoc()){
                        array_push($list_thread, $row);

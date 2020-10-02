@@ -16,11 +16,6 @@
 
 <script>
 
-    // const backPage = () =>{
-    //     document.cookie = "AuthorizationRoom=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    // }
-    // backPage();
-
     const grade_data = {
         1: 'Trung học',
         2: 'Đại học',

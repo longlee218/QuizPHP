@@ -25,12 +25,12 @@ class Thread extends Database
         return $result;
     }
 
-    public function queryThreadByRoomID($room_id){
-        $query = 'select * from thread where (room_id=? and flag_delete = ?)';
+    public function queryThreadByIDUser($id_user){
+        $query = 'select * from thread where (user_id = ? and flag_delete = ?)';
         $flag_delete = '0';
         $this->con->init();
         $stmt = $this->con->prepare($query);
-        $stmt->bind_param('is', $room_id, $flag_delete);
+        $stmt->bind_param('is', $id_user, $flag_delete);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
@@ -95,5 +95,19 @@ class Thread extends Database
         $stmt->bind_param('si',$is_test, $id_thread);
         $stmt->execute();
         $stmt->close();
+    }
+
+    public function countThread($id_room){
+        $query = 'select count(room.id) as `SL`
+                    from room inner join room_thread rt on room.id = rt.room_id
+                    where room.id = ?
+                    group by room.id';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('i',$id_room);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
     }
 }

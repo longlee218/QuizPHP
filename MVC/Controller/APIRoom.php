@@ -83,7 +83,7 @@ class APIRoom extends Controller
         echo json_encode($data_return);
     }
 
-    public function queryRoom($user_id){
+    public function queryClosestRoom(){
         $data_return = [];
         if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
             $data_return = $this->messages(false, 401,'Invalid token');
@@ -93,6 +93,30 @@ class APIRoom extends Controller
                 $data_return = $this->messages(false, 405, 'Method not allow');
             }else{
                 $data = [];
+                $user_id = $this->auth->isAuth()['user']['id'];
+                $result = $this->room_model->selectClosestByID($user_id);
+                if ($result->num_rows > 0){
+                    while ($row = $result->fetch_assoc()){
+                        array_push($data, $row);
+                    }
+                    $data_return = $this->messages(true, 200,'Success',  $data);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    public function queryRoom(){
+        $data_return = [];
+        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
+            $data_return = $this->messages(false, 401,'Invalid token');
+        }
+        else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Method not allow');
+            }else{
+                $data = [];
+                $user_id = $this->auth->isAuth()['user']['id'];
                 $result = $this->room_model->selectAllByID($user_id);
                 if ($result->num_rows > 0){
                     while ($row = $result->fetch_assoc()){
@@ -100,6 +124,27 @@ class APIRoom extends Controller
                     }
                     $data_return = $this->messages(true, 200,'Success',  $data);
                 }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    public function countQuizInRoom($id){
+        $data_return = [];
+        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
+            $data_return = $this->messages(false, 401,'Invalid token');
+        }
+        else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Method not allow');
+            }else{
+                $thread_model = $this->requireModel('Thread');
+                $data = $thread_model->countThread($id);
+                $number = 0;
+                if ($data->num_rows > 0){
+                    $number = $data->fetch_assoc()['SL'];
+                }
+                $data_return = $this->messages(true, 200, 'success', $number);
             }
         }
         echo json_encode($data_return);

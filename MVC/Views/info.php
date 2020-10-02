@@ -5,11 +5,13 @@
         font-size: 15px;
     }
     .info-user{
-        width: 380px;
-        border-right-style: inset;
-        border-top-style: outset;
-        border-bottom-style: inset;
-        border-radius: 20px;
+        width: 350px;
+        /*height: 550px;*/
+        max-height: 700px;
+        /*border-right-style: inset;*/
+        /*border-top-style: outset;*/
+        /*border-bottom-style: inset;*/
+        /*border-radius: 20px;*/
         padding: 15px;
         margin-top: 20px;
         margin-bottom: 30px;
@@ -21,7 +23,7 @@
         margin-top: 15px;
     }
     .title{
-        font-size: 15px;
+        font-size: 13px;
         font-weight: bold;
     }
     .time_join{
@@ -37,12 +39,13 @@
 <div class="container-fluid">
     <div class="row">
         <div class="info-user">
-            <h3 class="username">
+            <h2 class="username">
                 <span id="username-big"></span>
                 <p id="username-small" style="font-size: 15px"></p>
-            </h3>
+            </h2>
             <div class="" id="position"></div>
-            <button class="btn btn-block btn-outline-info mt-4 mb-4" id="btn-edit" onclick="visibleForm(this)">Chỉnh sửa thông tin</button>
+            <button class="btn btn-block btn-outline-primary mt-4 mb-4" id="btn-edit" onclick="visibleForm(this)">
+                <small>Chỉnh sửa</small></button>
             <div id="more-info"></div>
             <hr>
             <div id="number_room"></div>
@@ -352,16 +355,17 @@
                     </div> <!-- form-group end.// -->
                     <div class="form-group col-md-6">
                         <label>Chức vụ</label>
-                        <input type="text" class="form-control" id="position">
+                        <input type="text" class="form-control" id="position_input">
                     </div> <!-- form-group end.// -->
                 </div><!-- form-row.// -->
                 <div class="form-group">
                     <div class="col-xs-12">
                         <br>
-                        <button class="btn btn-outline-success" id="save" > Lưu</button>
-                        <button class="btn" type="reset" id="cancel" onclick="backInfo()"><i class="glyphicon glyphicon-repeat"></i>Hủy</button>
+                        <button class="btn btn-outline-success" id="save"><small>Lưu</small></button>
+                        <button class="btn" type="reset" id="cancel" onclick="backInfo()"><small>Hủy</small></button>
                     </div>
                 </div>
+                <hr>
             </form>
             <div id="time_join" class="time_join text-secondary"></div>
         </div>
@@ -371,74 +375,123 @@
 
 <script>
     var selectRadioButton = (name, value) =>{
+
         $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
     }
+    var user_inf;
+    $(document).ready(function () {
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization')
+            },
+            url: "/../QuizSys/Home/infoUserJWT",
+            async: false,
+            success: (data) =>{
+                var user = JSON.parse(data)['user']
 
-    $.ajax({
-        method: 'GET',
-        headers: {
-            'Content-type': 'application/json',
-            'Authorization': getCookie('Authorization')
-        },
-        url: "/../QuizSys/Home/infoUserJWT",
-        success: (data) =>{
-            var user = JSON.parse(data)['user']
-            document.getElementById('username-big').innerHTML = user['username']
-            document.getElementById('username-small').innerHTML = user['username']
-            document.getElementById('position').innerHTML ='<span class="title">Chức vụ</span> '+ user['position']
-            document.getElementById('more-info').innerHTML = `
+                document.getElementById('username-big').innerHTML = user['username']
+                document.getElementById('username-small').innerHTML = user['username']
+                document.getElementById('position').innerHTML ='<span class="title mr-2">Chức vụ</span>'+ user['position']
+                document.getElementById('more-info').innerHTML = `
                 <table class="table table-hover">
                     <tr class="row-info" style="margin-top: 10px">
                         <td class="title"> Email</td>
-                        <td>${user['email']}</td>
+                        <td class="text-secondary">${user['email']}</td>
                     </tr>
                     <tr class="row-info">
                         <td class="title"> Quốc gia</td>
-                        <td>${user['country']}</td>
+                        <td class="text-secondary">${user['country']}</td>
                     </tr>
                     <tr class="row-info">
                         <td class="title">Thành phố</td>
-                        <td>${user['city']}</td>
+                        <td class='text-secondary'>${user['city']}</td>
                     </tr>
                     <tr class="row-info">
                         <td class="title">Số lượng phòng</td>
-                        <td>0</td>
+                        <td class="text-secondary">0</td>
                     </tr>
                     <tr class="row-info">
                         <td class="title">Số lượng đề</td>
-                        <td>0</td>
+                        <td class="text-secondary">0</td>
                     </tr>
                 </table>
             `
-            document.getElementById('time_join').innerHTML = 'Ngày tham gia '+ user['date_join']
+                document.getElementById('time_join').innerHTML = 'Ngày tham gia '+ user['date_join']
 
-            document.getElementById('first_name').value = user['first_name']
-            document.getElementById('last_name').value = user['last_name']
-            document.getElementById('email').value = user['email']
-            selectRadioButton("gender", user['gender']);
-            document.getElementById('city').value = user['city']
-            document.getElementById('country').value = user['country']
-            document.getElementById('organization_name').value = user['organization_name']
-            document.getElementById('position').value = user['position']
-        },
-        error: (xhr, error) =>{
-            console.log(xhr, error)
-        }
+                document.getElementById('first_name').setAttribute('value', user['first_name'])
+                document.getElementById('last_name').setAttribute('value', user['last_name'])
+                document.getElementById('email').setAttribute('value', user['email'])
+                selectRadioButton("gender", user['gender']);
+                document.getElementById('city').setAttribute('value', user['city'])
+                document.getElementById('country').setAttribute('value', user['country'])
+                document.getElementById('organization_name').setAttribute('value', user['organization_name'])
+                document.getElementById('position_input').setAttribute('value', user['position'])
+            },
+            error: (xhr, error) =>{
+                console.log(xhr, error)
+            }
+        })
     })
     const visibleForm = (e) =>{
-        console.log('haha')
         e.style.display = 'none'
         const info = document.getElementById('more-info')
         info.style.display = 'none'
-        var form_update = document.getElementById('form-update')
-        console.log(form_update)
+        const form_update = document.getElementById('form-update');
         form_update.style.display = 'block'
     }
     const backInfo = () =>{
         const form =  document.getElementById('form-update')
         form.style.display = 'none'
-        form.reset()
         document.getElementById('more-info').style.display = 'block'
         document.getElementById('btn-edit').style.display = 'block'
     }
+    $('#save').click( () =>{
+        const email = document.getElementById('email').value
+        const first_name  = document.getElementById('first_name').value
+        const last_name = document.getElementById('last_name').value
+        const city = document.getElementById('city').value
+        const country =  document.getElementById('country').value
+        const org_name = document.getElementById('organization_name').value
+        const position =  document.getElementById('position_input').value
+        const gender = $('input[name="gender"]:checked').val();
+        const data_post = {
+            email:email,
+            first_name: first_name,
+            last_name: last_name,
+            city: city,
+            gender: gender,
+            country: country,
+            organization_name: org_name,
+            position: position,
+            school_name: '',
+            class_name: '',
+            id: id
+        }
+        console.log(data_post)
+        $.ajax({
+            method: 'POST',
+            url: "/../QuizSys/APIUpdateInfo/updateInfo",
+            headers:{
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization')
+            },
+            data: JSON.stringify(data_post),
+            success: (data) =>{
+                console.log(data)
+                if (data['success'] === true){
+                    alert('Thông tin đã được cập nhật!')
+                    location.reload()
+                }else{
+                    console.log(data['mess'])
+                }
+
+            },
+            error: (xhr, error) =>{
+                console.log(xhr, error)
+            }
+        })
+        return false
+    })
 </script>
