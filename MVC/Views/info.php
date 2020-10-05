@@ -34,9 +34,12 @@
         display: none;
         font-size: 13px;
     }
+    .content{
+        min-height: 100%;
+    }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid content">
     <div class="row">
         <div class="info-user">
             <h2 class="username">

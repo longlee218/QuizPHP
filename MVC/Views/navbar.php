@@ -1,20 +1,10 @@
 <?php include_once './MVC/Views/inc/master.php'?>
 
 <style>
-    .main, navbar-expand-lg,.page-footer {
+    .main, navbar-expand-lg-footer{
         background-color: rgb(119, 170, 209);
+        padding: 10px;
         border: none;
-    }
-    .page-footer {
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        color: white;
-        text-align: center;
-        padding: 15px;
-        /*position: absolute;*/
-        height: 100px;
-        overflow: hidden;
     }
     #username {
         text-align: center;
@@ -108,6 +98,18 @@
         background-color: white;
         color: black;
     }
+
+    .search-user{
+        width: 20%;
+        height: 30px;
+        font-size: 14px;
+        padding: 5px;
+    }
+    .logo{
+        margin-right: 10px;
+        border-radius: 50%;
+
+    }
 </style>
 <body style="position: relative; width: 100%">
     <div class="main">
@@ -117,36 +119,50 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="text-size" href="/../QuizSys/Home/InstructorHome" >Trang chủ <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="text-size" href="/../QuizSys/QuizPage/listQuiz/">Bộ đề <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class=" text-size" href="/../QuizSys/RoomAction">Phòng thi <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="text-size" href="#">Báo cáo <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active text-size">
-                    <a class="text-size" href="#">Kết quả <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active text-size">
-                    <a class="text-size" href="/../QUizSys/RegisterAccount/registerPageInstructor/">Thêm người dùng <span class="sr-only">(current)</span></a>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav mr-lg-5 navbar-left">
-                <li class="nav-item dropdown">
-                    <a class="dropdown-toggle"  id="navbarDropdown" role="button" data-toggle="dropdown" ><i class="fa fa-user" aria-hidden="true"></i></a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/../QuizSys/Profile/"><i class="fa fa-info" aria-hidden="true"></i> Thông tin</a>
-                        <a class="dropdown-item" id="btn_logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Đăng xuất </a>
+<!--            <ul class="navbar-nav mr-auto">-->
+<!--                <li class="nav-item active">-->
+<!--                    <a class="text-size" href="/../QuizSys/Home/InstructorHome" >Trang chủ <span class="sr-only">(current)</span></a>-->
+<!--                </li>-->
+<!--                <li class="nav-item active">-->
+<!--                    <a class="text-size" href="/../QuizSys/QuizPage/listQuiz/">Bộ đề <span class="sr-only">(current)</span></a>-->
+<!--                </li>-->
+<!--                <li class="nav-item active">-->
+<!--                    <a class=" text-size" href="/../QuizSys/RoomAction">Phòng thi <span class="sr-only">(current)</span></a>-->
+<!--                </li>-->
+<!--                <li class="nav-item active">-->
+<!--                    <a class="text-size" href="#">Báo cáo <span class="sr-only">(current)</span></a>-->
+<!--                </li>-->
+<!--                <li class="nav-item active text-size">-->
+<!--                    <a class="text-size" href="#">Kết quả <span class="sr-only">(current)</span></a>-->
+<!--                </li>-->
+<!--                <li class="nav-item active text-size">-->
+<!--                    <a class="text-size" href="/../QUizSys/RegisterAccount/registerPageInstructor/">Thêm người dùng <span class="sr-only">(current)</span></a>-->
+<!--                </li>-->
+<!--            </ul>-->
+            <label>
+                <img src="https://cdn.itviec.com/employers/akb-software/logo/social/Py3iphNer3jdBBKkuMFL3oU4/akb-software-logo.png" width="50px" height="50px" class="logo">
+            </label>
+            <input type="text" name="searchUser" class="form-control search-user" placeholder="Tìm người dùng...">
+            <div class="btn-group ml-auto">
+                <div class="btn-group dropleft" role="group">
+                    <button type="button"  class="btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color:  rgb(119, 170, 209);">
+                        <span class="sr-only">Toggle Dropleft</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <small><a class="dropdown-item" href="/../QuizSys/Home/InstructorHome"><i class="fa fa-info" aria-hidden="true"></i> Thông tin</a></small>
+                        <small><a class="dropdown-item" href="/../QuizSys/Home/InstructorHome"><i class="fa fa-home" aria-hidden="true"></i> Trang chủ</a></small>
+                        <small><a class="dropdown-item" href="/../QuizSys/Home/InstructorHome"><i class="fa fa-graduation-cap" aria-hidden="true"></i> Phòng </a></small>
+                        <small><a class="dropdown-item" href="/../QuizSys/Home/InstructorHome"><i class="fa fa-book" aria-hidden="true"></i> Kho đề</a></small>
+                        <hr>
+                        <small><a class="dropdown-item" id="btn_logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Đăng xuất </a>
+                        </small>
                         <div class="dropdown-divider"></div>
                     </div>
-                </li>
-            </ul>
+                </div>
+                <button type="button" class="btn" style="background-color:  rgb(119, 170, 209);">
+                    <i class="fa fa-user mr-5" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
     </nav>
 </div>

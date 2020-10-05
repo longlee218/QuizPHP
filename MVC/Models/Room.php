@@ -129,6 +129,15 @@ class Room extends Database
         return $result;
     }
 
+    public function updateStatus($id, $status){
+        $query = "update room set status=? where id = ?";
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("si", $status, $id);
+        $stmt->execute();
+        $stmt->close();
+        return true;
+    }
 
     public function setOnline($room_id){
         $status = '1';
@@ -162,13 +171,12 @@ class Room extends Database
         return $result;
     }
 
-    public function findByName($room_name){
-        $query = 'select * from room where room_name like ? and status = ?';
+    public function findByName($room_name, $users_id){
+        $query = 'select * from room where room_name like ? and users_id = ?';
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $room_name = "%".$room_name."%";
-        $status = '1';
-        $stmt->bind_param('ss', $room_name, $status);
+        $stmt->bind_param('si', $room_name, $users_id);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();

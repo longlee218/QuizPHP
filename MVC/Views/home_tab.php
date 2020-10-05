@@ -24,7 +24,7 @@
                 console.log(data)
                 if (data['success'] === true){
                     if (data['data'].length === 0){
-                        document.getElementById('list-room').innerHTML = '<h4>Khong co de</h4>'
+                        document.getElementById('list-room').innerHTML = '<h4>Không có đề </h4>'
                     }else{
                         $.each(data['data'], function (index, value) {
                             console.log(value)
@@ -39,7 +39,6 @@
                                                 <small class="col col-md-6">Số đề 0</small>
                                                 <small class="col col-md-6">Lượng truy cập 120</small>
                                             </div>
-                                            <a href="#" class="btn btn-sm btn-outline-primary mt-2">Chỉnh sửa</a>
                                         </div>
                                         <div class="card-footer">
                                             <small class="text-muted">Lần cập nhật cuối ${value['update_at']} </small>

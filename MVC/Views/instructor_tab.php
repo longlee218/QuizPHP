@@ -67,7 +67,9 @@
         </div>
     </div>
 </div>
+
 <script>
+
     $(document).ready(function () {
         $.ajax({
             method: 'GET',

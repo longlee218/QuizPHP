@@ -10,15 +10,37 @@ class APIRoom extends Controller
         parent::__construct();
         $this->room_model = $this->requireModel('Room');
     }
+    private function checkValidateRoom(&$data_return, $room_model){
+        if ($room_model->checkRoomNameExist($data->room_name)){
+            $data_return = $this->messages(false, 400, 'Try other name');
+            return false;
+        }
+        return true;
+    }
 
-//    private function messages($success, $messages, $type, $data=null){
-//        return [
-//            "success"=>$success,
-//            "messages"=>$messages,
-//            "type"=>$type,
-//            "data"=>$data
-//        ];
-//    }
+    public function createNewRoom(){
+        $data_return = [];
+        if ($this->auth->isAuth() === null || $this->auth->isAuth()['user']['user_type'] != 1){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                $user_id = $this->auth->isAuth()['user']['id'];
+                $room_model = $this->requireModel('Room');
+                if ($this->checkValidateRoom($data_return, $room_model)){
+                    if ($room_model->createRoom($data->room_name, $user_id ,md5($data->password))){
+                        $data_return = $this->messages(true, 200, 'Success');
+                    }else{
+                        $data_return = $this->messages(false, 500, 'Error');
+                    }
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
     public function createRoom(){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){
@@ -57,6 +79,26 @@ class APIRoom extends Controller
                         $this->room_model->updateRoom($data['room_id'], $data['room_name'], $password_hash);
                         $data_return = $this->messages(true, 200, 'Update success');
                     }
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    public function changeStatus($id){
+        $data_return = [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'PUT'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                $room_model = $this->requireModel('Room');
+                if (!$room_model->updateStatus($id, $data->status)){
+                    $data_return = $this->messages(false, 500, 'error');
+                }else{
+                    $data_return = $this->messages(true, 200, 'change status success');
                 }
             }
         }
@@ -130,7 +172,6 @@ class APIRoom extends Controller
     }
 
     public function countQuizInRoom($id){
-        $data_return = [];
         if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
             $data_return = $this->messages(false, 401,'Invalid token');
         }
@@ -278,7 +319,7 @@ class APIRoom extends Controller
 
     public function searchRoom($room_name=null){
         $data_return = [];
-        if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 2){
+        if ($this->auth->isAuth() == null){
             $data_return = $this->messages(false, 401, 'Invalid token');
         }else{
             if ($_SERVER['REQUEST_METHOD'] != 'GET'){
@@ -287,7 +328,8 @@ class APIRoom extends Controller
                 $array_value_return = [];
                 try {
                     $room_model = $this->requireModel('Room');
-                    $room_object = $room_model->findByName($room_name);
+                    $user_id = $this->auth->isAuth()['user']['id'];
+                    $room_object = $room_model->findByName($room_name, $user_id);
                     if ($room_object->num_rows > 0){
                         while ($row = $room_object->fetch_assoc()){
                             array_push($array_value_return, $row);
