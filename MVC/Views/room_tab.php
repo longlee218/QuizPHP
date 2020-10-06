@@ -14,49 +14,13 @@
 <div class="room-list pt-4">
     <div class="row" id="search_room">
         <input class="form-control col-md-10" oninput="searchRoom(this.value)" placeholder="Tìm phòng..">
-        <button class="btn btn-secondary ml-1 mr-1"><small><i class="fa fa-sort" aria-hidden="true"></i></small></button>
-        <div class="btn btn-lg btn-outline-success" data-toggle="modal" data-target="#modalCreateRoom" data-whatever="@mdo">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-        </div>
+        <button class="btn btn-success ml-3" onclick="window.location.href = '/../QuizSys/RoomAction/createRoom/'"><small>Thêm phòng</small></button>
+        <hr>
     </div>
     <div id="room" class="room-list mt-3">
         <div class="list-room" id="list-room-detail"></div>
     </div>
 
-<!--    Modal create new Room form-->
-    <div class="modal fade" id="modalCreateRoom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content" id="modalCreateRoom">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tạo phòng mới</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">Tên phòng:</label>
-                            <input type="text" class="form-control" id="room_name">
-                            <small class="text-danger" id="message_room"></small>
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">Mật khẩu:</label>
-                            <input  class="form-control" id="password" type="password" placeholder="*********">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">Nhập lại mật khẩu:</label>
-                            <input  class="form-control" id="password-confirm" type="password" placeholder="*********">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-success" id="create_room" data-dismiss="modal">Lưu</button>
-                </div>
-            </div>
-        </div>
-    </div>
 <!--    Modal edit room form-->
     <div class="modal fade" id="changeStatus" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
         <div class="modal-dialog modal-sm">
@@ -85,8 +49,8 @@
 <script>
 
     const statusRoom = {
-        0: 'Công khai',
-        1: 'Riêng tư'
+        0: '<i class="fa fa-unlock" aria-hidden="true"></i>',
+        1: '<i class="fa fa-lock" aria-hidden="true"></i>'
     }
 
     function searchRoom(value){
@@ -105,18 +69,18 @@
                     }else{
                         $.each(data['data'], (index, value) => {
                             const number_quiz =  count_quiz(value['id'])
-                            let btnStatus = `<button class="btn btn-outline-success float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                            let btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                             if (value['status'] === "1"){
-                                btnStatus = `<button class="btn btn-outline-warning float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                             }
                             $('#list-room-detail:last-child').append(`
                                  <div class="room-detail" name="${value['id']}">
-                                    <div class="row">
-                                        <div class="col col-md-10">
-                                            <a href="#"><h5>Phòng: ${value['room_name']}</h5></a>
+                                     <div class="row">
+                                        <div class="col col-md-11">
+                                              <a href="#"><h5>Phòng: ${value['room_name']}</h5></a>
                                         </div>
-                                        <div class="col col-md-2">
-                                            ${btnStatus}
+                                         <div class="col col-md-1">
+                                              ${btnStatus}
                                         </div>
                                     </div>
                                    <div class="row mt-2">
@@ -150,7 +114,6 @@
                 'Authorization': getCookie('Authorization')
             },
             success: (data) => {
-                console.log(data)
                 if (data['success'] === true){
                     number = data['data']
                 }
@@ -162,39 +125,6 @@
         return number
     }
 
-    $('#create_room').click(function() {
-        const room_name = document.getElementById('room_name').value
-        const password = document.getElementById('password').value
-        const password_confirm = document.getElementById('password-confirm').value
-        if (password !== password_confirm){
-            alert('Mật khẩu không khớp')
-        }else{
-            const data = {
-                room_name: room_name,
-                password: password
-            }
-            $.ajax({
-                method: 'POST',
-                url: '/../QuizSys/APIRoom/createNewRoom',
-                headers: {
-                    'Content-type': 'application/json',
-                    'Authorization': getCookie('Authorization')
-                },
-                data: JSON.stringify(data),
-                success: (data) => {
-                    if (data['success'] === true){
-                        alert('Phòng đã được tạo')
-                        $('#modalCreateRoom').find('form').trigger('reset')
-                        $('#modalCreateRoom').modal('hide')
-                        document.getElementById('list-room-detail').innerHTML = ''
-                        queryRoom()
-                    }else{
-                        alert(data['mess'])
-                    }
-                }
-            })
-        }
-    })
     function queryRoom(){
         $(document).ready(function () {
             $.ajax({
@@ -206,21 +136,24 @@
                 },
                 success: (data) =>{
                     if (data['success'] === true){
-                        $.each(data['data'], (index, value) =>{
-                            const number_quiz =  count_quiz(value['id'])
-                            let btnStatus = `<button class="btn btn-outline-success float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
-                            if (value['status'] === "1"){
-                                btnStatus = `<button class="btn btn-outline-warning float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
-                            }
-                            $('#list-room-detail:last-child').append(`
+                        if (data['data'].length === 0){
+                            document.getElementById('list-room-detail').innerHTML = '<h5>Danh sách của bạn trống</h5>'
+                        }else{
+                            $.each(data['data'], (index, value) =>{
+                                const number_quiz =  count_quiz(value['id'])
+                                let btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                if (value['status'] === "1"){
+                                    btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                }
+                                $('#list-room-detail:last-child').append(`
                             <div class="room-detail" name="${value['id']}">
                                 <div class="row">
-                                    <div class="col col-md-10">
-                                        <a href="#"><h5>Phòng: ${value['room_name']}</h5></a>
-                                    </div>
-                                    <div class="col col-md-2">
-                                        ${btnStatus}
-                                    </div>
+                                        <div class="col col-md-11">
+                                              <a href="#"><h5>Phòng: ${value['room_name']}</h5></a>
+                                        </div>
+                                         <div class="col col-md-1">
+                                              ${btnStatus}
+                                        </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col col-md-10">
@@ -234,7 +167,8 @@
                                 <p class="text-secondary"> Cập nhật: ${value['update_at']}</p>
                             </div>
                         `)
-                        })
+                            })
+                        }
                     }
                 },
                 error: (xhr, error) =>{

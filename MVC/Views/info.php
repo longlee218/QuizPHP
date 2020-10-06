@@ -47,8 +47,8 @@
                 <p id="username-small" style="font-size: 15px"></p>
             </h2>
             <div class="" id="position"></div>
-            <button class="btn btn-block btn-outline-primary mt-4 mb-4" id="btn-edit" onclick="visibleForm(this)">
-                <small>Chỉnh sửa</small></button>
+            <button class="btn btn-block mt-4 mb-4 border-dark" id="btn-edit" onclick="visibleForm(this)">
+                <small class="font-weight-bold">Chỉnh sửa</small></button>
             <div id="more-info"></div>
             <hr>
             <div id="number_room"></div>

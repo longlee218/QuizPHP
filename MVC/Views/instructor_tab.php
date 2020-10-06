@@ -61,7 +61,9 @@
                 <div class="tab-pane pade" id="nav-room" role="tabpanel" aria-labelledby="nav-room-tab">
                     <?php require_once './MVC/Views/room_tab.php'?>
                 </div>
-                <div class="tab-pane pade" id="nav-store-quiz" role="tabpanel" aria-labelledby="nav-store-quiz-tab">This is quiz</div>
+                <div class="tab-pane pade" id="nav-store-quiz" role="tabpanel" aria-labelledby="nav-store-quiz-tab">
+                    <?php require_once './MVC/Views/quiz_tab.php'?>
+                </div>
                 <div class="tab-pane pade" id="nav-result" role="tabpanel" aria-labelledby="nav-result-tab">This is result</div>
             </div>
         </div>
@@ -79,6 +81,7 @@
                 'Authorization': getCookie('Authorization')
             },
             success: (data) => {
+                console.log(data)
                 if (data['success'] === true){
                     const count = data['data'].length
                     if (count === 0){
@@ -97,7 +100,6 @@
                 'Authorization': getCookie('Authorization')
             },
             success: (data) =>{
-                console.log(data)
                 if (data['success'] === true){
                     const count = data['data'].length
                     if (count === 0){

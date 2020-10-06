@@ -18,12 +18,12 @@ class Room extends Database
         }
         return false;
     }
-    public function createRoom($room_name, $id, $password=null){
-        $query = "insert into room(room_name, password, users_id) value (?, ?, ?)";
+    public function createRoom($room_name, $id, $status, $description ,$password=null){
+        $query = "insert into room(room_name, password, status, `description`, users_id) value (?, ?, ?, ?, ?)";
         $this->con->init();
         try {
             $stmt = $this->con->prepare($query);
-            $stmt->bind_param("ssi", $room_name, $password, $id);
+            $stmt->bind_param("ssssi", $room_name, $password, $status , $description , $id);
             $stmt->execute();
             return true;
         }catch (Exception $exception){

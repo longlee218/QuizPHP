@@ -10,7 +10,7 @@ class APIRoom extends Controller
         parent::__construct();
         $this->room_model = $this->requireModel('Room');
     }
-    private function checkValidateRoom(&$data_return, $room_model){
+    private function checkValidateRoom(&$data_return, $room_model, $data){
         if ($room_model->checkRoomNameExist($data->room_name)){
             $data_return = $this->messages(false, 400, 'Try other name');
             return false;
@@ -29,8 +29,8 @@ class APIRoom extends Controller
                 $data = json_decode(file_get_contents('php://input'));
                 $user_id = $this->auth->isAuth()['user']['id'];
                 $room_model = $this->requireModel('Room');
-                if ($this->checkValidateRoom($data_return, $room_model)){
-                    if ($room_model->createRoom($data->room_name, $user_id ,md5($data->password))){
+                if ($this->checkValidateRoom($data_return, $room_model, $data)){
+                    if ($room_model->createRoom($data->room_name, $user_id ,$data->status, $data->description ,md5($data->password))){
                         $data_return = $this->messages(true, 200, 'Success');
                     }else{
                         $data_return = $this->messages(false, 500, 'Error');
@@ -165,6 +165,8 @@ class APIRoom extends Controller
                         array_push($data, $row);
                     }
                     $data_return = $this->messages(true, 200,'Success',  $data);
+                }else{
+                    $data_return = $this->messages(true, 200,'Dont have', []);
                 }
             }
         }

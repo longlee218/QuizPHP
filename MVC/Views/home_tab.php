@@ -21,15 +21,13 @@
                 'Authorization': getCookie('Authorization')
             },
             success: (data) =>{
-                console.log(data)
                 if (data['success'] === true){
                     if (data['data'].length === 0){
                         document.getElementById('list-room').innerHTML = '<h4>Không có đề </h4>'
                     }else{
                         $.each(data['data'], function (index, value) {
-                            console.log(value)
                             $('#list-room').append(`
-                                <div class="col-md-6 mb-5">
+                                <div class="col-md-6 mb-3">
                                     <div class="card">
                                         <div class="card-header">
                                             <a href="#"><h4 class="card-title">${value['room_name']}</h4></a>

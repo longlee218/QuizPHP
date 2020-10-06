@@ -2,15 +2,16 @@
 
 <style>
     .main, navbar-expand-lg-footer{
-        background-color: rgb(119, 170, 209);
+        background-color: rgb(26, 24, 24);
         padding: 10px;
         border: none;
     }
-    #username {
-        text-align: center;
-        font-size: x-large;
-        padding: 40px;
-    }
+    /*rgb(119, 170, 209)*/
+    /*#username {*/
+    /*    text-align: center;*/
+    /*    font-size: x-large;*/
+    /*    padding: 40px;*/
+    /*}*/
     .text-size {
         font-style: unset;
         color: white;
@@ -96,12 +97,12 @@
     }
     .dropdown-item:active{
         background-color: white;
-        color: black;
+        color: rgb(26, 24, 24);
     }
 
     .search-user{
-        width: 20%;
-        height: 30px;
+        width: 30%;
+        height: 35px;
         font-size: 14px;
         padding: 5px;
     }
@@ -113,41 +114,18 @@
 </style>
 <body style="position: relative; width: 100%">
     <div class="main">
-<!--    <div class="text-center text-size text-uppeercase" id="username"></i></div>-->
     <nav class="navbar navbar-expand-lg navbar-light ">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-<!--            <ul class="navbar-nav mr-auto">-->
-<!--                <li class="nav-item active">-->
-<!--                    <a class="text-size" href="/../QuizSys/Home/InstructorHome" >Trang chủ <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item active">-->
-<!--                    <a class="text-size" href="/../QuizSys/QuizPage/listQuiz/">Bộ đề <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item active">-->
-<!--                    <a class=" text-size" href="/../QuizSys/RoomAction">Phòng thi <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item active">-->
-<!--                    <a class="text-size" href="#">Báo cáo <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item active text-size">-->
-<!--                    <a class="text-size" href="#">Kết quả <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item active text-size">-->
-<!--                    <a class="text-size" href="/../QUizSys/RegisterAccount/registerPageInstructor/">Thêm người dùng <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--            </ul>-->
-            <label>
-                <img src="https://cdn.itviec.com/employers/akb-software/logo/social/Py3iphNer3jdBBKkuMFL3oU4/akb-software-logo.png" width="50px" height="50px" class="logo">
-            </label>
             <input type="text" name="searchUser" class="form-control search-user" placeholder="Tìm người dùng...">
             <div class="btn-group ml-auto">
                 <div class="btn-group dropleft" role="group">
-                    <button type="button"  class="btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color:  rgb(119, 170, 209);">
-                        <span class="sr-only">Toggle Dropleft</span>
+                    <button type="button"  class="btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: white">
+                        <span class="sr-only "></span>
                     </button>
+
                     <div class="dropdown-menu">
                         <small><a class="dropdown-item" href="/../QuizSys/Home/InstructorHome"><i class="fa fa-info" aria-hidden="true"></i> Thông tin</a></small>
                         <small><a class="dropdown-item" href="/../QuizSys/Home/InstructorHome"><i class="fa fa-home" aria-hidden="true"></i> Trang chủ</a></small>
@@ -159,8 +137,9 @@
                         <div class="dropdown-divider"></div>
                     </div>
                 </div>
-                <button type="button" class="btn" style="background-color:  rgb(119, 170, 209);">
-                    <i class="fa fa-user mr-5" aria-hidden="true"></i>
+                <button type="button" class="btn btn-outline-light">
+                    <i class="fa fa-user fa-1x" aria-hidden="true"></i>
+                    <span id="username" class="mr-3"></span>
                 </button>
             </div>
         </div>

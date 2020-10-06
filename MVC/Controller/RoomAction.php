@@ -16,4 +16,13 @@ class RoomAction extends Controller
             $this->requireView("inc/404_page");
         }
     }
+
+    public function createRoom(){
+        $auth = new Auth($_COOKIE);
+        if ($auth->isAuth() == null || $auth->isAuth()['user']['user_type'] != 1){
+            $this->requireView('inc/404_page');
+        }else{
+            $this->requireView('create_room');
+        }
+    }
 }

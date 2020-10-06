@@ -107,3 +107,10 @@ alter table question
 
 alter table question
     add image_name longtext;
+
+
+alter table room
+               add description longtext null
+
+alter table thread
+               add description longtext null
