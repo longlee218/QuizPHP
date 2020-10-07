@@ -71,6 +71,28 @@
 </div>
 
 <script>
+    function findGetParameter(parameterName) {
+        var result = null,
+            tmp = [];
+        location.search
+            .substr(1)
+            .split("&")
+            .forEach(function (item) {
+                tmp = item.split("=");
+                if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+            });
+        return result;
+    }
+    const tab =  findGetParameter('tab')
+    const tab_id = ['nav-home', 'nav-room', 'nav-store-quiz', 'nav-result']
+    if (tab_id.includes(tab)){
+        const tab_active = tab+'-tab'
+        $('#nav-home-tab').removeClass('active')
+        $('#'+tab_active).addClass('active')
+        $('#nav-home').removeClass('show active')
+        $('#'+tab).addClass('show active')
+    }
+
 
     $(document).ready(function () {
         $.ajax({

@@ -13,16 +13,25 @@ class RoomAction extends Controller
         if ($auth->isAuth() != null && $auth->isAuth()['user']['user_type'] == 2){
             $this->requireView("room_detail_student");
         }else{
-            $this->requireView("inc/404_page");
+            $this->requireView("login_page");
         }
     }
 
     public function createRoom(){
         $auth = new Auth($_COOKIE);
         if ($auth->isAuth() == null || $auth->isAuth()['user']['user_type'] != 1){
-            $this->requireView('inc/404_page');
+            $this->requireView('login_page');
         }else{
             $this->requireView('create_room');
+        }
+    }
+
+    public function roomDetail($room_name){
+        $auth = new Auth($_COOKIE);
+        if ($auth->isAuth() == null){
+            $this->requireView('login_page');
+        }else{
+            $this->requireView('room_detail');
         }
     }
 }

@@ -52,7 +52,7 @@
                     console.log(data)
                     if (data['success'] === true){
                         setTimeout(function () {
-                            window.location.href = data['url'];
+                            window.location.replace(data['url']);
                         },1000)
                         console.log(data['url'])
                     }

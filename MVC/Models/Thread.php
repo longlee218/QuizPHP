@@ -7,16 +7,18 @@ class Thread extends Database
     public function defaultFunction(){
         echo $this->model;
     }
-    public function insertThread($title, $subject, $grade, $room_id){
-        $query = "insert into thread(title, subject, grade, room_id) values 
-                    (?, ?, ?, ?)";
+    public function insertThread($title, $subject, $grade, $description, $user_id){
+        $query = " insert into thread  (title, subject, grade, description, user_id) 
+                   values              (  ?  ,    ?   ,   ?  ,      ?     ,    ?   ) ";
         $this->con->init();
         $stmt = $this->con->prepare($query);
-        $stmt->bind_param("sssi", $title, $subject, $grade, $room_id);
+        $stmt->bind_param("ssssi", $title, $subject, $grade, $description, $user_id);
         $stmt->execute();
         $id =  $stmt->insert_id;
         $stmt->close();
-        $query = "select * from thread where id=?";
+        $query = " select    * 
+                   from      thread 
+                   where     id = ? ";
         $stmt = $this->con->prepare($query);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -26,7 +28,7 @@ class Thread extends Database
     }
 
     public function queryThreadByIDUser($id_user){
-        $query = 'select * from thread where (user_id = ? and flag_delete = ?)';
+        $query = 'select * from thread where (user_id = ? and flag_delete = ?) order by update_at desc';
         $flag_delete = '0';
         $this->con->init();
         $stmt = $this->con->prepare($query);
@@ -74,6 +76,20 @@ class Thread extends Database
             return 0;
         }
     }
+
+    public function findByTitleLikeUser($user_id, $title){
+        $query = 'select * from thread where (user_id = ? and flag_delete = ? and title like ?) order by update_at desc ';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $title = '%'.$title.'%';
+        $flag_delete = '0';
+        $stmt->bind_param('iss',$user_id, $flag_delete, $title);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+
 
     public function findByTitleLike($id_room, $title){
         $query = 'select * from thread where (room_id = ? and flag_delete = ? and title like ?)';

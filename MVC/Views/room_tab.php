@@ -14,7 +14,8 @@
 <div class="room-list pt-4">
     <div class="row" id="search_room">
         <input class="form-control col-md-10" oninput="searchRoom(this.value)" placeholder="Tìm phòng..">
-        <button class="btn btn-success ml-3" onclick="window.location.href = '/../QuizSys/RoomAction/createRoom/'"><small>Thêm phòng</small></button>
+        <button class="btn btn-success ml-3" onclick="window.location.href = '/../QuizSys/RoomAction/createRoom/'"><i class="fa fa-star-o" aria-hidden="true"></i>
+            Thêm phòng</button>
         <hr>
     </div>
     <div id="room" class="room-list mt-3">
@@ -52,6 +53,10 @@
         0: '<i class="fa fa-unlock" aria-hidden="true"></i>',
         1: '<i class="fa fa-lock" aria-hidden="true"></i>'
     }
+    const statusName = {
+        0: 'Công khai',
+        1: 'Riêng tư'
+    }
 
     function searchRoom(value){
         $.ajax({
@@ -69,15 +74,15 @@
                     }else{
                         $.each(data['data'], (index, value) => {
                             const number_quiz =  count_quiz(value['id'])
-                            let btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                            let btnStatus = `<button class="btn btn-secondary float-right " id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                             if (value['status'] === "1"){
-                                btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                btnStatus = `<button class="btn btn-secondary float-right " id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                             }
                             $('#list-room-detail:last-child').append(`
                                  <div class="room-detail" name="${value['id']}">
                                      <div class="row">
                                         <div class="col col-md-11">
-                                              <a href="#"><h5>Phòng: ${value['room_name']}</h5></a>
+                                              <a href="/../QuizSys/RoomAction/roomDetail/${value['room_name']}"><h5>Phòng: ${value['room_name']}</h5></a>
                                         </div>
                                          <div class="col col-md-1">
                                               ${btnStatus}
@@ -141,15 +146,15 @@
                         }else{
                             $.each(data['data'], (index, value) =>{
                                 const number_quiz =  count_quiz(value['id'])
-                                let btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                let btnStatus = `<button class="btn btn-secondary float-right " id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                                 if (value['status'] === "1"){
-                                    btnStatus = `<button class="btn btn-secondary" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                    btnStatus = `<button class="btn btn-secondary float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                                 }
                                 $('#list-room-detail:last-child').append(`
                             <div class="room-detail" name="${value['id']}">
                                 <div class="row">
                                         <div class="col col-md-11">
-                                              <a href="#"><h5>Phòng: ${value['room_name']}</h5></a>
+                                            <a href="/../QuizSys/RoomAction/roomDetail/${value['room_name']}"><h5>Phòng: ${value['room_name']}</h5></a>
                                         </div>
                                          <div class="col col-md-1">
                                               ${btnStatus}
@@ -204,7 +209,7 @@
             success: (data) => {
                 console.log(data)
                 if (data['success'] === true){
-                    alert('Phòng số '+$('#update_btn_room').val()+' đã chuyển sang trạng thái '+statusRoom[value_status])
+                    alert('Phòng số '+$('#update_btn_room').val()+' đã chuyển sang trạng thái '+statusName[value_status])
                     $('#changeStatus').modal('hide')
                     document.getElementById('list-room-detail').innerHTML = ''
                     queryRoom()

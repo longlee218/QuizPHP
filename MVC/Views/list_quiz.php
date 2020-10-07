@@ -7,14 +7,32 @@
     }
 </style>
 <div class="container-fluid">
-    <div class="row m-3">
-        <div class="col-sm d-inline-flex">
-            <div class="position-relative text-uppercase"><h3>danh sách đề</h3></div>
-        </div>
-        <div class="col-sm">
-            <div class="float-right ml-2"><a href="#" class="btn btn-outline-danger" onclick="deleteQuiz()" style="border-radius: 30px;font-size:20px">Xóa đề</a></div>
-            <div class="float-right"><a href="/../QuizSys/QuizPage/" class="btn btn-outline-primary" style="border-radius: 30px;font-size:20px">Tạo mới đề</a></div>
-        </div>
+    <div class="mt-4">
+        <form class="form-quiz">
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-6">
+                        <div class="input-group mb-3">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Phân loại</button>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Nhập tên đề">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <input type="datetime-local" class="form-control">
+                    </div>
+                    <div class="col-1">
+                        <button class="btn btn-success"><i class="fa fa-star-o" aria-hidden="true"></i>
+                            Tạo đề mới</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+<!--        <div class="col-sm">-->
+<!--            <div class="float-right ml-2"><a href="#" class="btn btn-outline-danger" onclick="deleteQuiz()" style="border-radius: 30px;font-size:20px">Xóa đề</a></div>-->
+<!--            <div class="float-right"><a href="/../QuizSys/QuizPage/" class="btn btn-outline-primary" style="border-radius: 30px;font-size:20px">Tạo mới đề</a></div>-->
+<!--        </div>-->
     </div>
     <br>
     <div class="search-quizz">
@@ -291,4 +309,3 @@
         })
     })
 </script>
-<?php include_once './MVC/Views/footer.php'?>

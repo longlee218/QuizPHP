@@ -11,74 +11,97 @@ define('ROW_PER_PAGE', 1);
 class APIThread extends Controller
 {
 
-    public function checkValidateQuiz(){
-        $data = $_POST;
-        $data_return = [];
-        if (empty(trim($data['title'])) || trim($data['room_id']) == 'null'){
-            $data_return = $this->messages(false, 400, 'Require title or Room ID');
-        }
-        else{
+    private function checkValidateQuiz(&$data_return, $data){
+        if (empty(trim($data['title']))){
+            $data_return = $this->messages(false, 400, 'Require title');
+            return false;
+        }else{
             if(count(json_decode($data['questions'])) != 0){
                 $list_question = json_decode($data['questions']);
                 foreach ($list_question as $question){
                     if (empty(trim($question->description))){
                         $data_return = $this->messages(false, 400, 'Please fill the content of question');
-                    }
-                    elseif (count($question->choices) <= 1){
+                        return false;
+                    }elseif (count($question->choices) <= 1){
                         $data_return = $this->messages(false, 400, 'Need more than 1 selection');
-                    }
-                    else{
+                        return false;
+                    }else{
                         $list_choice = $question->choices;
                         $array_check = [];
                         foreach ($list_choice as $index=>$choice){
-                            array_push($array_check, $choice->correct);
+                            if (empty(trim($choice->choice_content))){
+                                $data_return = $this->messages(false, 400, 'Please fill the content of answer');
+                                return false;
+                            }else{
+                                array_push($array_check, $choice->correct);
+                            }
                         }
                         if (min($array_check) == max($array_check)){
                             $data_return = $this->messages(0, 400, "Question can't wrong all or correct all");
+                            return false;
                         }else{
                             $data_return = $this->messages(true, 200, "Validate data");
-                        }
-                        foreach ($list_choice as $index => $choice){
-                            if (empty(trim($choice->choice_content))){
-                                $data_return = $this->messages(false, 400, 'Please fill the content of answer');
-                                break;
-                            }
+                            return true;
                         }
                     }
                 }
             }else{
                 $data_return = $this->messages(false, 400, "Can't not submit because don't have any question");
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public function createQuiz(){
+        $data_return= [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 405, 'Method is not allowed');
+            }else{
+                $data = $_POST;
+                if ($this->checkValidateQuiz($data_return, $data)){
+                    $thread_model = $this->requireModel('Thread');
+                    $user_id = $this->auth->isAuth()['user']['id'];
+                    $thread_obj =  $thread_model->insertThread($data['title'], $data['subject'], $data['grade'], $data['description_thread'], $user_id);
+                    $thread_id = $thread_obj->fetch_assoc()['id'];
+                    $question_array = json_decode($data['questions']);
+                    foreach($question_array as $index=>$question){
+                        $question_obj = new APIQuestion();
+                        $value_file = $this->load_file($index);
+                        $img = $value_file['image'];
+                        $img_name = $value_file['image_name'];
+                        $question_id =  $question_obj->createQuestion($question->explain, $img, $img_name,$question->description, $thread_id)->fetch_assoc()['id'];
+                        $choice_array = $question->choices;
+                        foreach ($choice_array as $choice){
+                            $choice_obj = new APIChoices();
+                            $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
+                        }
+                    }
+                    $data_return = $this->messages(true, 200, 'Success', null);
+                }
             }
         }
         echo json_encode($data_return);
     }
 
-    public function createQuiz(){
-        $data_return= [];
-      if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-          $data_return = $this->messages(false, 405, 'Method is not allowed');
-      }else{
-          $data = $_POST;
-          $thread_model = $this->requireModel('Thread');
-          $thread_obj =  $thread_model->insertThread($data['title'], $data['subject'], $data['grade'], $data['room_id']);
-          $thread_id = $thread_obj->fetch_assoc()['id'];
-          $question_array = json_decode($data['questions']);
-          foreach($question_array as $index=>$question){
-              $question_obj = new APIQuestion();
-              $value_file = $this->load_file($index);
-              $img = $value_file['image'];
-              $img_name = $value_file['image_name'];
-              $question_id =  $question_obj->createQuestion($question->explain, $img, $img_name,$question->description, $thread_id)->fetch_assoc()['id'];
-              $choice_array = $question->choices;
-              foreach ($choice_array as $choice){
-                  $choice_obj = new APIChoices();
-                  $choice_obj->createChoices($choice->choice_name, $choice->choice_content, $choice->correct, $question_id);
-              }
-          }
-          $data_return = $this->messages(true, 200, 'Success', null);
-      }
-        echo json_encode($data_return);
-    }
+//    public function createdQuiz(){
+//        $data_return = [];
+//        if ($this->auth->isAuth() == null){
+//            $data_return = $this->messages(false, 401, 'Invalid token');
+//        }else{
+//            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+//                $data_return = $this->messages(false, 405, 'Not allowed this method');
+//            }else{
+//                $data = $_POST;
+//
+//            }
+//
+//        }
+//        echo json_encode($data_return);
+//    }
 
     private function load_file($index){
         $value_file = [
@@ -463,6 +486,34 @@ class APIThread extends Controller
         }
         echo json_encode($data_return);
     }
+
+    public function searchQuizTitleUser($title=null){
+        $data_return = [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $thread_model = $this->requireModel('Thread');
+                try {
+                    $array_data = [];
+                    $user_id = $this->auth->isAuth()['user']['id'];
+                    $result = $thread_model->findByTitleLikeUser($user_id, $title);
+                    if ($result->num_rows > 0){
+                        while ($row = $result->fetch_assoc()){
+                            array_push($array_data, $row);
+                        }
+                    }
+                    $data_return = $this->messages(true, 200, 'Success', $array_data);
+                }catch (Exception $e){
+                    $data_return = $this->messages(false, 500, $e);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
 
     public function searchQuizTitle($id_room, $title=null){
         $data_return = [];

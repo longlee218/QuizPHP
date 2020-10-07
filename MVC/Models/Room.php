@@ -31,7 +31,7 @@ class Room extends Database
         }
     }
     public function selectAllByID($user_id){
-        $query = "select * from room where  users_id = ?";
+        $query = "select * from room where  users_id = ? order by update_at desc";
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $stmt->bind_param("i", $user_id);
@@ -53,7 +53,7 @@ class Room extends Database
 
 
     public function selectAllByIDRoom($id){
-        $query = "select * from room where id = ?";
+        $query = "select * from room where id = ? ";
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $stmt->bind_param("i", $id);
@@ -172,7 +172,7 @@ class Room extends Database
     }
 
     public function findByName($room_name, $users_id){
-        $query = 'select * from room where room_name like ? and users_id = ?';
+        $query = 'select * from room where room_name like ? and users_id = ? order by update_at desc';
         $this->con->init();
         $stmt = $this->con->prepare($query);
         $room_name = "%".$room_name."%";

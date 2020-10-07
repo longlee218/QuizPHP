@@ -5,11 +5,14 @@ require_once __DIR__."/../config/api.php";
 class APIRoom extends Controller
 {
     var $room_model;
+    var $thread_model;
     public function __construct()
     {
         parent::__construct();
         $this->room_model = $this->requireModel('Room');
+        $this->thread_model = $this->requireModel('Thread');
     }
+
     private function checkValidateRoom(&$data_return, $room_model, $data){
         if ($room_model->checkRoomNameExist($data->room_name)){
             $data_return = $this->messages(false, 400, 'Try other name');
@@ -28,9 +31,8 @@ class APIRoom extends Controller
             }else{
                 $data = json_decode(file_get_contents('php://input'));
                 $user_id = $this->auth->isAuth()['user']['id'];
-                $room_model = $this->requireModel('Room');
-                if ($this->checkValidateRoom($data_return, $room_model, $data)){
-                    if ($room_model->createRoom($data->room_name, $user_id ,$data->status, $data->description ,md5($data->password))){
+                if ($this->checkValidateRoom($data_return, $this->room_model, $data)){
+                    if ($this->room_model->createRoom($data->room_name, $user_id ,$data->status, $data->description ,md5($data->password))){
                         $data_return = $this->messages(true, 200, 'Success');
                     }else{
                         $data_return = $this->messages(false, 500, 'Error');
@@ -41,49 +43,48 @@ class APIRoom extends Controller
         echo json_encode($data_return);
     }
 
-    public function createRoom(){
-        $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $data_return = $this->messages(false, 405, 'Not allowed this methd');
-        }else{
-            $data = $_POST;
-            $password_hash = null;
-            $room_name = null;
-            if (!empty(trim($data['password']))){
-                $password_hash = md5($data['password']);
-            }
-            if (!isset($data['room_name']) || empty(trim($data['room_name']))){
-                $room_name = "RoomNameDefault".mt_rand(100000, 999999);
-            }
-            if (!isset($data['room_id'])){
-                $room_name = $data['room_name'];
-                if ($this->room_model->checkRoomNameExist($room_name)){
-                    $data_return = $this->messages(false, 400, "Please try other room name");
-                }else{
-                    if ($this->room_model->createRoom($room_name, $data['id'],  $password_hash)){
-                        $data_return = $this->messages(true,200 , "RoomAction have been create");
-                    }
-                }
-            }
-            else{
-                $result = $this->room_model->selectAllByIDRoom($data['room_id']);
-                $room_name = $data['room_name'];
-                if ($data['room_name'] == $result->fetch_assoc()['room_name']){
-                    if($this->room_model->updateRoomWithoutName($data['room_id'], $password_hash)){
-                        $data_return = $this->messages(true, 200, 'Update success');
-                    }
-                }else{
-                    if ($this->room_model->checkRoomNameExist($room_name)){
-                        $data_return = $this->messages(false, 400, "Please try other room name");
-                    }else{
-                        $this->room_model->updateRoom($data['room_id'], $data['room_name'], $password_hash);
-                        $data_return = $this->messages(true, 200, 'Update success');
-                    }
-                }
-            }
-        }
-        echo json_encode($data_return);
-    }
+    //Function create room (old)
+//    public function createRoom(){
+//        $data_return = [];
+//        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+//            $data_return = $this->messages(false, 405, 'Not allowed this methd');
+//        }else{
+//            $data = $_POST;
+//            $password_hash = null;
+//            $room_name = null;
+//            if (!empty(trim($data['password']))){
+//                $password_hash = md5($data['password']);
+//            }
+//            if (!isset($data['room_id'])){
+//                $room_name = $data['room_name'];
+//                if ($this->room_model->checkRoomNameExist($room_name)){
+//                    $data_return = $this->messages(false, 400, "Please try other room name");
+//                }else{
+//                    if ($this->room_model->createRoom($room_name, $data['id'],  $password_hash)){
+//                        $data_return = $this->messages(true,200 , "RoomAction have been create");
+//                    }
+//                }
+//            }
+//            else{
+//                $result = $this->room_model->selectAllByIDRoom($data['room_id']);
+//                $room_name = $data['room_name'];
+//                if ($data['room_name'] == $result->fetch_assoc()['room_name']){
+//                    if($this->room_model->updateRoomWithoutName($data['room_id'], $password_hash)){
+//                        $data_return = $this->messages(true, 200, 'Update success');
+//                    }
+//                }else{
+//                    if ($this->room_model->checkRoomNameExist($room_name)){
+//                        $data_return = $this->messages(false, 400, "Please try other room name");
+//                    }else{
+//                        $this->room_model->updateRoom($data['room_id'], $data['room_name'], $password_hash);
+//                        $data_return = $this->messages(true, 200, 'Update success');
+//                    }
+//                }
+//            }
+//        }
+//        echo json_encode($data_return);
+//    }
+
 
     public function changeStatus($id){
         $data_return = [];
@@ -94,8 +95,7 @@ class APIRoom extends Controller
                 $data_return = $this->messages(false, 405, 'Not allowed this method');
             }else{
                 $data = json_decode(file_get_contents('php://input'));
-                $room_model = $this->requireModel('Room');
-                if (!$room_model->updateStatus($id, $data->status)){
+                if (!$this->room_model->updateStatus($id, $data->status)){
                     $data_return = $this->messages(false, 500, 'error');
                 }else{
                     $data_return = $this->messages(true, 200, 'change status success');
@@ -113,8 +113,7 @@ class APIRoom extends Controller
             if ($_SERVER['REQUEST_METHOD'] != 'GET'){
                 $data_return = $this->messages(false, 405, 'Not allowed this method');
             }else{
-                $room_model = $this->requireModel('Room');
-                $room_obj = $room_model->selectAllByIDRoom($id_room);
+                $room_obj = $this->room_model->selectAllByIDRoom($id_room);
                 if ($room_obj->num_rows <= 0){
                     $data_return = $this->messages(false, 400, "Don't have this room");
                 }else{
@@ -181,8 +180,7 @@ class APIRoom extends Controller
             if ($_SERVER['REQUEST_METHOD'] != 'GET'){
                 $data_return = $this->messages(false, 405, 'Method not allow');
             }else{
-                $thread_model = $this->requireModel('Thread');
-                $data = $thread_model->countThread($id);
+                $data = $this->thread_model->countThread($id);
                 $number = 0;
                 if ($data->num_rows > 0){
                     $number = $data->fetch_assoc()['SL'];
@@ -253,16 +251,16 @@ class APIRoom extends Controller
     }
 
     public function cronSetOnlineRoom(){
-        $room_model = $this->requireModel('Room');
+//        $room_model = $this->requireModel('Room');
         date_default_timezone_set('Asia/Bangkok');
         $time_now =  date('Y-m-d H:i');
         try {
             echo $time_now;
-            $result = $room_model->findRoomByTimeStart($time_now);
+            $result = $this->room_model->findRoomByTimeStart($time_now);
             if ($result->num_rows != 0){
                 $id_room =  $result->fetch_assoc()['id'];
                 echo 'Find time start';
-                $room_model->setOnline($id_room);
+                $this->room_model->setOnline($id_room);
             }else{
                 echo 'Waiting time start....';
             }
@@ -273,15 +271,15 @@ class APIRoom extends Controller
     }
 
     public function cronSetOfflineRoom(){
-        $room_model = $this->requireModel('Room');
+//        $room_model = $this->requireModel('Room');
         date_default_timezone_set('Asia/Bangkok');
         $time_now =  date('Y-m-d H:i');
         try {
-            $result = $room_model->findRoomByTimeEnd($time_now);
+            $result = $this->room_model->findRoomByTimeEnd($time_now);
             if ($result->num_rows != 0){
                 $id_room =  $result->fetch_assoc()['id'];
                 echo 'Find time end';
-                $room_model->setOffline($id_room);
+                $this->room_model->setOffline($id_room);
             }else{
                 echo 'Waiting time end....';
             }
@@ -303,8 +301,8 @@ class APIRoom extends Controller
             }else{
                 $data = [];
                 try {
-                    $room_model = $this->requireModel('Room');
-                    $room_object = $room_model->selectName();
+//                    $room_model = $this->requireModel('Room');
+                    $room_object = $this->room_model->selectName();
                     if ($room_object->num_rows > 0){
                         while ($row = $room_object->fetch_assoc()){
                             array_push($data, $row);
@@ -320,7 +318,6 @@ class APIRoom extends Controller
     }
 
     public function searchRoom($room_name=null){
-        $data_return = [];
         if ($this->auth->isAuth() == null){
             $data_return = $this->messages(false, 401, 'Invalid token');
         }else{
@@ -329,9 +326,8 @@ class APIRoom extends Controller
             }else{
                 $array_value_return = [];
                 try {
-                    $room_model = $this->requireModel('Room');
                     $user_id = $this->auth->isAuth()['user']['id'];
-                    $room_object = $room_model->findByName($room_name, $user_id);
+                    $room_object = $this->room_model->findByName($room_name, $user_id);
                     if ($room_object->num_rows > 0){
                         while ($row = $room_object->fetch_assoc()){
                             array_push($array_value_return, $row);
@@ -355,11 +351,11 @@ class APIRoom extends Controller
                 $data_return = $this->messages(false, 405, 'Not allowed this method');
             }else{
                 $data = json_decode(file_get_contents("php://input"));
-                $room_model = $this->requireModel('Room');
+//                $room_model = $this->requireModel('Room');
                 try {
                     $room_name = $data->room_name;
                     $password = $data->password;
-                    $room_obj = $room_model->findByRoomName($room_name);
+                    $room_obj = $this->room_model->findByRoomName($room_name);
                     $row = $room_obj->fetch_assoc();
                     $id = $row['id'];
                     if ($room_obj->num_rows > 0){

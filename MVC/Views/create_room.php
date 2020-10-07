@@ -110,7 +110,8 @@
             const data = {
                 room_name: room_name,
                 password: password,
-                status: status
+                status: status,
+                description: description
             }
             $.ajax({
                 method: 'POST',
@@ -123,7 +124,7 @@
                 success: (data) => {
                     if (data['success'] === true){
                         alert('Phòng đã được tạo. Click ok để quay lại')
-                        window.location.href = '/../QuizSys/Home/InstructorHome'
+                        window.location.replace('/../QuizSys/Home/InstructorHome?tab=nav-room')
                     }else{
                         alert(data['mess'])
                     }

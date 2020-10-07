@@ -6,7 +6,7 @@ class Home extends Controller {
     public function InstructorHome(){
         $auth = new Auth($_COOKIE);
         if ($auth->isAuth() != null && $auth->isAuth()['user']['user_type'] == 1){
-            $this->requireView('home', []);
+            $this->requireView('home');
         }
     }
 

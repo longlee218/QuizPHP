@@ -308,11 +308,11 @@
         $('#save_and_exit').on("click", function (e) {
             e.preventDefault()
             const quiz = new FormData();
-            const subject = $('#content_thread #subject').val();
-            const grade = $('#content_thread #grade').val();
+            const subject = $('#subject').val();
+            const grade = $('#grade').val();
             const title = $('#title_quiz').val();
+            const description_thread = $('#description_quiz').val();
             const form_question = $('#form_question');
-            const room_id = $('#room_list').val();
             const question_data = [];
             form_question.each(function () {
                 $(this).find('.qtn-form').each(function (index) {
@@ -339,62 +339,106 @@
             quiz.append('subject', subject);
             quiz.append('grade', grade);
             quiz.append('title', title);
-            quiz.append('room_id', room_id);
+            quiz.append('description_thread', description_thread);
             quiz.append('questions', JSON.stringify(question_data));
 
-                  $.ajax({
-                      type: 'POST',
-                      url: '/../QuizSys/APIThread/checkValidateQuiz',
-                      data: quiz,
-                      processData: false,
-                      contentType: false,
-                      success: function (data) {
-                          if (data['success'] === true){
-                              $.ajax({
-                                  type : 'POST',
-                                  url: '/../QuizSys/APIThread/createQuiz',
-                                  data: quiz,
-                                  processData: false,
-                                  contentType: false,
-                                  success: function (data) {
-                                      if (data['success'] === true){
-                                          alert('Bộ đề đã được lưu');
-                                          window.location.href = '/../QuizSys/QuizPage/listQuiz';
-                                      }else{
-                                          console.log(data);
-                                      }
-                                  },
-                                  error: function (xhr, error) {
-                                      console.log(xhr, error);
-                                  }
-                              })
-                          }else{
-                              switch (data['mess']) {
-                                case "Can't not submit because don't have any question":
-                                    alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
-                                    break;
-                                case "Require title or Room ID":
-                                    alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
-                                    break;
-                                 case "Need more than 1 selection":
-                                     alert("Cần nhiều hơn 1 đáp án");
-                                     break;
-                                  case "Question can't wrong all or correct all":
-                                      alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
-                                      break;
-                                  case "Please fill the content of question":
-                                      alert("Vui lòng điền nội dung câu hỏi");
-                                      break;
-                                  case "Please fill the content of answer":
-                                      alert("Vui lòng nhập nội dung câu trả lời");
-                                      break;
-                              }
-                          }
-                      },
-                      error: function (xhr, error) {
-                          console.log(xhr, error);
-                      }
-                  })
+            //new AJAX request
+            $.ajax({
+                type : 'POST',
+                url: '/../QuizSys/APIThread/createQuiz',
+                headers: {
+                    'Authorization': getCookie('Authorization')
+                },
+                data: quiz,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data['success'] === true){
+                        alert('Bộ đề đã được lưu');
+                        window.location.replace('/../QuizSys/Home/InstructorHome?tab=nav-store-quiz');
+
+                    }else{
+                        switch (data['mess']) {
+                            case "Can't not submit because don't have any question":
+                                alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
+                                break;
+                            case "Require title or Room ID":
+                                alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
+                                break;
+                            case "Need more than 1 selection":
+                                alert("Cần nhiều hơn 1 đáp án");
+                                break;
+                            case "Question can't wrong all or correct all":
+                                alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
+                                break;
+                            case "Please fill the content of question":
+                                alert("Vui lòng điền nội dung câu hỏi");
+                                break;
+                            case "Please fill the content of answer":
+                                alert("Vui lòng nhập nội dung câu trả lời");
+                                break;
+                        }
+                    }
+                },
+                error: function (xhr, error) {
+                    console.log(xhr, error);
+                }
+            })
+
+            // old AJAX request
+            //       $.ajax({
+            //           type: 'POST',
+            //           url: '/../QuizSys/APIThread/checkValidateQuiz',
+            //           data: quiz,
+            //           processData: false,
+            //           contentType: false,
+            //           success: function (data) {
+            //               if (data['success'] === true){
+            //                   $.ajax({
+            //                       type : 'POST',
+            //                       url: '/../QuizSys/APIThread/createQuiz',
+            //                       data: quiz,
+            //                       processData: false,
+            //                       contentType: false,
+            //                       success: function (data) {
+            //                           if (data['success'] === true){
+            //                               alert('Bộ đề đã được lưu');
+            //                               window.location.href = '/../QuizSys/QuizPage/listQuiz';
+            //                           }else{
+            //                               console.log(data);
+            //                           }
+            //                       },
+            //                       error: function (xhr, error) {
+            //                           console.log(xhr, error);
+            //                       }
+            //                   })
+            //               }else{
+            //                   switch (data['mess']) {
+            //                     case "Can't not submit because don't have any question":
+            //                         alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
+            //                         break;
+            //                     case "Require title or Room ID":
+            //                         alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
+            //                         break;
+            //                      case "Need more than 1 selection":
+            //                          alert("Cần nhiều hơn 1 đáp án");
+            //                          break;
+            //                       case "Question can't wrong all or correct all":
+            //                           alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
+            //                           break;
+            //                       case "Please fill the content of question":
+            //                           alert("Vui lòng điền nội dung câu hỏi");
+            //                           break;
+            //                       case "Please fill the content of answer":
+            //                           alert("Vui lòng nhập nội dung câu trả lời");
+            //                           break;
+            //                   }
+            //               }
+            //           },
+            //           error: function (xhr, error) {
+            //               console.log(xhr, error);
+            //           }
+            //       })
         })
     })
     function previewImg(e) {
