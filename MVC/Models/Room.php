@@ -194,4 +194,34 @@ class Room extends Database
         return $result;
     }
 
+    public function findByRoomNameUser($room_name, $user_id){
+        $query = 'select * from room where room_name = ? and users_id = ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('si', $room_name, $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
+
+    public function selectThreadInRoom($id_room){
+        try {
+            $query = 'select thread.*
+                    from thread
+                    where thread.id in (select rt.thread_id
+                                        from room
+                                        inner join room_thread rt on room.id = rt.room_id
+                                        where rt.room_id = ?)';
+            $this->con->init();
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param('i', $id_room);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result;
+        }catch (Exception $exception){
+            return $exception;
+        }
+    }
 }

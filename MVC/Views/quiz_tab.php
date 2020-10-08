@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="col col-md-3">
-            <input class="form-control" type="datetime-local">
+            <input class="form-control" type="date">
         </div>
         <div class="col col-md-2">
             <button class="btn btn-success float-right" name="newQuiz" onclick="location.href = '/../QuizSys/QuizPage'"><i class="fa fa-star-o" aria-hidden="true"></i>

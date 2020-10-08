@@ -8,8 +8,20 @@ require_once __DIR__."/../lib/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php";
 
 define('ROW_PER_PAGE', 1);
 
-class APIThread extends Controller
-{
+class APIThread extends Controller{
+
+    var $thread_model;
+    var $room_model;
+    var $choice_model;
+    var $question_model;
+
+    public function __construct(){
+        parent::__construct();
+        $this->thread_model = $this->requireModel('Thread');
+        $this->room_model = $this->requireModel('Room');
+        $this->choice_model = $this->requireModel('Choices');
+        $this->question_model = $this->requireModel('Question');
+    }
 
     private function checkValidateQuiz(&$data_return, $data){
         if (empty(trim($data['title']))){
@@ -53,6 +65,31 @@ class APIThread extends Controller
         return false;
     }
 
+    public function queryQuizInRoom($id_room){
+        if ($this->auth->isAuth() === null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Method is not allowed');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                try {
+                    $array_value = [];
+                    $room_obj = $this->room_model->selectThreadInRoom($id_room);
+                    if ($room_obj->num_rows > 0){
+                        while ($row = $room_obj->fetch_assoc()){
+                            array_push($array_value, $row);
+                        }
+                    }
+                    $data_return = $this->messages(true, 200, 'Success', $array_value);
+                }catch (Exception $exception){
+                    $data_return = $this->messages(false, 500, $exception);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
     public function createQuiz(){
         $data_return= [];
         if ($this->auth->isAuth() == null){
@@ -87,21 +124,6 @@ class APIThread extends Controller
         echo json_encode($data_return);
     }
 
-//    public function createdQuiz(){
-//        $data_return = [];
-//        if ($this->auth->isAuth() == null){
-//            $data_return = $this->messages(false, 401, 'Invalid token');
-//        }else{
-//            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-//                $data_return = $this->messages(false, 405, 'Not allowed this method');
-//            }else{
-//                $data = $_POST;
-//
-//            }
-//
-//        }
-//        echo json_encode($data_return);
-//    }
 
     private function load_file($index){
         $value_file = [

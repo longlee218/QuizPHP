@@ -122,6 +122,7 @@
                 'Authorization': getCookie('Authorization')
             },
             success: (data) =>{
+                console.log(data)
                 if (data['success'] === true){
                     const count = data['data'].length
                     if (count === 0){
