@@ -30,7 +30,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="card">
                                         <div class="card-header">
-                                            <a href="#"><h4 class="card-title">${value['room_name']}</h4></a>
+                                            <a href="/../QuizSys/RoomAction/roomDetail/${value['room_name']}"><h4 class="card-title">${value['room_name']}</h4></a>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">

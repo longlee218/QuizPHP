@@ -13,9 +13,8 @@
 
 <div class="room-list pt-4">
     <div class="row" id="search_room">
-        <input class="form-control col-md-10" oninput="searchRoom(this.value)" placeholder="Tìm phòng..">
-        <button class="btn btn-success ml-3" onclick="window.location.href = '/../QuizSys/RoomAction/createRoom/'"><i class="fa fa-star-o" aria-hidden="true"></i>
-            Thêm phòng</button>
+        <input class="form-control col-md-9" oninput="searchRoom(this.value)" placeholder="Tìm phòng..">
+        <button class="btn btn-success ml-4" onclick="window.location.href = '/../QuizSys/RoomAction/createRoom/'"><i class="fa fa-star-o" aria-hidden="true"></i>Thêm phòng</button>
         <hr>
     </div>
     <div id="room" class="room-list mt-3">

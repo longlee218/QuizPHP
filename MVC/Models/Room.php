@@ -224,4 +224,8 @@ class Room extends Database
             return $exception;
         }
     }
+
+    public function selectQuizNotInRoom($id_room){
+
+    }
 }

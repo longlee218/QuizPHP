@@ -126,4 +126,17 @@ class Thread extends Database
         $stmt->close();
         return $result;
     }
+
+    public function selectThreadNotInRoom($id_room){
+        $query = '  select *
+                    from thread
+                    where id not in (select thread_id from room_thread where room_id = ?)';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('i',$id_room);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result;
+    }
 }

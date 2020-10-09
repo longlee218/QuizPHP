@@ -23,6 +23,8 @@ class APIThread extends Controller{
         $this->question_model = $this->requireModel('Question');
     }
 
+
+    //Kiểm tra validate dữ liệu khi tạo đề
     private function checkValidateQuiz(&$data_return, $data){
         if (empty(trim($data['title']))){
             $data_return = $this->messages(false, 400, 'Require title');
@@ -65,6 +67,7 @@ class APIThread extends Controller{
         return false;
     }
 
+    //Lấy danh sách các đề trong 1 phòng <id_room>
     public function queryQuizInRoom($id_room){
         if ($this->auth->isAuth() === null){
             $data_return = $this->messages(false, 401, 'Invalid token');
@@ -90,6 +93,33 @@ class APIThread extends Controller{
         echo json_encode($data_return);
     }
 
+    //Lấy danh sách các đề có thể import vào 1 phòng.
+    public function queryQuizImport($id_room){
+        $data_return = [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                try {
+                    $data = [];
+                    $result = $this->thread_model->selectThreadNotInRoom($id_room);
+                    if ($result->num_rows > 0){
+                        while ($row = $result->fetch_assoc()){
+                            array_push($data, $row);
+                        }
+                    }
+                    $data_return = $this->messages(true, 200, 'success', $data);
+                }catch (Exception $exception){
+                    $data_return = $this->messages(false, 500, $exception);
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    //Tạo mới đề
     public function createQuiz(){
         $data_return= [];
         if ($this->auth->isAuth() == null){
@@ -124,7 +154,7 @@ class APIThread extends Controller{
         echo json_encode($data_return);
     }
 
-
+    //Upload file được post vào folder images trong htdocs
     private function load_file($index){
         $value_file = [
             'image' => null,
@@ -147,6 +177,8 @@ class APIThread extends Controller{
         return $value_file;
     }
 
+
+    //Lấy danh sách đề của người dùng <id_user>
     public function queryQuiz(){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'GET'){
@@ -170,12 +202,15 @@ class APIThread extends Controller{
         echo json_encode($data_return);
     }
 
+
+    //Hàm ép thành array
     private function arrayGroupBy($array){
         $groups = [];
         foreach( $array as $row ) array_push($groups, $row);
         return $groups;
     }
 
+    // Lấy thông tin chi tiết của đề, bao gồm cả các câu hỏi và các phương án trả lời
     public function queryQuizDetail($id_thread){
         $data_return = [];
         $data = [];
@@ -207,6 +242,7 @@ class APIThread extends Controller{
         echo json_encode($data);
     }
 
+    //Cập nhật đề
     public function  updateQuiz(){
         $data_return = [];
         if ($_SERVER['REQUEST_METHOD'] != 'POST'){
@@ -256,6 +292,7 @@ class APIThread extends Controller{
     }
 
 
+    //Xóa đề (xóa cả câu hỏi và các phương án trả lời)
     public function deleteQuiz(){
         $data_return = [];
         if ($this->auth->isAuth() == null || $this->auth->isAuth()['user']['user_type'] != 1){
@@ -279,9 +316,20 @@ class APIThread extends Controller{
     }
 
 
-    public function test(){
-        print_r($_FILES);
-        print_r($_POST);
+    //Hàm share đề vào phòng cụ thể  <id_room>
+    public function shareToRoom(){
+        $data_return = [];
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                print_r($data);
+            }
+        }
+        echo json_encode($data_return);
     }
 
     public function queryQuizPaginator($id_thread, $page=1){

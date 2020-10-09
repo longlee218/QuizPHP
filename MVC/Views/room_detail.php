@@ -47,13 +47,19 @@
             <h3 class=""><a href="#" id="room-name" class="text-primary"></a></h3>
             <nav class="project-tab">
                 <div class="nav nav-tabs nav-room" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active" id="nav-room-quiz-tab" data-toggle="tab" href="#nav-room-quiz" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa fa-home" aria-hidden="true"></i>
-                        Danh sách đề</a>
-                    <a class="nav-item nav-link" id="nav-room-report-tab" data-toggle="tab" href="#nav-room-report" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa fa-graduation-cap" aria-hidden="true"></i>
-                        Thống kê <span class="counter" id="count-room"></span></a>
-                    <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-setting" role="tab" aria-controls="nav-contact" aria-selected="false"><i class="fa fa-book" aria-hidden="true"></i>
+                    <a class="nav-item nav-link active" id="nav-room-quiz-tab" data-toggle="tab" href="#nav-room-quiz" role="tab" aria-controls="nav-home" aria-selected="true">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+                        Danh sách đề
+                    </a>
+                    <a class="nav-item nav-link" id="nav-room-report-tab" data-toggle="tab" href="#nav-room-report" role="tab" aria-controls="nav-profile" aria-selected="false">
+                        <i class="fa fa-line-chart" aria-hidden="true"></i>
+                        Thống kê <span class="counter" id="count-room"></span>
+                    </a>
+                    <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-setting" role="tab" aria-controls="nav-contact" aria-selected="false">
+                        <i class="fa fa-spinner" aria-hidden="true"></i>
                         Truy cập <span class="counter" id="count-quiz"></a>
-                    <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-setting" role="tab" aria-controls="nav-contact" aria-selected="false"><i class="fa fa-book" aria-hidden="true"></i>
+                    <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-setting" role="tab" aria-controls="nav-contact" aria-selected="false">
+                        <i class="fa fa-cogs" aria-hidden="true"></i>
                         Cài đặt <span class="counter" id="count-quiz"></a>
                 </div>
             </nav>

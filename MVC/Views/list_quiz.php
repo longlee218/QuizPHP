@@ -15,7 +15,33 @@
         border-color: gray;
         background-color: #f2f2f2;
         border-radius: 15px;
-
+    }
+    .btn-setting{
+        border: none;
+        border-radius: 50%;
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline:none
+    }
+    .btn-setting:focus{
+        border: none;
+        outline: none;
+    }
+    .list-quiz-import{
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border-style: solid;
+        border-width: thin;
+        border-color: #f4f4f4;
+        margin: 20px 0;
+        max-height: calc(80vh - 210px);
+        overflow-y: auto;
     }
 </style>
 <div class="container-fluid">
@@ -25,7 +51,7 @@
             <form class="form-quiz">
                 <div class="form-group">
                     <div class="form-row">
-                        <div class="col col-md-5">
+                        <div class="col col-md-6">
                             <div class="input-group mb-3">
                                 <div class="dropdown">
                                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropDownCategorize" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Phân loại</button>
@@ -37,60 +63,70 @@
                                 <input type="text" class="form-control" placeholder="Nhập tên đề">
                             </div>
                         </div>
-                        <div class="col col-md-2">
+                        <div class="col col-md-1">
                             <input type="date" class="form-control" id="dateForm">
                         </div>
                         <div class="col-1 d-flex justify-content-center align-items-center">
                             <span class="fa fa-arrow-right mb-4" aria-hidden="true"></span>
                         </div>
-                        <div class="col col-md-2">
+                        <div class="col col-md-1">
                             <input type="date" class="form-control" id="dateTo">
                         </div>
                         <div class="col col-md-2">
-                            <button class="btn btn-success"><i class="fa fa-star-o" aria-hidden="true"></i>
-                                Tạo đề mới</button>
+                            <div class="btn-group ml-4" role="group" aria-label="Basic example">
+                                <a class="btn btn-success text-white" onclick="location.href = '/../QuizSys/QuizPage'">
+                                    <i class="fa fa-star-o" aria-hidden="true"></i> Đề mới
+                                </a>
+                                <a class="btn btn-info text-white" onclick="importQuiz()">
+                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                    Nhập đề
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+
         <div class="card">
             <div class="card-header">
                 <a href="#" class="text-dark"><i class="fa fa-file-text-o" aria-hidden="true"></i><span id="countExam"></span> Kiểm tra</a>
                 <a href="#" class="text-dark"><i class="fa fa-check" aria-hidden="true"><span id="countPractice"></span></i> Ôn tập</a>
             </div>
             <div class="card-body mt-0" id="list-quiz">
-                <table class="table table-hover" id="table-list-quiz">
-                    <thead>
-<!--                        <tr>-->
-<!--                            <th scope="col">Tên đề</th>-->
-<!--                            <th scope="col">Môn học</th>-->
-<!--                            <th scope="col">Mô tả</th>-->
-<!--                            <th scope="col">Trình độ</th>-->
-<!--                            <th scope="col">Lần cập nhật cuối</th>-->
-<!--                        </tr>-->
-                    </thead>
+                <table class="table" id="table-list-quiz">
+                    <thead></thead>
                     <tbody>
                         <tr></tr>
-<!--                    <tr>-->
-<!--                        <th scope="row">1</th>-->
-<!--                        <td>Mark</td>-->
-<!--                        <td>Otto</td>-->
-<!--                        <td>@mdo</td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <th scope="row">2</th>-->
-<!--                        <td>Jacob</td>-->
-<!--                        <td>Thornton</td>-->
-<!--                        <td>@fat</td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <th scope="row">3</th>-->
-<!--                        <td colspan="2">Larry the Bird</td>-->
-<!--                        <td>@twitter</td>-->
-<!--                    </tr>-->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+
+<!--        Modal import-->
+        <div class="modal fade" id="modalImport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="exampleModalLabel">Nhập đề </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input class="form-control" placeholder="Tìm kiếm kiếm đề...." onkeyup="searchImportQuiz(this.value)">
+                        <div class="list-quiz-import" id="quiz-import">
+                            <table class="table table-hover" id="table-quiz-import">
+                                <tbody><tr></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="submitImport">Nhập</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -387,9 +423,6 @@
         4: 'Khác'
     }
 
-    // $(document).ready(() => {
-    //
-    // })
     $(document).ready(() => {
         $.ajax({
             method: 'GET',
@@ -403,9 +436,8 @@
                 console.log(data)
                 if (data['success'] === true){
                     const id_room = data['data'][0]['id']
-                    // console.log(data['data'])
-                    console.log(id_room)
                     queryQuizInRoom(id_room)
+                    queryListQuizImport(id_room)
                 }
             }
         })
@@ -430,6 +462,7 @@
                                 <td>${value['description']}</td>
                                 <td>${gradeName[value['grade']]}</td>
                                 <td>${value['update_at']}</td>
+                                <td><button class="btn-setting"><p>...</p></button></td>
                             </tr>
                         `)
                     })
@@ -437,4 +470,97 @@
             }
         })
     }
+
+    const queryListQuizImport = (id_room) => {
+        $(document).ready(() => {
+            $.ajax({
+                method: 'GET',
+                headers:{
+                    'Authorization': getCookie('Authorization'),
+                    'Content-type': 'application/json'
+                },
+                url: '/../QuizSys/APIThread/queryQuizImport/'+id_room,
+                success: (data) => {
+                    if (data['success'] === true){
+                        $(data['data']).each((index, value) => {
+                            $('#table-quiz-import tr:last').after(`
+                            <tr>
+                                <th>
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="checkbox"  name="title-quiz" id="checkbox-${value['id']}" value="${value['id']}">
+                                      <label class="form-check-label" for="checkbox-${value['id']}">${value['title']}</label>
+                                    </div>
+                                </th>
+                                <th><small class="font-weight-normal text-secondary">${value['description']}</small></th>
+                            </tr>
+                            `)
+                        })
+                        $('#submitImport').attr('value', id_room)
+                    }
+                },
+                error: (xhr, error) =>{
+                    console.log(xhr, error)
+                }
+            })
+        })
+    }
+
+    $(document).ready(() => {
+        $('#submitImport').click(() => {
+            let array_choose = []
+            let checkbox, first_th
+            const table = $('#table-quiz-import')
+            const tr = $(table).find('tr')
+            for (let i = 1; i < tr.length; i++){
+                first_th = $(tr[i]).find('th')[0]
+                checkbox = $(first_th).find('input[name="title-quiz"]')
+                if ($(checkbox).is(':checked')){
+                    array_choose.push($(checkbox).val())
+                }
+            }
+            $.ajax({
+                method: 'POST',
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                url: '/../QuizSys/APIThread/shareToRoom',
+                data: JSON.stringify(
+                        {
+                            id_room:2,
+                            data: array_choose
+                        }
+                    ),
+                success: (data) => {
+                    console.log(data)
+                },
+                error: (xhr, error) => {
+                    console.log(xhr, error)
+                }
+            })
+        })
+    })
+
+
+    const searchImportQuiz = (value) => {
+        let a, textValue, value_upper = value.toUpperCase()
+        const table = $('#table-quiz-import')
+        const tr = $(table).find('tr')
+        for (let i = 1; i < tr.length; i++ ){
+            a = $(tr[i]).find('th')[0]
+            textValue = $(a).text() || $(a).textContent
+            if (textValue.toUpperCase().indexOf(value_upper) > -1){
+                tr[i].style.display = ''
+            }else{
+                tr[i].style.display = 'none'
+            }
+        }
+    }
+
+
+
+
+   function importQuiz() {
+       $('#modalImport').modal('show')
+   }
 </script>

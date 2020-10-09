@@ -7,7 +7,7 @@ class QuizPage extends Controller
 
     public function defaultFunction(){
         $auth = new Auth($_COOKIE);
-        if ($auth->isAuth() != null && $auth->isAuth()['user']['user_type'] ==1){
+        if ($auth->isAuth() != null){
             $this->requireView("quiz_page");
         }
     }
