@@ -124,10 +124,10 @@ class APIThread extends Controller{
         $data_return= [];
         if ($this->auth->isAuth() == null){
             $data_return = $this->messages(false, 401, 'Invalid token');
-        }else{
+        } else{
             if ($_SERVER['REQUEST_METHOD'] != 'POST'){
                 $data_return = $this->messages(false, 405, 'Method is not allowed');
-            }else{
+            } else{
                 $data = $_POST;
                 if ($this->checkValidateQuiz($data_return, $data)){
                     $thread_model = $this->requireModel('Thread');
@@ -214,44 +214,51 @@ class APIThread extends Controller{
     public function queryQuizDetail($id_thread){
         $data_return = [];
         $data = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'GET'){
-            $data_return = $this->messages(0, 405, "Not allow this method");
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, 'Invalid token');
         }else{
-            $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread));
-            $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread));
-            $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoin($id_thread));
-
-            try {
-                foreach ($result_thread as $index=>$single_thread){
-                    $single_thread['questions'] =  $result_question;
-                    foreach ($single_thread['questions'] as $index2=>&$single_question){
-                       $single_question['choices'] = [];
-                       foreach ($result_choices as  $index3 => $single_choice){
-                           if ($single_choice['question_id'] == $single_question['id']){
-                               array_push($single_question['choices'], $single_choice);
-                           }
-                       }
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(0, 405, "Not allow this method");
+            }else{
+                $result_thread = $this->arrayGroupBy($this->requireModel('Thread')->selectAllByID($id_thread));
+                $result_question =$this->arrayGroupBy( $this->requireModel('Question')->selectAllByThreadID($id_thread));
+                $result_choices = $this->arrayGroupBy( $this->requireModel('Choices')->selectAllByThreadIDJoin($id_thread));
+                try {
+                    foreach ($result_thread as $index=>$single_thread){
+                        $single_thread['questions'] =  $result_question;
+                        foreach ($single_thread['questions'] as $index2=>&$single_question){
+                            if ($single_question['image'] == null){
+                                $single_question['image'] = $GLOBALS['img_default'];
+                            }
+                            $single_question['choices'] = [];
+                            foreach ($result_choices as  $index3 => $single_choice){
+                                if ($single_choice['question_id'] == $single_question['id']){
+                                    array_push($single_question['choices'], $single_choice);
+                                }
+                            }
+                        }
+                        $data = $single_thread;
                     }
-                    $data = $single_thread;
+                    $data_return = $this->messages(true, 200, 'success', $data);
+                }catch (Exception $exception){
+                    echo $exception;
                 }
-            }catch (Exception $exception){
-                echo $exception;
             }
-
         }
-        echo json_encode($data);
+        echo json_encode($data_return);
     }
 
     //Cập nhật đề
     public function  updateQuiz(){
         $data_return = [];
-        if ($_SERVER['REQUEST_METHOD'] != 'POST'){
-            $data_return = $this->messages(false, 405, "Not allowed this method");
-        }else{
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401, "Invalid token");
+        }
+        else{
            $data = $_POST;
            if (!array_key_exists('id', $data)){
                $data_return = $this->messages(false, 500, "Can't not update!");
-           }else{
+           } else{
                $id_thread = $data['id'];
                $modelThread = $this->requireModel('Thread');
                $model_question = $this->requireModel('Question');
@@ -259,31 +266,35 @@ class APIThread extends Controller{
                $this_is_test = $modelThread->selectAllByID($id_thread)->fetch_assoc()['is_test'];
                if ($this_is_test != 0){
                    $data_return = $this->messages(false, 500, "Can't not update!");
-               }else{
-                   try {
-                       $modelThread->updateThread($data['id'], $data['grade'], $data['room_id'], $data['subject'], $data['title']);
-                       if ($model_choices->deleteAllByThreadIDJoin($data['id']) == 1 && $model_question->deleteAllByThreadID($data['id']) == 1) {
-                           $question_array = json_decode($data['questions']);
-                           foreach ($question_array as $index => $single_question) {
-                               $question_obj = new APIQuestion();
-                               if ($single_question->src == 'null'){
+               } else{
+                   if ($this->checkValidateQuiz($data_return, $data)){
+                       try {
+                           $modelThread->updateThread($data['id'], $data['grade'], $data['subject'], $data['title'], $data['description_thread']);
+                           if ($model_choices->deleteAllByThreadIDJoin($data['id']) == 1 && $model_question->deleteAllByThreadID($data['id']) == 1) {
+                               $question_array = json_decode($data['questions']);
+                               foreach ($question_array as $index => $single_question) {
+                                   $question_obj = new APIQuestion();
+//                               if ($single_question->src == 'null'){
                                    $value_file = $this->load_file($index);
                                    $img = $value_file['image'];
                                    $img_name = $value_file['image_name'];
-                               }else{
-                                   $img_name = null;
-                                   $img = $single_question->src;
+//                               }
+//                               else{
+//                                   $img_name = null;
+//                                   $img = $single_question->src;
+//                               }
+                                   $id_question = $question_obj->createQuestion($single_question->explain, $img, $img_name ,$single_question->description, $id_thread)->fetch_assoc()['id'];
+                                   foreach ($single_question->choices as $index2=>$single_choice){
+                                       $choice_obj = new APIChoices();
+                                       $choice_obj->createChoices($single_choice->choice_name, $single_choice->choice_content, $single_choice->correct, $id_question);
+                                   }
                                }
-                               $id_question = $question_obj->createQuestion($single_question->explain, $img, $img_name ,$single_question->description, $id_thread)->fetch_assoc()['id'];
-                               foreach ($single_question->choices as $index2=>$single_choice){
-                                   $choice_obj = new APIChoices();
-                                   $choice_obj->createChoices($single_choice->choice_name, $single_choice->choice_content, $single_choice->correct, $id_question);
-                               }
+                               $data_return = $this->messages(true, 200, "Success update");
                            }
-                           $data_return = $this->messages(true, 200, "Success update");
                        }
-                   }catch (BadFunctionCallException $exception){
-                       $data_return = $this->messages(false, 400, $exception);
+                       catch (Exception $exception){
+                           $data_return = $this->messages(false, 500, $exception);
+                       }
                    }
                }
            }
@@ -326,7 +337,11 @@ class APIThread extends Controller{
                 $data_return = $this->messages(false, 405, 'Not allowed this method');
             }else{
                 $data = json_decode(file_get_contents('php://input'));
-                print_r($data);
+                $id_room = $data->id_room;
+                foreach ($data->data as $i=>$id_thread){
+                    $this->thread_model->insertIntoRoomThread($id_room, $id_thread);
+                }
+                $data_return = $this->messages(true, 200, 'Success');
             }
         }
         echo json_encode($data_return);

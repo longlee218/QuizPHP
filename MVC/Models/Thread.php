@@ -49,11 +49,11 @@ class Thread extends Database
         $stmt->close();
         return $result;
     }
-    public function updateThread($thread_id, $grade, $room_id, $subject, $title){
+    public function updateThread($thread_id, $grade, $subject, $title, $description){
         try {
-            $query = 'update thread set grade = ? , room_id = ?, subject = ?, title = ? where id = ?';
+            $query = 'update thread set grade = ? , subject = ?, title = ?, description = ? where id = ?';
             $stmt = $this->con->prepare($query);
-            $stmt->bind_param('sissi', $grade, $room_id, $subject, $title, $thread_id);
+            $stmt->bind_param('ssssi', $grade, $subject, $title, $description, $thread_id);
             $stmt->execute();
             $stmt->close();
             return 1;
@@ -138,5 +138,14 @@ class Thread extends Database
         $result = $stmt->get_result();
         $stmt->close();
         return $result;
+    }
+
+    public function insertIntoRoomThread($id_room, $id_thread){
+        $query = 'insert into room_thread(thread_id, room_id) value (?, ?)';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('ii',$id_thread, $id_room);
+        $stmt->execute();
+        $stmt->close();
     }
 }

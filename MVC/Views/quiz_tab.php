@@ -21,13 +21,14 @@
     }
     .more-quiz{
         border: none;
-        background-color: #f5f5f5;
-        border-radius: 50%;
+        background-color: white;
         padding: 10px;
         outline: none;
+        font-weight: bold;
     }
     .more-quiz:focus{
         border: none;
+        font-weight: bold;
         outline: none;
     }
     .li-quiz{
@@ -120,13 +121,13 @@
                                   <li class="list-group-item li-quiz" name="${value['id']}">
                                     <div class="row mt-3">
                                         <div class="col col-md-4">
-                                          <h5> <a href="#" class="text-secondary font-weight-bold ">${value['title']}</a></h5>
+                                          <h5> <a href="/../QuizSys/QuizPage/detail/${value['id']}" class="text-secondary font-weight-bold ">${value['title']}</a></h5>
                                         </div>
                                         <div class="col col-md-3"></div>
                                         <div class="col col-md-4"><small class="text-secondary">Môn học: ${value['subject']}</small></div>
                                         <div class="col col-md-1 mt-2">
                                             <div class="dropdown">
-                                                <button class="btn more-quiz dropdown-toggle" type="button" id="dropDownSetting" data-toggle="dropdown" aria-expanded="false"></button>
+                                                <button class="btn more-quiz" type="button" id="dropDownSetting" data-toggle="dropdown" aria-expanded="false">...</button>
                                                 <div class="dropdown-menu" aria-labelledby="dropDownSetting">
                                                     <p class="dropdown-item" onclick="modalShare(this)" id="share" name="${value['id']}" title="${value['title']}"  >Chia sẻ</p>
                                                     <a class="dropdown-item" href="#">Cài đặt</a>
@@ -175,7 +176,7 @@
                                         <div class="col col-md-4"><small class="text-secondary">Môn học: ${value['subject']}</small></div>
                                        <div class="col col-md-1 mt-2">
                                             <div class="dropdown">
-                                                <button class="btn more-quiz dropdown-toggle" type="button" id="dropDownSetting" data-toggle="dropdown" aria-expanded="false"></button>
+                                                <button class="btn more-quiz" type="button" id="dropDownSetting" data-toggle="dropdown" aria-expanded="false">...</button>
                                                 <div class="dropdown-menu" aria-labelledby="dropDownSetting">
                                                     <p class="dropdown-item" onclick="modalShare(this)" id="share" name="${value['id']}" title="${value['title']}">Chia sẻ</p>
                                                     <p class="dropdown-item" >Cài đặt</p>

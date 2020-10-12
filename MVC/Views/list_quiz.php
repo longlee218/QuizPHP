@@ -60,7 +60,7 @@
                                         <a class="dropdown-item" href="#">Kiểm tra</a>
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" placeholder="Nhập tên đề">
+                                <input type="text" class="form-control" placeholder="Nhập tên đề" onkeyup="search(this.value)">
                             </div>
                         </div>
                         <div class="col col-md-1">
@@ -457,12 +457,22 @@
                     $(data['data']).each((index, value) =>{
                         $('#table-list-quiz tr:last').after(`
                              <tr>
-                                <th scope="row"><a href='#' class="text-dark">${value['title']}</a></th>
-                                <td>${value['subject']}</td>
-                                <td>${value['description']}</td>
-                                <td>${gradeName[value['grade']]}</td>
-                                <td>${value['update_at']}</td>
-                                <td><button class="btn-setting"><p>...</p></button></td>
+                                <th scope="row">
+                                    <a href='/../QuizSys/QuizPage/detail/${value['id']}' class="text-dark">${value['title']}</a>
+                                </th>
+                                <td><p class='text-secondary'>${value['update_at']}</p></td>
+                                <td class='text-secondary'>${value['description']}</td>
+                                <td>
+                                    <button class="btn-setting"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><p>...</p></button>
+                                     <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">Chi tiết</a>
+                                        <a class="dropdown-item" href="#">Chia sẻ đề</a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#">Cài đặt</a>
+                                    </div>
+                                </td>
+
                             </tr>
                         `)
                     })
@@ -509,6 +519,7 @@
         $('#submitImport').click(() => {
             let array_choose = []
             let checkbox, first_th
+            const id_room = $('#submitImport').val()
             const table = $('#table-quiz-import')
             const tr = $(table).find('tr')
             for (let i = 1; i < tr.length; i++){
@@ -527,12 +538,16 @@
                 url: '/../QuizSys/APIThread/shareToRoom',
                 data: JSON.stringify(
                         {
-                            id_room:2,
+                            id_room: id_room,
                             data: array_choose
                         }
                     ),
                 success: (data) => {
-                    console.log(data)
+                    if (data['success'] === true){
+                        $('#table-list-quiz').empty().html('')
+                        alert('Đã thêm các bộ đề số '+array_choose+ ' vào')
+                        location.reload()
+                    }
                 },
                 error: (xhr, error) => {
                     console.log(xhr, error)
@@ -544,7 +559,7 @@
 
     const searchImportQuiz = (value) => {
         let a, textValue, value_upper = value.toUpperCase()
-        const table = $('#table-quiz-import')
+        const table = $('#table-list-quiz')
         const tr = $(table).find('tr')
         for (let i = 1; i < tr.length; i++ ){
             a = $(tr[i]).find('th')[0]
@@ -557,10 +572,23 @@
         }
     }
 
-
-
-
    function importQuiz() {
        $('#modalImport').modal('show')
+   }
+
+   function search(value){
+       let a, textValue, value_upper = value.toUpperCase()
+       const table = $('#table-list-quiz')
+       const tr = $(table).find('tr')
+       for (let i = 1; i < tr.length; i++ ){
+           a = $(tr[i]).find('th')[0]
+           textValue = $(a).text() || $(a).textContent
+           if (textValue.toUpperCase().indexOf(value_upper) > -1){
+               tr[i].style.display = ''
+           }else{
+               tr[i].style.display = 'none'
+           }
+       }
+
    }
 </script>

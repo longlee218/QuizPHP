@@ -83,7 +83,7 @@
     const this_url = window.location.href
     const array_value = this_url.split('/')
     const room_name = array_value.slice(-1)[0]
-    document.getElementById('room-name').innerHTML = room_name
+    document.getElementById('room-name').innerHTML = decodeURIComponent(room_name)
 </script>
 
 

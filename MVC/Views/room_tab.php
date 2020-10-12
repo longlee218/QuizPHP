@@ -1,17 +1,43 @@
 <?php require_once './MVC/Views/inc/master.php'?>
 
 <style>
+    html {
+        scroll-behavior: smooth;
+    }
+
     .room-list{
         padding: 10px;
     }
     .room-detail{
         padding-top: 5px;
-        margin-bottom: 15px;
-        border-bottom-style: groove;
+        margin-bottom: 20px;
+        border-bottom-style: solid;
+        border-bottom-width: thin;
+        border-bottom-color: #dadada;
+
+    }
+
+    .btn-status{
+        background-color: white;
+        border: none;
+        outline: none;
+    }
+
+    .btn-status:focus{
+        border: none;
+        outline: none;
+    }
+    .btn-to-top{
+        position:fixed;
+        bottom: 60px;
+        right: 20px;
+        height: 50px;
+        z-index: 999;
+        padding: 10px;
+        display: none;
     }
 </style>
-
-<div class="room-list pt-4">
+<div class="room-list pt-4" id="top-content">
     <div class="row" id="search_room">
         <input class="form-control col-md-9" oninput="searchRoom(this.value)" placeholder="Tìm phòng..">
         <button class="btn btn-success ml-4" onclick="window.location.href = '/../QuizSys/RoomAction/createRoom/'"><i class="fa fa-star-o" aria-hidden="true"></i>Thêm phòng</button>
@@ -46,7 +72,9 @@
         <!-- /.modal-dialog -->
     </div>
 </div>
+    <a class="btn btn-danger btn-to-top" href="#top-content"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
 <script>
+    // <button class="btn btn-outline-danger float-right" id="deleteRoom" value="${value['id']}" onclick="deleteRoom(this.value)"><small><i class="fa fa-trash" aria-hidden="true"></i></smal></button>
 
     const statusRoom = {
         0: '<i class="fa fa-unlock" aria-hidden="true"></i>',
@@ -54,7 +82,7 @@
     }
     const statusName = {
         0: 'Công khai',
-        1: 'Riêng tư'
+        1: 'Riêng tư',
     }
 
     function searchRoom(value){
@@ -89,9 +117,7 @@
                                     </div>
                                    <div class="row mt-2">
                                         <p class="text-secondary col col-md-10"> Số đề hiện tại: ${number_quiz}</p>
-                                        <div class="col col-md-2">
-                                            <button class="btn btn-outline-danger float-right" id="deleteRoom" value="${value['id']}" onclick="deleteRoom(this.value)"><small><i class="fa fa-trash" aria-hidden="true"></i></smal></button>
-                                        </div>
+                                        <div class="col col-md-2"></div>
                                     </div>
                                     <p class="text-secondary"> Cập nhật: ${value['update_at']}</p>
                                 </div>
@@ -145,12 +171,12 @@
                         }else{
                             $.each(data['data'], (index, value) =>{
                                 const number_quiz =  count_quiz(value['id'])
-                                let btnStatus = `<button class="btn btn-secondary float-right " id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                let btnStatus = `<button class="btn btn-status float-right " id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                                 if (value['status'] === "1"){
-                                    btnStatus = `<button class="btn btn-secondary float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
+                                    btnStatus = `<button class="btn btn-status float-right" id="editRoom"  name="${value['status']}" value="${value['id']}"  onclick="modalStatus(this)" data-target='#changeStatus' data-toggle="modal"><small>${statusRoom[value['status']]}</small></button>`
                                 }
                                 $('#list-room-detail:last-child').append(`
-                            <div class="room-detail" name="${value['id']}">
+                            <div class="room-detail pb-4 pt-3" name="${value['id']}">
                                 <div class="row">
                                         <div class="col col-md-11">
                                             <a href="/../QuizSys/RoomAction/roomDetail/${value['room_name']}"><h5>Phòng: ${value['room_name']}</h5></a>
@@ -163,9 +189,7 @@
                                     <div class="col col-md-10">
                                        <p class="text-secondary"> Số đề hiện tại: ${number_quiz}</p>
                                     </div>
-                                    <div class="col col-md-2">
-                                        <button class="btn btn-outline-danger float-right" id="deleteRoom" value="${value['id']}" onclick="deleteRoom(this.value)"><i class="fa fa-trash" aria-hidden="true"></i></button>
-                                    </div>
+                                    <div class="col col-md-2"></div>
                                     </div>
 
                                 <p class="text-secondary"> Cập nhật: ${value['update_at']}</p>
@@ -224,5 +248,11 @@
         console.log(value)
         // return false
     }
-
+    $(window).scroll(function() {
+        if($(document).scrollTop() > 800){
+            $(".btn-to-top").show();
+        } else {
+            $(".btn-to-top").hide();
+        }
+    });
 </script>

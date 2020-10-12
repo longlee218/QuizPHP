@@ -1,15 +1,11 @@
 <?php require_once './MVC/Views/navbar.php'?>
 <style>
     #title_quiz{
-        height: 50px;
-        width: 500px;
-        font-size: 24pt;
+        height: 40px;
+        width: 400px;
+        font-size: 20pt;
         text-transform: uppercase;
-    }
-    .square {
-        height: 150px;
-        width: 150px;
-        background-color: #555;
+        padding: 20px 5px;
     }
     .qs_correct{
         width: 25px;
@@ -35,74 +31,87 @@
 
     }
 
-    #upload-photo {
-        opacity: 0;
-        position: absolute;
-        z-index: -1;
-    }
 </style>
 <div class="container" id="main-content">
-    <form id="form_quiz">
-        <div class="row mt-auto mt-5 pt-5">
-            <div class="col-6">
+    <form id="form_quiz" enctype="multipart/form-data">
+        <div class="row mt-auto pt-5">
+            <div class="col col-6">
                 <div class="form-row">
                     <input class="form-control" id="title_quiz" value="Tiêu đề mặc định" required>
                 </div>
             </div>
-            <div class="col col-4"></div>
-            <div class="col-2 form-group">
-                <button class="btn btn-outline-primary btn-lg" type="submit" id="save_and_exit">Lưu và thoát</button>
+            <div class="col col-5"></div>
+            <div class="col col-1 form-group">
+                <button class="btn btn-outline-success" type="submit" id="save_and_exit">Lưu và thoát</button>
             </div>
         </div>
         <hr>
-        <div class="form-row">
-            <div class="col col-xs-3 col-md-6">
-                <label class="switch">
-                    <input id="quiz_setting_switch" name="setting_quiz" type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-                <div class="ml-2 text-dark font-weight-bold">Tùy chỉnh cài đặt bộ đề</div>
-            </div>
-            <div class="col col-xs-3 col-md-6 text-right">
-                <label class="switch">
-                    <input id="sharing_room" name="sharing_room" type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-                <div class="ml-2 text-dark font-weight-bold">Phòng muốn share</div>
-            </div>
-        </div>
-        <div id="content_thread">
-            <br>
+<!--        <div class="form-row">-->
+<!--            <div class="col col-xs-3 col-md-6">-->
+<!--                <label class="switch">-->
+<!--                    <input id="quiz_setting_switch" name="setting_quiz" type="checkbox">-->
+<!--                    <span class="slider round"></span>-->
+<!--                </label>-->
+<!--                <div class="ml-2 text-dark font-weight-bold">Tùy chỉnh cài đặt bộ đề</div>-->
+<!--            </div>-->
+<!--            <div class="col col-xs-3 col-md-6 text-right">-->
+<!--                <label class="switch">-->
+<!--                    <input id="sharing_room" name="sharing_room" type="checkbox">-->
+<!--                    <span class="slider round"></span>-->
+<!--                </label>-->
+<!--                <div class="ml-2 text-dark font-weight-bold">Phòng muốn share</div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <form id="content_thread" class="form-setting-quiz">
             <div class="form-group">
-                <label>Tên môn học</label>
-                <input placeholder="Tên môn học" class="form-control" id="subject">
+                <div class="form-row">
+                    <div class="col-md-4">
+                        <label>Tên môn học</label>
+                        <input placeholder="Tên môn học" class="form-control" id="subject">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Cấp bậc/Trình độ</label>
+                        <select type="text" class="form-control" id="grade">
+                            <option selected value="1">Trung học</option>
+                            <option value="2">Đại học</option>
+                            <option value="3">Doanh nghiệp</option>
+                            <option value="4">Khác</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
             </div>
             <div class="form-group">
-                <label>Cấp bậc/Trình độ</label>
-                <select type="text" class="form-control" id="grade">
-                    <option selected value="1">Trung học</option>
-                    <option value="2">Đại học</option>
-                    <option value="3">Doanh nghiệp</option>
-                    <option value="4">Khác</option>
-                </select>
+                <div class="form-row">
+                    <div class="col">
+                        <label for="exampleFormControlTextarea1" class="font-weight-bold">Mô tả <small class="text-secondary">(có thể bỏ qua)</small></label>
+                        <textarea class="form-control" id="description_quiz" rows="3"></textarea>
+                    </div>
+                </div>
             </div>
+<!--            <div class="form-group">-->
+<!--                <label>Cấp bậc/Trình độ</label>-->
+<!--                <select type="text" class="form-control" id="grade">-->
+<!--                    <option selected value="1">Trung học</option>-->
+<!--                    <option value="2">Đại học</option>-->
+<!--                    <option value="3">Doanh nghiệp</option>-->
+<!--                    <option value="4">Khác</option>-->
+<!--                </select>-->
+<!--            </div>-->
             <!--                    <div class="form-group">-->
             <!--                        <button class="btn btn-outline-primary" type="button" onclick="$('#content_thread').hide()">Lưu</button>-->
             <!--                        <button class="btn btn-light">Hủy</button>-->
             <!--                    </div>-->
-        </div>
-        <div id="list_room">
-            <br>
-            <div class="form-group">
-                <label>Danh sách các phòng</label>
-                <select type="text" class="form-control" id="room_list"></select>
-            </div>
-            <!--            <div class="form-group">-->
-            <!--                <button class="btn btn-outline-primary" type="button" onclick="$('#list_room').hide()">Lưu</button>-->
-            <!--                <button class="btn btn-light">Hủy</button>-->
-            <!--            </div>-->
-        </div>
-        <hr>
+        </form>
+<!--        <div id="list_room">-->
+<!--            <br>-->
+<!--            <div class="form-group">-->
+<!--                <label>Danh sách các phòng</label>-->
+<!--                <select type="text" class="form-control" id="room_list"></select>-->
+<!--            </div>-->
+<!--           -->
+<!--        </div>-->
+        <br>
         <div>
             <div class="form_question" id="form_question"></div>
             <br>
@@ -121,28 +130,28 @@
         segment_array.splice(0,4);
         return segment_array;
     }
-    var id_quiz =  getDetail()[0];
-
-    $(document).ready(function () {
-        $("#content_thread").hide();
-        $("#quiz_setting_switch").change(function () {
-            if (this.checked){
-                $("#content_thread").fadeIn();
-            }else{
-                $("#content_thread").fadeOut();
-            }
-        })
-    });
-    $(document).ready(function () {
-        $("#list_room").hide();
-        $("#sharing_room").change(function () {
-            if (this.checked){
-                $("#list_room").fadeIn();
-            }else{
-                $("#list_room").fadeOut();
-            }
-        })
-    });
+    const id_quiz =  getDetail()[0];
+    //
+    // $(document).ready(function () {
+    //     $("#content_thread").hide();
+    //     $("#quiz_setting_switch").change(function () {
+    //         if (this.checked){
+    //             $("#content_thread").fadeIn();
+    //         }else{
+    //             $("#content_thread").fadeOut();
+    //         }
+    //     })
+    // });
+    // $(document).ready(function () {
+    //     $("#list_room").hide();
+    //     $("#sharing_room").change(function () {
+    //         if (this.checked){
+    //             $("#list_room").fadeIn();
+    //         }else{
+    //             $("#list_room").fadeOut();
+    //         }
+    //     })
+    // });
     $.ajax({
         type: 'GET',
         url: "/../QuizSys/APIRoom/queryRoom/"+return_first,
@@ -305,23 +314,24 @@
     $(document).ready(function () {
         $('#save_and_exit').click(function (e) {
             e.preventDefault()
-            var quiz = new FormData();
-            var subject = $('#content_thread #subject').val();
-            var grade = $('#content_thread #grade').val();
-            var title = $('#title_quiz').val();
-            var form_question = $('#form_question');
-            var room_id = $('#room_list').val();
-            var question_data = [];
+            const quiz = new FormData();
+            const subject = $('#content_thread #subject').val()
+            const grade = $('#content_thread #grade').val()
+            const title = $('#title_quiz').val()
+            const form_question = $('#form_question')
+            // const room_id = $('#room_list').val();
+            const description_thread = $('#description_quiz').val()
+            const question_data = [];
             form_question.each(function () {
                 $(this).find('.qtn-form').each(function (index) {
-                    var single_question = {};
+                    const single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
                     single_question['src'] = $(this).find('.row .picture img').attr('src');
                     quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0]);
                     single_question['image_name'] =
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
-                    var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
-                    var choice_data = [];
+                    const choice_group = $(this).find('.row .qs .form-group .question_wrapper');
+                    const choice_data = [];
                     choice_group.find('.test').each(function () {
                         var single_choice = {};
                         single_choice['choice_name'] = $(this).attr('id');
@@ -340,60 +350,65 @@
             quiz.append('subject', subject);
             quiz.append('grade', grade);
             quiz.append('title', title);
-            quiz.append('room_id', room_id);
+            quiz.append('description_thread', description_thread);
             quiz.append('questions', JSON.stringify(question_data));
             $.ajax({
                 type: 'POST',
-                url: '/../QuizSys/APIThread/checkValidateQuiz',
+                url: '/../QuizSys/APIThread/updateQuiz',
+                headers:{
+                    'Authorization': getCookie('Authorization')
+                },
                 data: quiz,
                 processData: false,
                 contentType: false,
                 success: function (data) {
                     if (data['success'] === true){
-                        $.ajax({
-                            type : 'POST',
-                            url: '/../QuizSys/APIThread/updateQuiz',
-                            data: quiz,
-                            processData: false,
-                            contentType: false,
-                            success: function (data) {
-                                if (data['success'] === true){
-                                    alert('Cập nhật thành công');
-                                    window.location.href = "/../QuizSys/QuizPage/listQuiz";
-                                }else{
-                                    console.log(data);
-                                    alert(data['mess'])
-                                }
-                            },
-                            error: function (xhr, error) {
-                                console.log(xhr, error);
-                            }
-                        })
+                        // $.ajax({
+                        //     type : 'POST',
+                        //     url: '/../QuizSys/APIThread/updateQuiz',
+                        //     data: quiz,
+                        //     processData: false,
+                        //     contentType: false,
+                        //     success: function (data) {
+                        //         if (data['success'] === true){
+                        //             alert('Cập nhật thành công');
+                        //             window.location.href = "/../QuizSys/QuizPage/listQuiz";
+                        //         }else{
+                        //             console.log(data);
+                        //             alert(data['mess'])
+                        //         }
+                        //     },
+                        //     error: function (xhr, error) {
+                        //         console.log(xhr, error);
+                        //     }
+                        // })
+                        alert('Bộ đề đã được cập nhật thành công')
+                        window.location.replace('/../QuizSys/Home/InstructorHome?tab=nav-store-quiz')
                     }else{
                         switch (data['mess']) {
                             case "Can't not submit because don't have any question":
-                                alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
-                                break;
+                                alert("Đề chưa có câu hỏi. Bạn không thể lưu được")
+                                break
                             case "Require title or Room ID":
-                                alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
-                                break;
+                                alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu")
+                                break
                             case "Need more than 1 selection":
-                                alert("Cần nhiều hơn 1 đáp án");
-                                break;
+                                alert("Cần nhiều hơn 1 đáp án")
+                                break
                             case "Question can't wrong all or correct all":
-                                alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
-                                break;
+                                alert("Cần ít nhất 1 câu sai trong từng câu hỏi")
+                                break
                             case "Please fill the content of question":
-                                alert("Vui lòng điền nội dung câu hỏi");
-                                break;
+                                alert("Vui lòng điền nội dung câu hỏi")
+                                break
                             case "'Please fill the content of answer":
-                                alert("Vui lòng nhập nội dung câu trả lời");
-                                break;
+                                alert("Vui lòng nhập nội dung câu trả lời")
+                                break
                         }
                     }
                 },
                 error: function (xhr, error) {
-                    console.log(xhr, error);
+                    console.log(xhr, error)
                 }
             })
         })
@@ -403,20 +418,22 @@
             method: 'GET',
             url: '/../QuizSys/APIThread/queryQuizDetail/'+id_quiz,
             headers: {
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization')
             },
-            success: function (data) {
+            success: function (data_return) {
+                const data = data_return['data']
                 console.log(data);
                 $('#title_quiz').val(data['title']);
-                $('#content_thread #subject').val(data['subject']);
-                $('#content_thread #grade').val(data['grade']);
-                $('#list_room select').val(data['room_id']).change();
+                $('#subject').val(data['subject']);
+                $('#grade').val(data['grade']);
+                $('#description_quiz').val(data['description'])
                 $.each(data['questions'], function (index, value) {
                     const qtnForm = document.createElement("div");
                     qtnForm.setAttribute("class", "qtn-form");
                     qtnForm.setAttribute("id", `${index+1}`);
                     qtnForm.setAttribute('name', `${value['id']}`)
-                    var qtnFormContent = `
+                    const qtnFormContent = `
                         <div class="row">
                             <div class="col-xl-1 qs_label">
                                     <label for="question_title" class="font-weight-bold" name="label-question">Câu ${index + 1}</label>
@@ -500,4 +517,4 @@
         }
     }
 </script>
-<?php include_once './MVC/Views/footer.php'?>
+<?php //include_once './MVC/Views/footer.php'?>

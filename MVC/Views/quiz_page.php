@@ -316,14 +316,14 @@
             const question_data = [];
             form_question.each(function () {
                 $(this).find('.qtn-form').each(function (index) {
-                    var single_question = {};
+                    const single_question = {};
                     single_question['explain'] = $(this).find('.row .qs #exp').val();
                     quiz.append(index, $(this).find('.row .picture input[name="photo"]')[0].files[0])
                     single_question['description'] = $(this).find('.row .qs #question_title').val();
-                    var choice_group = $(this).find('.row .qs .form-group .question_wrapper');
-                    var choice_data = [];
+                    const choice_group = $(this).find('.row .qs .form-group .question_wrapper');
+                    const choice_data = [];
                     choice_group.find('.test').each(function () {
-                        var single_choice = {};
+                        const single_choice = {};
                         single_choice['choice_name'] = $(this).attr('id');
                         single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
                         single_choice['correct'] = '0';
@@ -355,33 +355,33 @@
                 success: function (data) {
                     if (data['success'] === true){
                         alert('Bộ đề đã được lưu');
-                        window.location.replace('/../QuizSys/Home/InstructorHome?tab=nav-store-quiz');
+                        window.location.replace('/../QuizSys/Home/InstructorHome?tab=nav-store-quiz')
 
                     }else{
                         switch (data['mess']) {
                             case "Can't not submit because don't have any question":
-                                alert("Đề chưa có câu hỏi. Bạn không thể lưu được");
-                                break;
+                                alert("Đề chưa có câu hỏi. Bạn không thể lưu được")
+                                break
                             case "Require title or Room ID":
-                                alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu");
-                                break;
+                                alert("Hãy chọn tiêu đề cho bộ đề và lựa chọn phòng bạn muốn lưu")
+                                break
                             case "Need more than 1 selection":
-                                alert("Cần nhiều hơn 1 đáp án");
-                                break;
+                                alert("Cần nhiều hơn 1 đáp án")
+                                break
                             case "Question can't wrong all or correct all":
-                                alert("Cần ít nhất 1 câu sai trong từng câu hỏi");
-                                break;
+                                alert("Cần ít nhất 1 câu sai trong từng câu hỏi")
+                                break
                             case "Please fill the content of question":
-                                alert("Vui lòng điền nội dung câu hỏi");
-                                break;
+                                alert("Vui lòng điền nội dung câu hỏi")
+                                break
                             case "Please fill the content of answer":
-                                alert("Vui lòng nhập nội dung câu trả lời");
-                                break;
+                                alert("Vui lòng nhập nội dung câu trả lời")
+                                break
                         }
                     }
                 },
                 error: function (xhr, error) {
-                    console.log(xhr, error);
+                    console.log(xhr, error)
                 }
             })
 
