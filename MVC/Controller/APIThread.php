@@ -274,15 +274,15 @@ class APIThread extends Controller{
                                $question_array = json_decode($data['questions']);
                                foreach ($question_array as $index => $single_question) {
                                    $question_obj = new APIQuestion();
-//                               if ($single_question->src == 'null'){
+                               if ($single_question->src == $GLOBALS['img_default']){
                                    $value_file = $this->load_file($index);
                                    $img = $value_file['image'];
                                    $img_name = $value_file['image_name'];
-//                               }
-//                               else{
-//                                   $img_name = null;
-//                                   $img = $single_question->src;
-//                               }
+                               }
+                               else{
+                                   $img_name = null;
+                                   $img = $single_question->src;
+                               }
                                    $id_question = $question_obj->createQuestion($single_question->explain, $img, $img_name ,$single_question->description, $id_thread)->fetch_assoc()['id'];
                                    foreach ($single_question->choices as $index2=>$single_choice){
                                        $choice_obj = new APIChoices();

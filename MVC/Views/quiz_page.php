@@ -76,7 +76,7 @@
                            <div class="col-md-4">
                                <label class="font-weight-bold">Cấp bậc/Trình độ</label>
                                <select type="text" class="form-control" id="grade">
-                                   <option selected value="1">Trung học</option>
+                                   <option selected="selected" value="1">Trung học</option>
                                    <option value="2">Đại học</option>
                                    <option value="3">Doanh nghiệp</option>
                                    <option value="4">Khác</option>

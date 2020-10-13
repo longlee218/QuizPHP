@@ -413,11 +413,11 @@
                     </tr>
                     <tr class="row-info">
                         <td class="title">Số lượng phòng</td>
-                        <td class="text-secondary">0</td>
+                        <td class="text-secondary" id="number-room"></td>
                     </tr>
                     <tr class="row-info">
                         <td class="title">Số lượng đề</td>
-                        <td class="text-secondary">0</td>
+                        <td class="text-secondary" id="number-quiz"></td>
                     </tr>
                 </table>
             `
@@ -431,6 +431,7 @@
                 document.getElementById('country').setAttribute('value', user['country'])
                 document.getElementById('organization_name').setAttribute('value', user['organization_name'])
                 document.getElementById('position_input').setAttribute('value', user['position'])
+                numberRoomAndQuiz()
             },
             error: (xhr, error) =>{
                 console.log(xhr, error)
@@ -497,4 +498,36 @@
         })
         return false
     })
+
+
+    function numberRoomAndQuiz(){
+        $.ajax({
+            method: 'GET',
+            url: '/../QuizSys/APIRoom/queryRoom',
+            headers:{
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization')
+            },
+            success: (data) => {
+                console.log(data)
+                if (data['success'] === true){
+                    document.getElementById('number-room').innerHTML = data['data'].length
+                }
+            }
+        })
+        $.ajax({
+            method: 'GET',
+            url: '/../QUizSys/APIThread/queryQuiz/',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': getCookie('Authorization')
+            },
+            success: (data) =>{
+                console.log(data)
+                if (data['success'] === true){
+                   document.getElementById('number-quiz').innerHTML = data['data'].length
+                }
+            }
+        })
+    }
 </script>

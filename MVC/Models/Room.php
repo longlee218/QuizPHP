@@ -225,7 +225,18 @@ class Room extends Database
         }
     }
 
-    public function selectQuizNotInRoom($id_room){
-
+    public function checkThreadInRoom($id_room, $id_thread){
+        try {
+            $query = 'select * from room_thread where thread_id = ? and room_id = ?';
+            $this->con->init();
+            $stmt = $this->con->prepare($query);
+            $stmt->bind_param('ii', $id_room, $id_thread);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result;
+        }catch (Exception $exception){
+            return $exception;
+        }
     }
 }

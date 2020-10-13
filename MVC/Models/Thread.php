@@ -91,18 +91,19 @@ class Thread extends Database
     }
 
 
-    public function findByTitleLike($id_room, $title){
-        $query = 'select * from thread where (room_id = ? and flag_delete = ? and title like ?)';
-        $this->con->init();
-        $stmt = $this->con->prepare($query);
-        $title = '%'.$title.'%';
-        $flag_delete = '0';
-        $stmt->bind_param('iss',$id_room, $flag_delete, $title);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $stmt->close();
-        return $result;
-    }
+//    public function findByTitleLike($id_room, $title){
+//        $query = 'select * from thread where (room_id = ? and flag_delete = ? and title like ?)';
+//        $this->con->init();
+//        $stmt = $this->con->prepare($query);
+//        $title = '%'.$title.'%';
+//        $flag_delete = '0';
+//        $stmt->bind_param('iss',$id_room, $flag_delete, $title);
+//        $stmt->execute();
+//        $result = $stmt->get_result();
+//        $stmt->close();
+//        return $result;
+//    }
+
     public function setStatusThread($id_thread){
         $query = 'update thread set is_test = ? where id = ?';
         $this->con->init();

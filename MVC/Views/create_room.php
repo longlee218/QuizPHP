@@ -61,19 +61,19 @@
             </div>
         </div>
         <hr>
-        <div class="form-group">
-            <div class="form-row">
-                <div class="col-3">
-                    <label class="font-weight-bold">Mật khẩu <small class="text-secondary">(có thể bỏ qua)</small></label>
-                    <input type="password" name="password_room" id="password_room" class="form-control">
-                </div>
-                <div class="col-3">
-                    <label class="font-weight-bold">Nhập lại mật khẩu</label>
-                    <input type="password" name="password_confirm" id="password_confirm" class="form-control">
-                </div>
-            </div>
-        </div>
-        <hr>
+<!--        <div class="form-group">-->
+<!--            <div class="form-row">-->
+<!--                <div class="col-3">-->
+<!--                    <label class="font-weight-bold">Mật khẩu <small class="text-secondary">(có thể bỏ qua)</small></label>-->
+<!--                    <input type="password" name="password_room" id="password_room" class="form-control">-->
+<!--                </div>-->
+<!--                <div class="col-3">-->
+<!--                    <label class="font-weight-bold">Nhập lại mật khẩu</label>-->
+<!--                    <input type="password" name="password_confirm" id="password_confirm" class="form-control">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <hr>-->
         <button class="btn btn-success" id="create_room">Tạo mới</button>
     </form>
 </div>
@@ -100,16 +100,16 @@
 
     $('#create_room').click(function() {
         const room_name = document.getElementById('room_name').value
-        const password = document.getElementById('password_room').value
-        const password_confirm = document.getElementById('password_confirm').value
+        // const password = document.getElementById('password_room').value
+        // const password_confirm = document.getElementById('password_confirm').value
         const description = document.getElementById('description_room').value
         const status =  $('input[type="radio"][name="status-radio"]:checked').val()
-        if (password !== password_confirm){
-            alert('Mật khẩu không khớp')
-        }else{
+        // if (password !== password_confirm){
+        //     alert('Mật khẩu không khớp')
+        // }else{
             const data = {
                 room_name: room_name,
-                password: password,
+                // password: password,
                 status: status,
                 description: description
             }
@@ -130,7 +130,7 @@
                     }
                 }
             })
-        }
+        // }
         return false
     })
 

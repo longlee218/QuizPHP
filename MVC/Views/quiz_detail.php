@@ -72,7 +72,7 @@
                     <div class="col-md-4">
                         <label>Cấp bậc/Trình độ</label>
                         <select type="text" class="form-control" id="grade">
-                            <option selected value="1">Trung học</option>
+                            <option value="1">Trung học</option>
                             <option value="2">Đại học</option>
                             <option value="3">Doanh nghiệp</option>
                             <option value="4">Khác</option>
@@ -208,14 +208,14 @@
 <!--                                    <div class="square"></div>-->
                                 <img src="" alt="Image preview" class="image-preview__image" >
                             </div>
-                            <input type="file" name="photo" onclick="previewImg(this)" accept=".gif, .png, .jpg, .jpeg"/>
+                            <input class="mt-3" type="file" name="photo" onclick="previewImg(this)" accept=".gif, .png, .jpg, .jpeg"/>
                         </div>
                         <div class="col-1">
                             <div class="row">
                                 <a href="javascript:void(0)" class="remove_question"><i class="fa fa-trash fa-2x" aria-hidden="true"></i></a>
                             </div>
                             <div class="row mt-3">
-                                <a href="javascript:void(0);" class="#"><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>
+<!--                                <a href="javascript:void(0);" class="#"><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>-->
                             </div>
                         </div>
                         <div class="end-question"></div>
@@ -315,11 +315,10 @@
         $('#save_and_exit').click(function (e) {
             e.preventDefault()
             const quiz = new FormData();
-            const subject = $('#content_thread #subject').val()
-            const grade = $('#content_thread #grade').val()
+            const subject = $('#subject').val()
+            const grade = $('#grade').val()
             const title = $('#title_quiz').val()
             const form_question = $('#form_question')
-            // const room_id = $('#room_list').val();
             const description_thread = $('#description_quiz').val()
             const question_data = [];
             form_question.each(function () {
@@ -333,7 +332,7 @@
                     const choice_group = $(this).find('.row .qs .form-group .question_wrapper');
                     const choice_data = [];
                     choice_group.find('.test').each(function () {
-                        var single_choice = {};
+                        const single_choice = {};
                         single_choice['choice_name'] = $(this).attr('id');
                         single_choice['choice_content'] = $(this).find('.row .col-9 input[name="question"]').val();
                         single_choice['correct'] = '0';
@@ -458,14 +457,14 @@
                             <div class="image-preview" name="inpFile">
                                 <img src="${value['image']}" alt="Image preview" height="150" width="150" onclick="removeImg(this)" ">
                             </div>
-                            <input class="mt-2" type="file" name="photo" id="${index}" accept=".gif, .png, .jpg, .jpeg" >
+                            <input class="mt-3" type="file" name="photo" id="${index}" accept=".gif, .png, .jpg, .jpeg" >
                         </div>
                         <div class="col-1">
                             <div class="row">
                                 <a href="javascript:void(0)" class="remove_question"><i class="fa fa-trash fa-2x" aria-hidden="true"></i></a>
                             </div>
                             <div class="row mt-3">
-                                <a href="javascript:void(0);" class="#" onclick=""><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>
+<!--                                <a href="javascript:void(0);" class="#" onclick=""><i class="fa fa-save fa-2x" aria-hidden="true"></i></a>-->
                             </div>
                         </div>
                         <div class="end-question">
@@ -509,10 +508,11 @@
         })
     })
     function removeImg(e) {
-        if ($(e).attr('src') !== 'null'){
+        const img_default = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAALiSURBVHhe7d3BThtHAIBht4gDB16ikZJbyfs/RUh6Ts69VCqcEZWVRbEiQhzY32Vnvk9CzIKEsOZndsyu7N/+/uff+x2s7PflM6xKWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIZ7s/Evnz/vbm5ulqPtePvu3e7i4mI52r5hwrr+8GEZbdvl5eXujzdvlqPtGuJUOEpUe7e3t8to2+yxXqER/lCGOBUeTsTV+/fLaFs+Xl/v7u+/TcVWH8eDza9Yd3d3y2jb/ry6WkZjcCokISwS04S134c99kFjirCeCkhcjeHDOiYcca3PHouEsFZk5ftGWCt5iEpcXwlrBd/HJC5hvdiPIpo9ruHDOuaa23Ovy/0snpnjmmLFeiqcKqoHs8a1+bsb9heh//r0aTk6zV0Bz4nlmN/r8Oee4nGU7LF+0XNXoNlWLmH9gpfGMVNcwjrSWlHMEtf0YR0z0WvHMENcU4f1MMFPTXQVwehxTRvW9xP72ESPPvmlKcP6UTCHXxfVy0wX1s+C2X9fVC83VViCOZ1pwhLVaU0RlqhOb/iwRPX/mG7zzmkIi4SwSAiLhLBIuIP0FTl8BusOUniEsEhsPqyzs7Nl9NXhyy1uyWj/yB3uNUhHYY/F6rYe1d4QYe0n4vz8fDnathGi2hvmnSl4XZwKSQiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsAjsdv8B1ZDQyfvNmO8AAAAASUVORK5CYII=';
+        if ($(e).attr('src') !== img_default){
             const confirm_remove = confirm('Bạn muốn xóa ảnh này ?');
             if ( confirm_remove === true){
-                $(e).attr('src', 'null');
+                $(e).attr('src', img_default);
             }
         }
     }

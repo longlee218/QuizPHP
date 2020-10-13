@@ -405,5 +405,7 @@ include_once './MVC/Views/navbar.php' ?>
             return false;
         });
     });
+
+
 </script>
 <?php require_once './MVC/Views/footer.php'?>

@@ -208,7 +208,6 @@
     queryRoom()
 
     function modalStatus(e) {
-        console.log(e)
         const name = $(e).attr('name')
         $('#changeStatus').find('#Heading').html('Phòng '+$(e).attr('value'))
         $('#changeStatus').find('input[type="radio"][name="status-radio"][value="'+name+'"]').prop('checked', true)

@@ -32,7 +32,7 @@ class APIRoom extends Controller
                 $data = json_decode(file_get_contents('php://input'));
                 $user_id = $this->auth->isAuth()['user']['id'];
                 if ($this->checkValidateRoom($data_return, $this->room_model, $data)){
-                    if ($this->room_model->createRoom($data->room_name, $user_id ,$data->status, $data->description ,md5($data->password))){
+                    if ($this->room_model->createRoom($data->room_name, $user_id ,$data->status, $data->description)){
                         $data_return = $this->messages(true, 200, 'Success');
                     }else{
                         $data_return = $this->messages(false, 500, 'Error');
@@ -210,6 +210,27 @@ class APIRoom extends Controller
                     $number = $data->fetch_assoc()['SL'];
                 }
                 $data_return = $this->messages(true, 200, 'success', $number);
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    //Kiểm tra đề đã tồn tại trong phòng chưa
+    public  function checkQuizInRoom($id_room, $title_thread){
+        if ($this->auth->isAuth() == null){
+            $data_return = $this->messages(false, 401,'Invalid token');
+        }
+        else{
+            if ($_SERVER['REQUEST_METHOD'] != 'GET'){
+                $data_return = $this->messages(false, 405, 'Method not allow');
+            }else{
+                $data_thread = $this->thread_model->findByTitleLikeUser($this->auth->isAuth()['user']['id'], $title_thread);
+                $data = $this->room_model->checkThreadInRoom($id_room, $data_thread->fetch_assoc()['id']);
+                if ($data->num_rows == 0){
+                    $data_return = $this->messages(true, 200, 'Not in room');
+                }else{
+                    $data_return = $this->messages(false, 400, 'In room');
+                }
             }
         }
         echo json_encode($data_return);
