@@ -347,6 +347,28 @@ class APIThread extends Controller{
         echo json_encode($data_return);
     }
 
+    public function makeExamQuiz(){
+        $data_return = [];
+        if ($this->auth->isAuth() == null ){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return =  $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                $this->thread_model->setExamThread($data->id_thread, $data->time_start, $data->time_do, 1, md5($data->password));
+                $list_room = $data->list_room_select;
+                foreach ($list_room as $value){
+                    $this->thread_model->insertIntoRoomThread($value, $data->id_thread);
+                }
+                $data_return = $this->messages(true, 200, 'success');
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+
+    //Query các câu hỏi phân trang
     public function queryQuizPaginator($id_thread, $page=1){
         $data_return = [];
         if ($this->auth->isAuth() == null && $this->auth->isAuth() != 2){

@@ -43,6 +43,19 @@
         max-height: calc(80vh - 210px);
         overflow-y: auto;
     }
+    .status-dot{
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 2px;
+    }
+    .exam{
+        background-color: red;
+    }
+    .practice{
+        background-color: green;
+    }
 </style>
 <div class="container-fluid">
 <div class="row">
@@ -90,8 +103,12 @@
 
         <div class="card">
             <div class="card-header">
-                <a href="#" class="text-dark"><i class="fa fa-file-text-o" aria-hidden="true"></i><span id="countExam"></span> Kiểm tra</a>
-                <a href="#" class="text-dark"><i class="fa fa-check" aria-hidden="true"><span id="countPractice"></span></i> Ôn tập</a>
+                <a href="#" onclick="displayType('exam')" class="text-dark mr-3">
+                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                    <span id="countExam" class="ml-2" name="exam"></span> Kiểm tra</a>
+                <a href="#" onclick="displayType('practice')" class="text-dark">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <span id="countPractice" class="ml-2" name="practice"></span> Ôn tập</a>
             </div>
             <div class="card-body mt-0" id="list-quiz">
                 <table class="table" id="table-list-quiz">
@@ -452,13 +469,22 @@
                 'Authorization': getCookie('Authorization')
             },
             success: (data) =>{
-                console.log($('#table-list-quiz'))
                 if (data['success'] === true){
+                    let countPractice = 0
+                    let countExam = 0
                     $(data['data']).each((index, value) =>{
+                        let status_dot = '<span class="status-dot practice ml-3 " name="practice"></span><span class="small text-secondary">Ôn tập</span>'
+                        if(value['status'] === '1'){
+                            status_dot = '<span class="status-dot exam ml-3 " name="exam"></span><span class="small text-secondary">Kiểm tra</span>'
+                            countExam += 1
+                        }else{
+                            countPractice += 1
+                        }
                         $('#table-list-quiz tr:last').after(`
                              <tr>
                                 <th scope="row">
                                     <a href='/../QuizSys/QuizPage/detail/${value['id']}' class="text-dark">${value['title']}</a>
+                                    ${status_dot}
                                 </th>
                                 <td><p class='text-secondary'>${value['update_at']}</p></td>
                                 <td class='text-secondary'>${value['description']}</td>
@@ -476,6 +502,8 @@
                             </tr>
                         `)
                     })
+                    $('#countExam').html(countExam)
+                    $('#countPractice').html(countPractice)
                 }
             }
         })
@@ -589,6 +617,21 @@
                tr[i].style.display = 'none'
            }
        }
-
    }
+
+   function displayType(type){
+       const table = $('#table-list-quiz')
+       let current_col
+       const tr = $(table).find('tr')
+       for (let i = 1; i < tr.length; i++){
+           current_col = $(tr[i]).find('th')[0]
+           let span = $(current_col).find('span')
+           if ($(span).attr('name') !== type){
+               tr[i].style.display = 'none'
+           }else{
+               tr[i].style.display = ''
+           }
+       }
+   }
+
 </script>

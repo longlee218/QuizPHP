@@ -114,3 +114,21 @@ alter table room
 
 alter table thread
                add description longtext null
+
+alter table thread
+                add status enum('0', '1') default '0',
+                add time_start timestamp null ,
+                add time_end timestamp null;
+
+alter table room
+                drop time_start,
+                drop time_end
+
+alter table thread
+add password varchar(255) null
+
+alter table thread
+drop time_start;
+
+alter table thread
+add column  time_do float

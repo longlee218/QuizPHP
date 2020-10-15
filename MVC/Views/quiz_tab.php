@@ -74,15 +74,17 @@
 <div class="quiz-tab">
     <div class="row">
         <div class="col col-md-7 search-quiz">
-            <div class="input-group">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button">Phân loại</button>
-                </div>
-                <input type="text"  oninput="searchQuiz(this.value)" placeholder="......" class="form-control search-input">
-            </div>
+<!--            <div class="input-group">-->
+<!--                <div class="input-group-append">-->
+<!--                    <button class="btn btn-outline-secondary" type="button">Phân loại</button>-->
+<!--                </div>-->
+<!--                <input type="text"  oninput="searchQuiz(this.value)" placeholder="......" class="form-control search-input">-->
+<!--            </div>-->
+                            <input type="text"  oninput="searchQuiz(this.value)" placeholder="......" class="form-control search-input">
+
         </div>
         <div class="col col-md-3">
-            <input class="form-control" type="date">
+            <input class="form-control"  placeholder="ngày/tháng/năm" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
         </div>
         <div class="col col-md-2">
             <button class="btn btn-success float-right" name="newQuiz" onclick="location.href = '/../QuizSys/QuizPage'"><i class="fa fa-star-o" aria-hidden="true"></i>
@@ -92,8 +94,7 @@
     <div class="quiz-content">
         <div class="card card-list-quiz">
             <div class="card-header dashboard-quiz">
-                <a href="#" class="text-dark font-weight-bold" id="count-quiz-training">Ôn tập</a>
-                <a href="#" class="text-dark font-weight-bold" id="count-quiz-exam">Kiểm tra</a>
+               <p class="text-secondary">Kho đề của bạn</p>
             </div>
             <div class="card-body">
                 <ul class="list-group list-group-flush" id="list"></ul>
@@ -173,11 +174,11 @@
                                 <div class="form-row">
                                     <div class="col col-6">
                                         <label class="text-secondary">Thời gian bắt đầu</label>
-                                        <input class="form-control" type="datetime-local" id="timeStart">
+                                        <input class="form-control" type="datetime-local" id="timeStart" required>
                                     </div>
                                     <div class="col col-6">
                                         <label class="text-secondary">Thời gian làm bài</label>
-                                        <input class="form-control" type="time" id="timeDo" min="00:01" max="12:00">
+                                        <input class="form-control" type="text" id="timeDo" required>
                                     </div>
                                 </div>
                             </div>
@@ -185,11 +186,12 @@
                                 <div class="form-row">
                                     <div class="col col-6">
                                         <label>Mật khẩu <small>(có thể bỏ qua)</small></label>
-                                        <input class="form-control">
+                                        <input class="form-control" type="password" id="password">
                                     </div>
                                     <div class="col col-6">
                                         <label>Nhập lại mật khẩu</label>
-                                        <input class="form-control">
+                                        <input class="form-control" type="password" id="password-confirm" onkeyup="checkPasswordMatch()">
+                                        <div id="messPass" class="mt-2"></div>
                                     </div>
                                 </div>
                             </div>
@@ -235,7 +237,8 @@
                                                 <div class="dropdown-menu" aria-labelledby="dropDownSetting">
                                                     <p class="dropdown-item" onclick="modalExam(this)" id="exam" name="${value['id']}" title="${value['title']}">Kiểm tra</p>
                                                     <p class="dropdown-item" onclick="modalShare(this)" id="share" name="${value['id']}" title="${value['title']}"  >Chia sẻ</p>
-                                                    <a class="dropdown-item" href="#">Cài đặt</a>
+                                                    <p class="dropdown-item"  id="download" onclick="downloadQuiz(this)" name="${value['id']}" title="${value['title']}"  >Tải xuống</p>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -254,6 +257,9 @@
             })
         })
 
+        // $(document).ready(function () {
+        //     $('#password, #password-confirm').keyup(checkPasswordMatch)
+        // })
 
 
     function searchQuiz(value) {
@@ -285,7 +291,7 @@
                                                 <div class="dropdown-menu" aria-labelledby="dropDownSetting">
                                                     <p class="dropdown-item" onclick="modalExam(this)" id="exam" name="${value['id']}" title="${value['title']}">Kiểm tra</p>
                                                     <p class="dropdown-item" onclick="modalShare(this)" id="share" name="${value['id']}" title="${value['title']}"  >Chia sẻ</p>
-                                                    <a class="dropdown-item" href="#">Cài đặt</a>
+                                                    <p class="dropdown-item"  id="download" onclick="downloadQuiz(this)" name="${value['id']}" title="${value['title']}"  >Tải xuống</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -315,6 +321,7 @@
         function modalExam(e) {
             $('#modalExam').modal('show')
             $('#modalExam').attr('name', e.title)
+            $('#submit-btn').attr('name', $(e).attr('name'))
             $('#examHeaderModal').html('Kiểm tra: '+e.title)
             $('#next-btn').click( function () {
                 document.getElementById('titleSetting1').style.display = 'block'
@@ -384,7 +391,6 @@
                 },
                 url: '/../QuizSys/APIRoom/checkQuizInRoom/'+$(parent).attr("name")+'/'+$(current_modal).attr("name"),
                 success: (data) =>{
-                    // console.log(typeof (data['status']))
                     if (data['success'] === false && data['status'] === 400){
                         alert('Bộ đề '+$(current_modal).attr('name')+' đã nằm trong phòng '+$(label).text())
                         $(e).prop('checked', false)
@@ -396,7 +402,98 @@
         }
     }
 
-    function quizToExam() {
-        return 0
+    function checkPasswordMatch(){
+        if ($('#password').val() !== $('#password-confirm').val()){
+            $('#messPass').html('<small class="text-danger">*Mật khẩu không đồng nhất</small>')
+        }else{
+            $('#messPass').html('<small class="text-success"> *Hợp lệ </small>')
+        }
     }
+
+
+    $('#submit-btn').click(() => {
+        let list_room_select = []
+        const table_room = $('#table-room-exam')
+        const list_tr = $(table_room).find('tr')
+        for (let i = 1; i < list_tr.length; i++){
+            const first_th = $(list_tr[i]).find('th')[0]
+            const checkbox = $(first_th).find('input[name="room_name"]')
+            if ($(checkbox).is(':checked')){
+                list_room_select.push($(checkbox).attr('value'))
+            }
+        }
+        let time_start = $('#timeStart').val()
+        const time_do = $('#timeDo').val()
+        const password = $('#password').val()
+        if (!time_do || !time_start){
+            alert('Vui lòng điền đủ các trường')
+        }else{
+            time_start = time_start.split('T')
+            time_start = time_start[0] + ' ' + time_start[1]
+            const data = {
+                id_thread: $('#submit-btn').attr('name'),
+                time_start: time_start,
+                time_do: time_do,
+                password: password,
+                list_room_select: list_room_select
+            }
+            $.ajax({
+                method: 'POST',
+                url: '/../QuizSys/APIThread/makeExamQuiz/',
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                data: JSON.stringify(data),
+                success: (data) =>{
+                    if(data['success'] === true){
+                        alert('Đề đang được tiến hành kiểm tra')
+                        window.location.reload()
+                    }
+                },
+                error: (xhr, error) =>{
+                    console.log(xhr, error)
+                }
+            })
+        }
+        return false
+    })
+
+        function downloadQuiz(e) {
+            const id = $(e).attr('name')
+            $.ajax({
+                method: 'POST',
+                url: '/../QuizSys/APIThread/exportToExcel/'+id,
+                headers:{
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                success: (data) =>{
+                    const json = JSON.parse(data)
+                    if (json['success'] === true){
+                        const a = document.createElement('a');
+                        a.href = json['url'] ;
+                        a.download = json['data'];
+                        a.click();
+                        a.remove();
+                    }
+                }
+            })
+        }
+
+     function searchRoomExam(value) {
+         let label, th, textValue, value_upper = value.toUpperCase()
+         const table = $('#table-room-exam')
+         const tr = $(table).find('tr')
+         for (let i = 1; i < tr.length; i++ ){
+             th = $(tr[i]).find('th')[0]
+             label = $(th).find('label')
+             textValue = $(label).text() || $(label).textContent
+             if (textValue.toUpperCase().indexOf(value_upper) > -1){
+                 tr[i].style.display = ''
+             }else{
+                 tr[i].style.display = 'none'
+             }
+         }
+     }
 </script>

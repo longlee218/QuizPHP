@@ -149,4 +149,13 @@ class Thread extends Database
         $stmt->execute();
         $stmt->close();
     }
+
+    public function setExamThread($id, $time_start, $time_do, $status, $password){
+        $query = 'update thread set time_start = ?, time_do = ?, status = ?, password = ? where id = ?';
+        $this->con->init();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param('ssssi', $time_start, $time_do, $status, $password, $id);
+        $stmt->execute();
+        $stmt->close();
+    }
 }

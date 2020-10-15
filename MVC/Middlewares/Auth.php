@@ -25,7 +25,7 @@ require_once __DIR__.'/../Models/User.php';
                 if(isset($this->token[0]) && !empty(trim($this->token[0]))):
                     $data = $this->_jwt_decode_token($this->token[0]);
                     $object = $data['data'];
-                    if(isset($data['auth']) && isset($object->data) && $data['auth']):
+                    if(isset($data['auth']) && isset($object->data) && $data['auth'] && $_SESSION['id'] == $this->fetchUser($object->data)['user']['id']):
                         return $this->fetchUser($object->data);
                     else:
                         return null;

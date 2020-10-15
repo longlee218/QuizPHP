@@ -6,12 +6,7 @@
     }
     .info-user{
         width: 350px;
-        /*height: 550px;*/
         max-height: 700px;
-        /*border-right-style: inset;*/
-        /*border-top-style: outset;*/
-        /*border-bottom-style: inset;*/
-        /*border-radius: 20px;*/
         padding: 15px;
         margin-top: 20px;
         margin-bottom: 30px;
@@ -38,7 +33,6 @@
         min-height: 100%;
     }
 </style>
-
 <div class="container-fluid content">
     <div class="row">
         <div class="info-user">
