@@ -10,10 +10,7 @@
     .info-quiz{
         position: relative;
         height: 450px;
-        border-style: solid;
-        border-width: thin;
-        border-color: gray;
-        background-color: #f2f2f2;
+        padding-top: 10px;
         border-radius: 15px;
     }
     .btn-setting{
@@ -69,8 +66,8 @@
                                 <div class="dropdown">
                                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropDownCategorize" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Phân loại</button>
                                     <div class="dropdown-menu" aria-labelledby="dropDownCategorize">
-                                        <a class="dropdown-item" href="#">Ôn tập</a>
-                                        <a class="dropdown-item" href="#">Kiểm tra</a>
+                                        <a class="dropdown-item" href="#" onclick="displayType('practice')">Ôn tập</a>
+                                        <a class="dropdown-item" href="#" onclick="displayType('exam')">Kiểm tra</a>
                                     </div>
                                 </div>
                                 <input type="text" class="form-control" placeholder="Nhập tên đề" onkeyup="search(this.value)">
@@ -119,8 +116,15 @@
                 </table>
             </div>
         </div>
-
-
+        <br>
+<!--        <div class="card">-->
+<!--            <div class="card-body">-->
+<!--        <div class="form-group">-->
+<!--            <label for="description-room"></label>-->
+<!--            <textarea class="form-control" id="description-room" rows="3"></textarea>-->
+<!--        </div>-->
+<!--            </div>-->
+<!--        </div>-->
 <!--        Modal import-->
         <div class="modal fade" id="modalImport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -165,8 +169,33 @@
     <!--        </div>-->
     <!--    </div>-->
 
-    <div class="col col-md-3 mt-3 info-quiz">
-        <h1>this is list content</h1>
+    <div class="col col-md-3 mt-3 info-quiz" id="info-detail">
+        <form>
+            <div class="form-group">
+                <label class="font-weight-bold">Mô tả</label>
+                <p class="text-secondary mt-3" id="description-room"></p>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="font-weight-bold">Trạng thái</label>
+                <br>
+                <div id="status-room" class="mt-3"></div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="font-weight-bold">Thống kê</label>
+                <br>
+                <div class="progress mt-3" style="height: 10px">
+                    <div class="progress-bar progress-bar-success" id="exam-bar" role="progressbar" style="background-color: red"></div>
+                    <div class="progress-bar progress-bar-warning" id="practice-bar" role="progressbar" style="background-color: green"></div>
+                </div>
+                <br>
+                <span class="status-dot practice"></span><small id="percentPractice"> Ôn tập</small>
+
+                <span class="status-dot exam ml-5"></span><small id="percentExam"> Kiểm tra</small>
+            </div>
+        </form>
+
     </div>
 </div>
 
@@ -440,26 +469,44 @@
         4: 'Khác'
     }
 
-    $(document).ready(() => {
-        $.ajax({
+    function fetchDemo(room_name){
+        return fetch('/../QuizSys/APIRoom/queryRoomDetail/'+room_name,{
             method: 'GET',
-            url: '/../QuizSys/APIRoom/queryRoomDetail/'+room_name,
             headers:{
                 'Content-type': 'application/json',
                 'Authorization': getCookie('Authorization')
-            },
-            async: false,
-            success: (data) => {
-                console.log(data)
-                if (data['success'] === true){
-                    const id_room = data['data'][0]['id']
-                    queryQuizInRoom(id_room)
-                    queryListQuizImport(id_room)
-                }
             }
-        })
+        }).then(response =>  response.json())
+            .then(data =>{
+                if (data['success'] === true){
+                    return data
+                }
+            }).catch(error => console.log(error))
+    }
+
+
+    const roomDetail = fetchDemo(room_name)
+    roomDetail.then(data => {
+        console.log(data)
+        action(data['data'][0])
     })
 
+
+    function action(data_room) {
+        const id_room = data_room['id']
+        if (data_room['description'] === null){
+            $('#description-room').html('<small class="text-secondary">Không có</small>')
+        }else{
+            $('#description-room').html(`<small class="text-secondary">${data_room['description']}</small>`)
+        }
+        if (data_room['status'] === '0'){
+            $('#status-room').html(`<span class="status-dot" style="background-color: #046580"></span><small> Công khai</small>`)
+        }else{
+            $('#status-room').html(`<span class="status-dot" style="background-color: #dbde04"></span><small> Riêng tư</small>`)
+        }
+        queryQuizInRoom(id_room)
+        queryListQuizImport(id_room)
+    }
     const queryQuizInRoom = (id_room) =>{
         $.ajax({
             method: 'GET',
@@ -470,8 +517,7 @@
             },
             success: (data) =>{
                 if (data['success'] === true){
-                    let countPractice = 0
-                    let countExam = 0
+                    let countPractice = 0, countExam = 0, total = 0
                     $(data['data']).each((index, value) =>{
                         let status_dot = '<span class="status-dot practice ml-3 " name="practice"></span><span class="small text-secondary">Ôn tập</span>'
                         if(value['status'] === '1'){
@@ -481,27 +527,26 @@
                             countPractice += 1
                         }
                         $('#table-list-quiz tr:last').after(`
-                             <tr>
+                             <tr id="${value['id']}">
                                 <th scope="row">
                                     <a href='/../QuizSys/QuizPage/detail/${value['id']}' class="text-dark">${value['title']}</a>
                                     ${status_dot}
                                 </th>
                                 <td><p class='text-secondary'>${value['update_at']}</p></td>
                                 <td class='text-secondary'>${value['description']}</td>
-                                <td>
-                                    <button class="btn-setting"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><p>...</p></button>
-                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="#">Chi tiết</a>
-                                        <a class="dropdown-item" href="#">Chia sẻ đề</a>
-
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#">Cài đặt</a>
-                                    </div>
-                                </td>
-
                             </tr>
                         `)
                     })
+                    total = countPractice + countExam
+                    if (countPractice === 0 && countExam === 0){
+                        total = 1
+                    }
+                    let percentPractice = Math.round(countPractice/total * 100)
+                    let percentExam = Math.round(countExam/total * 100)
+                    document.getElementById('exam-bar').style.width = percentExam+'%'
+                    document.getElementById('practice-bar').style.width = percentPractice+ '%'
+                    document.getElementById('percentExam').innerHTML = '<span class="font-weight-bold">Kiểm tra </span> '+percentExam+'%'
+                    document.getElementById('percentPractice').innerHTML = '<span class="font-weight-bold">Ôn tập </span>'+percentPractice+'%'
                     $('#countExam').html(countExam)
                     $('#countPractice').html(countPractice)
                 }

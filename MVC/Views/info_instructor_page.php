@@ -350,9 +350,9 @@ include_once './MVC/Views/navbar.php' ?>
 
 <script>
     var id;
-    function selectRadioButton(name, value){
-        $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
-    }
+    // function selectRadioButton(name, value){
+    //     $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
+    // }
     $(document).ready(function () {
         $('#save').click(function () {
             var email = $("#email").val();

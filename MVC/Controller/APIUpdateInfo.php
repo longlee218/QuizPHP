@@ -17,7 +17,7 @@ class APIUpdateInfo extends Controller
                 $data = json_decode(file_get_contents("php://input"));
                 $user_model = $this->requireModel("User");
                 if (!isset($data->id)){
-                    $data_return = $this->messages(false, 400, "Error");
+                    $data_return = $this->messages(false, 400, "Dont have id user");
                 }else{
                     try {
                         $user_model->updateInfo($data->id, $data->first_name, $data->last_name, $data->email, $data->gender,

@@ -349,9 +349,9 @@ include_once './MVC/Views/navbar_student.php' ?>
     </div><!--/row-->
 
     <script>
-        function selectRadioButton(name, value){
-            $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
-        }
+        // function selectRadioButton(name, value){
+        //     $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
+        // }
 
         console.log(user_info)
         $("#email").val(user_info['email']);

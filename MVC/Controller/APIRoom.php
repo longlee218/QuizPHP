@@ -85,7 +85,6 @@ class APIRoom extends Controller
 //        echo json_encode($data_return);
 //    }
 
-
     public function changeStatus($id){
         $data_return = [];
         if ($this->auth->isAuth() == null){

@@ -9,7 +9,6 @@ require_once __DIR__."/../lib/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php";
 define('ROW_PER_PAGE', 1);
 
 class APIThread extends Controller{
-
     var $thread_model;
     var $room_model;
     var $choice_model;

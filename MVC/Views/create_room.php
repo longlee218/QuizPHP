@@ -100,16 +100,10 @@
 
     $('#create_room').click(function() {
         const room_name = document.getElementById('room_name').value
-        // const password = document.getElementById('password_room').value
-        // const password_confirm = document.getElementById('password_confirm').value
         const description = document.getElementById('description_room').value
         const status =  $('input[type="radio"][name="status-radio"]:checked').val()
-        // if (password !== password_confirm){
-        //     alert('Mật khẩu không khớp')
-        // }else{
             const data = {
                 room_name: room_name,
-                // password: password,
                 status: status,
                 description: description
             }
@@ -130,7 +124,6 @@
                     }
                 }
             })
-        // }
         return false
     })
 

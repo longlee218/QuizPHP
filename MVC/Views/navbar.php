@@ -6,12 +6,6 @@
         padding: 10px;
         border: none;
     }
-    /*rgb(119, 170, 209)*/
-    /*#username {*/
-    /*    text-align: center;*/
-    /*    font-size: x-large;*/
-    /*    padding: 40px;*/
-    /*}*/
     .text-size {
         font-style: unset;
         color: white;
@@ -148,51 +142,87 @@
 </body>
 
 <script>
-    var user;
-    var id;
     function selectRadioButton(name, value){
         $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
     }
-        $.ajax({
-            type: 'GET',
-            url: "/../QuizSys/Home/infoUserJWT",
+
+    function getInfoUser(){
+       return  fetch( "/../QuizSys/Home/infoUserJWT",{
+            method: 'GET',
             headers: {
                 'Authorization': getCookie('Authorization'),
-            },
-            async: false,
-            success:function (data){
-                console.log(data);
-                var data_parse = JSON.parse(data);
-                user = data['user']
-                if (data_parse['success'] === true){
-                    $('#username').html(data_parse['user']['username']);
-                    id = data_parse['user']['id'];
-                    $("#email").val(data_parse['user']['email']);
-                    $('#first_name').val(data_parse['user']['first_name']);
-                    $('#last_name').val(data_parse['user']['last_name']);
-                    $('#city').val(data_parse['user']['city']);
-                    $('#country').val(data_parse['user']['country']);
-                    $('#organization_name').val(data_parse['user']['organization_name']);
-                    $('#position').val(data_parse['user']['position']);
-                    var value_gender = data_parse['user']['gender'];
-                    selectRadioButton("gender", value_gender);
-                }else {
-                    window.location.href = "/../QuizSys/MVC/Views/inc/404_page.php";
-                }
-            },
-            error: function (xhr, error) {
-                console.log(xhr);
-                console.log(error);
+                'Content-type': 'application/json'
             }
-        });
+        }).then(response => response.json()
+        ).then(data => {
+            if (data['success'] === true){
+                return data['user']
+            }
+        }).catch(error => {
+            console.log(error)
+        })
+    }
+    const userInfo =  getInfoUser()
+    userInfo.then(data => {
+        document.getElementById('username').innerHTML = data['username']
+    })
+    // function loadInfoUser(){
+    //     $('#username').html(data_parse['user']['username']);
+    //                 id = data_parse['user']['id'];
+    //                 $("#email").val(data_parse['user']['email']);
+    //                 $('#first_name').val(data_parse['user']['first_name']);
+    //                 $('#last_name').val(data_parse['user']['last_name']);
+    //                 $('#city').val(data_parse['user']['city']);
+    //                 $('#country').val(data_parse['user']['country']);
+    //                 $('#organization_name').val(data_parse['user']['organization_name']);
+    //                 $('#position').val(data_parse['user']['position']);
+    //                 var value_gender = data_parse['user']['gender'];
+    //                 selectRadioButton("gender", value_gender);
+    //             }else {
+    //                 window.location.href = "/../QuizSys/MVC/Views/inc/404_page.php";
+    //             }
+    // }
+        // $.ajax({
+        //     type: 'GET',
+        //     url: "/../QuizSys/Home/infoUserJWT",
+        //     headers: {
+        //         'Authorization': getCookie('Authorization'),
+        //     },
+        //     async: false,
+        //     success:function (data){
+        //         var data_parse = JSON.parse(data);
+        //         user = data['user']
+        //         if (data_parse['success'] === true){
+        //             $('#username').html(data_parse['user']['username']);
+        //             id = data_parse['user']['id'];
+        //             $("#email").val(data_parse['user']['email']);
+        //             $('#first_name').val(data_parse['user']['first_name']);
+        //             $('#last_name').val(data_parse['user']['last_name']);
+        //             $('#city').val(data_parse['user']['city']);
+        //             $('#country').val(data_parse['user']['country']);
+        //             $('#organization_name').val(data_parse['user']['organization_name']);
+        //             $('#position').val(data_parse['user']['position']);
+        //             var value_gender = data_parse['user']['gender'];
+        //             selectRadioButton("gender", value_gender);
+        //         }else {
+        //             window.location.href = "/../QuizSys/MVC/Views/inc/404_page.php";
+        //         }
+        //     },
+        //     error: function (xhr, error) {
+        //         console.log(xhr);
+        //         console.log(error);
+        //     }
+        // });
+
+
     $('#btn_logout').click(function () {
-        var question_logout = confirm("Bạn có muốn đăng xuất không?");
+        const question_logout = confirm("Bạn có muốn đăng xuất không?");
         if (question_logout === true){
             $.ajax({
                 type: 'GET',
                 url: '/../QuizSys/APILogout/logout',
                 success: function (data) {
-                    window.location.href = data['url'];
+                    window.location.replace(data['url']);
                 },
                 error: function (xhr, error){
                     console.log(xhr);
@@ -202,23 +232,26 @@
         }
     });
 
-    var return_first = function () {
-        var tmp = null;
-        $.ajax({
-            async: false,
-            global: false,
-            dataType: 'html',
-            type: "GET",
-            url: "/../QuizSys/Home/infoUserJWT",
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': getCookie('Authorization'),
-            },
-            success: function (data) {
-                tmp = JSON.parse(data)['user']['id']
-            }
-        });
-        return tmp;
-    }();
-    console.log(return_first);
+
+    // var return_first = function () {
+    //     var tmp = null;
+    //     $.ajax({
+    //         async: false,
+    //         global: false,
+    //         dataType: 'html',
+    //         type: "GET",
+    //         url: "/../QuizSys/Home/infoUserJWT",
+    //         headers: {
+    //             'Content-type': 'application/json',
+    //             'Authorization': getCookie('Authorization'),
+    //         },
+    //         success: function (data) {
+    //             tmp = JSON.parse(data)['user']['id']
+    //         }
+    //     });
+    //     return tmp;
+    // }();
+    const return_first = userInfo.then(data => {
+        return data['id']
+    })
 </script>

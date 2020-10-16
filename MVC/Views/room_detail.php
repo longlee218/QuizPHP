@@ -41,6 +41,14 @@
     }
 
 </style>
+<script>
+    const this_url = window.location.href
+    const array_value = this_url.split('/')
+    const room_name = array_value.slice(-1)[0]
+    // document.getElementById('room-name').innerHTML = decodeURIComponent(room_name)
+
+</script>
+
 <div class="setting-main">
     <div class="nav-tab">
         <div class="col col-md-12">
@@ -73,17 +81,12 @@
                 <div class="tab-pane pade" id="nav-room-setting" role="tabpanel" aria-labelledby="nav-store-quiz-tab">
                     <?php require_once './MVC/Views/room_setting.php'?>
                 </div>
-                <div class="tab-pane pade" id="nav-result" role="tabpanel" aria-labelledby="nav-result-tab">This is result</div>
             </div>
         </div>
     </div>
 
 </div>
+
 <script>
-    const this_url = window.location.href
-    const array_value = this_url.split('/')
-    const room_name = array_value.slice(-1)[0]
     document.getElementById('room-name').innerHTML = decodeURIComponent(room_name)
 </script>
-
-
