@@ -218,17 +218,20 @@
     $('#btn_logout').click(function () {
         const question_logout = confirm("Bạn có muốn đăng xuất không?");
         if (question_logout === true){
-            $.ajax({
+            const url = '/../QuizSys/APILogout/logout'
+            const option = {
                 type: 'GET',
-                url: '/../QuizSys/APILogout/logout',
-                success: function (data) {
-                    window.location.replace(data['url']);
-                },
-                error: function (xhr, error){
-                    console.log(xhr);
-                    console.log(error);
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
                 }
-            })
+            }
+            fetch(url, option).then(response => response.json()).
+                then(data => {
+                if (data['success'] === true){
+                    window.location.replace(data['url'])
+                }
+            }).catch(error => console.log(error))
         }
     });
 
