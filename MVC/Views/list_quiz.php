@@ -190,9 +190,8 @@
                     <div class="progress-bar progress-bar-warning" id="practice-bar" role="progressbar" style="background-color: green"></div>
                 </div>
                 <br>
-                <span class="status-dot practice"></span><small id="percentPractice"> Ôn tập</small>
-
-                <span class="status-dot exam ml-5"></span><small id="percentExam"> Kiểm tra</small>
+                <span class="status-dot exam"></span><small id="percentExam"> Kiểm tra</small>
+                <span class="status-dot practice ml-5"></span><small id="percentPractice"> Ôn tập</small>
             </div>
         </form>
 

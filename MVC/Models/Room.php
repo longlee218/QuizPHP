@@ -230,7 +230,7 @@ class Room extends Database
             $query = 'select * from room_thread where thread_id = ? and room_id = ?';
             $this->con->init();
             $stmt = $this->con->prepare($query);
-            $stmt->bind_param('ii', $id_room, $id_thread);
+            $stmt->bind_param('ii', $id_thread, $id_room);
             $stmt->execute();
             $result = $stmt->get_result();
             $stmt->close();

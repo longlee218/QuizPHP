@@ -383,6 +383,7 @@
             //Luu ten cua bo de dang xet
             const current_modal = $(e).parents()[11]
             const label =  $("#modalExam label[for='" + $(e).attr('id') + "']")
+            console.log($(parent))
             $.ajax({
                 method: 'GET',
                 headers:{
@@ -391,6 +392,7 @@
                 },
                 url: '/../QuizSys/APIRoom/checkQuizInRoom/'+$(parent).attr("name")+'/'+$(current_modal).attr("name"),
                 success: (data) =>{
+                    console.log(data)
                     if (data['success'] === false && data['status'] === 400){
                         alert('Bộ đề '+$(current_modal).attr('name')+' đã nằm trong phòng '+$(label).text())
                         $(e).prop('checked', false)
