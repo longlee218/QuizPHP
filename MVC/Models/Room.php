@@ -74,17 +74,16 @@ class Room extends Database
             return false;
         }
     }
-    public function updateRoom($room_id, $room_name, $password){
-        $query = "update room set room_name= ?, password=? where id=?";
+    public function updateRoom($room_id, $room_name, $description){
+        $query = "update room set room_name= ?, description = ? where id=?";
         $this->con->init();
-        try {
-            $stmt = $this->con->prepare($query);
-            $stmt->bind_param("ssi", $room_name, $password, $room_id);
-            $stmt->execute();
+        $stmt = $this->con->prepare($query);
+        $stmt->bind_param("ssi", $room_name, $description,  $room_id);
+        if (!$stmt->execute()){
+             return false;
+        }else{
+            $stmt->close();
             return true;
-        }catch (Exception $exception){
-            echo $exception;
-            return false;
         }
     }
     public function setOfflineRoomBack($room_id){
@@ -163,7 +162,7 @@ class Room extends Database
         $query = 'select * from room where status = ? limit 10';
         $this->con->init();
         $stmt = $this->con->prepare($query);
-        $status = '1';
+        $status = '0';
         $stmt->bind_param('s', $status);
         $stmt->execute();
         $result = $stmt->get_result();

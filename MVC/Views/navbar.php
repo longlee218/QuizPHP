@@ -143,7 +143,7 @@
 
 <script>
     function selectRadioButton(name, value){
-        $("input[name='"+name+"'][value='"+value+"']").prop('checked', true);
+        $("input[name='"+name+"'][value='"+value+"']").attr("checked", "checked")
     }
 
     function getInfoUser(){
@@ -165,6 +165,7 @@
     const userInfo =  getInfoUser()
     userInfo.then(data => {
         document.getElementById('username').innerHTML = data['username']
+        document.getElementById('username_icon').innerHTML = data['username']
     })
     // function loadInfoUser(){
     //     $('#username').html(data_parse['user']['username']);

@@ -14,7 +14,9 @@ class APIRoom extends Controller
     }
 
     private function checkValidateRoom(&$data_return, $room_model, $data){
-        if ($room_model->checkRoomNameExist($data->room_name)){
+        if (!isset($data->room_name)){
+            $data_return = $this->messages(false, 400, 'Require room nam');
+        }else if ($room_model->checkRoomNameExist($data->room_name)){
             $data_return = $this->messages(false, 400, 'Try other name');
             return false;
         }
@@ -37,6 +39,26 @@ class APIRoom extends Controller
                     }else{
                         $data_return = $this->messages(false, 500, 'Error');
                     }
+                }
+            }
+        }
+        echo json_encode($data_return);
+    }
+
+    public function updateRoom($id){
+        $data_return = [];
+        if ($this->auth->isAuth() === null || $this->auth->isAuth()['user']['user_type'] != 1){
+            $data_return = $this->messages(false, 401, 'Invalid token');
+        }else{
+            if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+                $data_return = $this->messages(false, 405, 'Not allowed this method');
+            }else{
+                $data = json_decode(file_get_contents('php://input'));
+                $status =  $this->room_model->updateRoom($id, $data->room_name, $data->description);
+                if ($status == true){
+                    $data_return = $this->messages(true, 200, 'Success');
+                }else{
+                    $data_return = $this->messages(false, 500, $status);
                 }
             }
         }

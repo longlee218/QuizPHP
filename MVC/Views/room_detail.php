@@ -63,7 +63,7 @@
                         <i class="fa fa-line-chart" aria-hidden="true"></i>
                         Thống kê <span class="counter" id="count-room"></span>
                     </a>
-                    <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-setting" role="tab" aria-controls="nav-contact" aria-selected="false">
+                    <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-access" role="tab" aria-controls="nav-contact" aria-selected="false">
                         <i class="fa fa-spinner" aria-hidden="true"></i>
                         Truy cập <span class="counter" id="count-quiz"></a>
                     <a class="nav-item nav-link" id="nav-room-setting-tab" data-toggle="tab" href="#nav-room-setting" role="tab" aria-controls="nav-contact" aria-selected="false">
@@ -78,7 +78,10 @@
                 <div class="tab-pane pade" id="nav-room-report" role="tabpanel" aria-labelledby="nav-room-report-tab">
                     <?php require_once './MVC/Views/report.php'?>
                 </div>
-                <div class="tab-pane pade" id="nav-room-setting" role="tabpanel" aria-labelledby="nav-store-quiz-tab">
+                <div class="tab-pane pade" id="nav-room-access" role="tabpanel" aria-labelledby="nav-store-quiz-tab">
+                    Access
+                </div>
+                <div class="tab-pane pade" id="nav-room-setting" role="tabpanel" aria-labelledby="nav-room-setting-tab">
                     <?php require_once './MVC/Views/room_setting.php'?>
                 </div>
             </div>

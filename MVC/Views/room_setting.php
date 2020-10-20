@@ -24,7 +24,7 @@
                     <div class="mt-3">
                         <h5>Cài đặt</h5>
                         <hr>
-                        <form method="post" id="form-update" onsubmit="return update()">
+                        <form method="post" id="form-update" >
                             <div class="form-group">
                                 <div class="form-row">
                                     <div class="col col-4">
@@ -48,7 +48,7 @@
                                     <div class="col">
                                         <label class="font-weight-bold">Trạng thái</label>
                                            <div class="form-check">
-                                               <input class="form-check-input" type="radio" name="status-radio" id="publicRoom" value="0" checked>
+                                               <input class="form-check-input" type="radio" name="status-radio" id="publicRoom" value="0">
                                                <label class="form-check-label" for="exampleRadios1">
                                                    <span><i class="fa fa-book fa-3x" aria-hidden="true"></i></span>
                                                    <span class="font-weight-bold">Công khai</span>
@@ -66,7 +66,7 @@
                                                </label>
                                            </div>
                                            <div class="form-group mt-4">
-                                               <button class="btn btn-success" type="submit">Cập nhật</button>
+                                               <button class="btn btn-success" type="button" id="btn-update">Cập nhật</button>
                                            </div>
                                     </div>
                                 </div>
@@ -106,17 +106,38 @@
     function loadData(data) {
         document.getElementById('room_name').value = data['room_name']
         document.getElementById('description').value = data['description']
+        selectRadioButton('status-radio', data['status'])
         $('input[name="status-radio"][value="'+data['status']+'"]').prop('checked', true)
     }
 
+    $('#btn-update').click(function (){
+        roomDetail.then(data => {
+            const data_post = {
+                room_name : document.getElementById('room_name').value,
+                description: document.getElementById('description').value,
+                status :   $('input[type="radio"][name="status-radio"]:checked').val(),
+            }
+            const url = '/../QuizSys/APIRoom/updateRoom/'+data['data'][0]['id']
+            $.ajax({
+                url: url,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': getCookie('Authorization')
+                },
+                data: JSON.stringify(data_post),
+                success: (data) => {
+                    const room_name =  document.getElementById('room_name').value
+                    if (data['success'] === true){
+                        alert("Cập nhật thành công")
+                        location.replace('/../QuizSys/RoomAction/roomDetail/'+room_name)
+                    }else {
+                        location.reload()
+                    }
+                }
 
-    function update(){
-        const data = {
-            room_name : document.getElementById('room_name').value,
-            description: document.getElementById('description').value,
-            status :   $('input[type="radio"][name="status-radio"]:checked').val()
-        }
-        console.log(data)
-        return false
-    }
+            })
+        })
+    })
+
 </script>

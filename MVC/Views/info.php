@@ -414,7 +414,9 @@
         document.getElementById('email').setAttribute('value', user['email'])
         selectRadioButton("gender", user['gender']);
         document.getElementById('city').setAttribute('value', user['city'])
-        document.getElementById('country').setAttribute('value', user['country'])
+        $("#country").attr('value', user['country'])
+        $('#country option[value="'+user['country']+'"]').attr('selected', 'selected')
+        // document.getElementById('country').setAttribute('value', user['country'])
         document.getElementById('organization_name').setAttribute('value', user['organization_name'])
         document.getElementById('position_input').setAttribute('value', user['position'])
         numberRoomAndQuiz()
